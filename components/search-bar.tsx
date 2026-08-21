@@ -17,16 +17,8 @@ export function SearchBar() {
           aria-label="Search"
           className="h-10"
         />
-        <Button
-          type="submit"
-          size="icon"
-          className="size-10 shrink-0 md:hidden"
-          aria-label="Search"
-        >
-          <Search strokeWidth={1.75} />
-        </Button>
-        <Button type="submit" size="lg" className="hidden shrink-0 md:inline-flex">
-          <Search strokeWidth={1.75} />
+        <Button type="submit" size="lg" className="shrink-0">
+          <Search strokeWidth={1.5} />
           Search
         </Button>
       </Form>

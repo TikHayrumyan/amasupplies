@@ -46,7 +46,13 @@
   }
 
   html {
-    scroll-padding-top: 112px;
+    scroll-padding-top: 56px;
+  }
+
+  @media (min-width: 768px) {
+    html {
+      scroll-padding-top: 120px;
+    }
   }
 
   body {
