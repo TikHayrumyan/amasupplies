@@ -1,26 +1,25 @@
 import { Search } from "lucide-react";
 import Form from "next/form";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export function SearchBar() {
   return (
-    <div className="border-t border-border bg-background">
+    <div className="border-t border-border/80">
       <Form
         action="/search"
-        className="container mx-auto flex gap-2 px-4 py-2"
+        className="container mx-auto flex h-12 items-center gap-3 px-4"
       >
+        <Search
+          className="size-4 shrink-0 text-muted-foreground"
+          strokeWidth={1.5}
+        />
         <Input
           type="search"
           name="query"
-          placeholder="Search products..."
+          placeholder="Search"
           aria-label="Search"
-          className="h-10"
+          className="h-12 border-0 bg-transparent px-4 shadow-none focus-visible:border-0 focus-visible:ring-0 md:text-sm"
         />
-        <Button type="submit" size="lg" className="shrink-0">
-          <Search strokeWidth={1.5} />
-          Search
-        </Button>
       </Form>
     </div>
   );
