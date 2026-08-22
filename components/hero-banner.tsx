@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export type HeroBannerProps = {
@@ -66,9 +68,19 @@ export function HeroBanner({
         )}
       >
         <div className="container mx-auto px-4 py-16 md:py-24">
+          <span
+            className={cn(
+              "caption inline-flex border px-3 py-1 tracking-[0.16em] uppercase",
+              hasMedia
+                ? "border-white/35 text-white/85"
+                : "border-border text-muted-foreground",
+            )}
+          >
+            Free consultation
+          </span>
           <h1
             className={cn(
-              "max-w-2xl text-4xl font-medium tracking-tight md:text-5xl",
+              "mt-5 max-w-2xl text-4xl font-medium tracking-tight md:text-5xl",
               preview && !title && "opacity-40",
             )}
           >
@@ -85,6 +97,16 @@ export function HeroBanner({
               {copy}
             </p>
           ) : null}
+          <Button
+            asChild
+            className={cn(
+              "mt-8 h-12 rounded-none px-8 text-sm tracking-[0.16em] uppercase",
+              hasMedia &&
+                "bg-white text-foreground hover:bg-white/90",
+            )}
+          >
+            <Link href="/">Get Started</Link>
+          </Button>
         </div>
       </div>
     </div>

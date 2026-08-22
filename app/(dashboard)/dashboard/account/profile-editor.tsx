@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { Pencil } from "lucide-react";
 import { logout } from "@/app/(auth)/login/actions";
 import { updateOwnProfile } from "./actions";
 import { Button } from "@/components/ui/button";
