@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getHero } from "@/lib/hero";
 import { updateHero } from "./actions";
 import { HeroEditor } from "./hero-editor";
@@ -15,23 +16,20 @@ export default async function DashboardPage({
     <div className="container mx-auto px-4 py-12 md:py-16">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div>
-          <p className="text-sm tracking-[0.12em] text-muted-foreground uppercase">
-            Homepage
-          </p>
           <h1 className="mt-2 font-medium tracking-tight">Home</h1>
-          <p className="mt-3 max-w-xl text-muted-foreground">
-            Edit the sections visitors see first. More blocks will land here as
-            the storefront grows.
+          <p className="text-sm tracking-[0.12em] text-muted-foreground uppercase">
+          Edit the Homepage sections
           </p>
+          
         </div>
-        <a
+        <Link
           href="/"
           target="_blank"
           rel="noreferrer"
           className="caption tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-foreground"
         >
           View site
-        </a>
+        </Link>
       </div>
 
       {forbidden ? (

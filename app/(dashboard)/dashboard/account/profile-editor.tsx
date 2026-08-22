@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { Pencil } from "lucide-react";
+import { logout } from "@/app/(auth)/login/actions";
 import { updateOwnProfile } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,8 +45,9 @@ export function ProfileEditor({
             {role}
           </p>
         </div>
-        {!editing ? (
-          <Button
+        <div className="flex items-center gap-2">
+          {!editing ? (
+            <Button
             type="button"
             variant="outline"
             className=" text-[13px] tracking-[0.12em]"
@@ -52,7 +55,17 @@ export function ProfileEditor({
           >
             Edit
           </Button>
-        ) : null}
+          ) : null}
+          <form action={logout}>
+            <Button
+              type="submit"
+              variant="destructive"
+              className="h-9 px-2 text-[13px] tracking-[0.12em]"
+            >
+              Sign out
+            </Button>
+          </form>
+        </div>
       </div>
 
       {editing ? (

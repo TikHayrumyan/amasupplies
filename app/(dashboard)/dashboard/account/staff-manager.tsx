@@ -6,6 +6,7 @@ import {
   deleteStaffMember,
   updateStaffMember,
 } from "./actions";
+import { Pencil, Trash2, UserPlus } from "lucide-react";
 import type { StaffUser } from "@/lib/staff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -85,6 +86,7 @@ export function StaffManager({
           className="h-8 text-[13px] tracking-[0.12em]"
           onClick={() => setPanel({ type: "add" })}
         >
+          <UserPlus />
           Add user
         </Button>
       </div>
@@ -121,18 +123,20 @@ export function StaffManager({
                   <td className="py-4 text-right">
                     <button
                       type="button"
-                      className="text-[13px] tracking-[0.08em] text-muted-foreground transition-colors hover:text-foreground"
+                      aria-label="Edit"
+                      className="inline-flex size-8 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
                       onClick={() => setPanel({ type: "edit", user })}
                     >
-                      Edit
+                      <Pencil className="size-4" />
                     </button>
                     {user.id !== currentUserId ? (
                       <button
                         type="button"
-                        className="ml-5 text-[13px] tracking-[0.08em] text-muted-foreground transition-colors hover:text-danger"
+                        aria-label="Delete"
+                        className="ml-1 inline-flex size-8 items-center justify-center text-muted-foreground transition-colors hover:text-danger"
                         onClick={() => setPanel({ type: "delete", user })}
                       >
-                        Delete
+                        <Trash2 className="size-4" />
                       </button>
                     ) : null}
                   </td>
