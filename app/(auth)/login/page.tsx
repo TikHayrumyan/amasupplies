@@ -14,7 +14,13 @@ export default async function LoginPage({
   const next = typeof params.next === "string" ? params.next : "/dashboard";
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
+    <div className="relative grid min-h-screen lg:grid-cols-2">
+      <div
+        className="absolute inset-0 bg-cover bg-center lg:hidden"
+        style={{ backgroundImage: "url('/dashboard/login-bg.jpg')" }}
+      />
+      <div className="absolute inset-0 bg-black/40 lg:hidden" />
+
       <div className="relative hidden flex-col justify-between overflow-hidden px-12 py-12 text-white lg:flex">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -37,8 +43,8 @@ export default async function LoginPage({
         <p className="relative caption text-white/70">Staff only</p>
       </div>
 
-      <div className="flex items-center justify-center bg-background px-6 py-16 lg:border-l lg:border-border/80 lg:px-16">
-        <div className="w-full max-w-sm">
+      <div className="relative z-10 flex items-center justify-center px-6 py-16 lg:bg-background lg:px-16">
+        <div className="w-full max-w-sm bg-background px-6 py-10 lg:bg-transparent lg:p-0">
           <p className="text-sm font-semibold tracking-[0.22em] uppercase lg:hidden">
             AmaSupplies
           </p>
