@@ -2,8 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["@prisma/orm-postgres"],
-  serverActions: {
-    bodySizeLimit: "32mb",
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "32mb",
+    },
   },
   images: {
     remotePatterns: [
