@@ -2,6 +2,6 @@ export default function AuthLayout({
   children,
 }: LayoutProps<"/">) {
   return (
-    <div className="min-h-full bg-surface text-foreground">{children}</div>
+    <div className="flex-1 min-h-screen bg-surface text-foreground">{children}</div>
   );
 }

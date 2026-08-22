@@ -14,22 +14,27 @@ export default async function LoginPage({
   const next = typeof params.next === "string" ? params.next : "/dashboard";
 
   return (
-    <div className="grid min-h-full lg:grid-cols-2">
-      <div className="hidden flex-col justify-between bg-surface px-12 py-12 lg:flex">
-        <p className="text-sm font-semibold tracking-[0.22em] uppercase">
+    <div className="grid min-h-screen lg:grid-cols-2">
+      <div className="relative hidden flex-col justify-between overflow-hidden px-12 py-12 text-white lg:flex">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/dashboard/login-bg.jpg')" }}
+        />
+        <div className="absolute inset-0 bg-black/40" />
+        <p className="relative text-sm font-semibold tracking-[0.22em] uppercase">
           AmaSupplies
         </p>
-        <div className="max-w-sm">
+        <div className="relative max-w-sm">
           <p className="text-4xl font-medium leading-tight tracking-tight">
             Quiet rooms.
             <br />
             Clear work.
           </p>
-          <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-6 text-sm leading-relaxed text-white/75">
             Sign in to edit the storefront.
           </p>
         </div>
-        <p className="caption text-muted-foreground">Staff only</p>
+        <p className="relative caption text-white/70">Staff only</p>
       </div>
 
       <div className="flex items-center justify-center bg-background px-6 py-16 lg:border-l lg:border-border/80 lg:px-16">
