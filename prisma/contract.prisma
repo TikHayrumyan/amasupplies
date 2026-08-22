@@ -1,0 +1,13 @@
+// use prisma-next
+
+model Hero {
+  id          Int         @id @default(autoincrement())
+  title       String      @default("")
+  description String      @default("")
+  imageUrl    String?
+  videoUrl    String?
+  updatedAt   Timestamptz @default(now())
+
+  @@rls
+  @@map("hero")
+}
