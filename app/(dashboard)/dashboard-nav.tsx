@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { logout } from "@/app/(auth)/login/actions";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -31,6 +33,17 @@ export function DashboardNav({ isAdmin }: { isAdmin: boolean }) {
     <nav className="flex items-center gap-6 text-[13px] tracking-[0.12em]">
       <NavLink href="/dashboard">Home</NavLink>
       {isAdmin ? <NavLink href="/dashboard/account">Account</NavLink> : null}
+      {!isAdmin ? (
+        <form action={logout}>
+          <Button
+            type="submit"
+            variant="destructive"
+            className="h-8 px-2 text-[13px] tracking-[0.12em]"
+          >
+            Sign out
+          </Button>
+        </form>
+      ) : null}
     </nav>
   );
 }
