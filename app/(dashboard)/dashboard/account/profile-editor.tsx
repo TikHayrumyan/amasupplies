@@ -46,8 +46,8 @@ export function ProfileEditor({
         {!editing ? (
           <Button
             type="button"
-            variant="ghost"
-            className="h-8 px-0 text-[13px] tracking-[0.12em]"
+            variant="outline"
+            className=" text-[13px] tracking-[0.12em]"
             onClick={() => setEditing(true)}
           >
             Edit
@@ -75,14 +75,14 @@ export function ProfileEditor({
             <Button
               type="submit"
               disabled={pending}
-              className="h-10 rounded-none px-6 text-sm tracking-[0.16em] uppercase"
+              className="h-10 rounded-none px-6 text-[13px] tracking-[0.12em] uppercase"
             >
               {pending ? "Saving…" : "Save"}
             </Button>
             <Button
               type="button"
-              variant="ghost"
-              className="h-10 px-0"
+              variant="outline"
+              className="h-10 text-[13px] tracking-[0.12em]"
               onClick={() => setEditing(false)}
             >
               Cancel

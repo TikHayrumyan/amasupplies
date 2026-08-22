@@ -81,8 +81,8 @@ export function StaffManager({
         </div>
         <Button
           type="button"
-          variant="ghost"
-          className="h-8 px-0 text-[13px] tracking-[0.12em]"
+          variant="outline"
+          className="h-8 text-[13px] tracking-[0.12em]"
           onClick={() => setPanel({ type: "add" })}
         >
           Add user
