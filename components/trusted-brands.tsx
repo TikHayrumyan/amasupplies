@@ -35,7 +35,7 @@ export async function TrustedBrands() {
                 alt={brand.title}
                 width={180}
                 height={72}
-                className="h-16 w-24 object-contain opacity-70 grayscale transition-opacity duration-300 group-hover:opacity-100 md:h-24"
+                className="h-24 w-36 object-contain opacity-70 grayscale transition-opacity duration-300 group-hover:opacity-100 md:h-24"
               />
             </div>
           ))}
