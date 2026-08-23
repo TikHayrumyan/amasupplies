@@ -32,30 +32,11 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
 export function Footer() {
   return (
     <footer className="border-t border-border bg-background">
-      <div className="container mx-auto grid gap-12 px-4 py-16 md:grid-cols-2 lg:grid-cols-4">
+      <div className="container mx-auto grid gap-12 px-4 py-16 md:grid-cols-2 xl:grid-cols-5">
         <div>
           <Link href="/" aria-label="AmaSupplies">
-            <BrandLogo className="h-15 w-auto md:h-15"/>
+            <BrandLogo className="h-15 w-auto md:h-15" />
           </Link>
-          <div className="mt-8 flex items-center gap-4">
-            {SOCIAL_LINKS.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                prefetch={false}
-                aria-label={link.label}
-                className="opacity-80 transition-opacity hover:opacity-100"
-              >
-                <Image
-                  src={link.src}
-                  alt=""
-                  width={30}
-                  height={30}
-                  unoptimized
-                />
-              </Link>
-            ))}
-          </div>
         </div>
 
         <div>
@@ -78,9 +59,9 @@ export function Footer() {
             <p className="flex items-start gap-3">
               <Clock className="mt-0.5 size-4 shrink-0" />
               <span>
-                Monday – Friday 9:00 AM to 6:00 PM
+                Mon–Fri: 9 AM – 6 PM
                 <br />
-                Saturday 10:00 AM to 4:00 PM
+                Sat: 10 AM – 4 PM
               </span>
             </p>
           </div>
@@ -105,6 +86,30 @@ export function Footer() {
             {POLICY_LINKS.map((link) => (
               <li key={link.label}>
                 <Link href={link.href} prefetch={false} className={linkClass}>
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <FooterHeading>Social media</FooterHeading>
+          <ul className="mt-5 flex flex-col gap-3">
+            {SOCIAL_LINKS.map((link) => (
+              <li key={link.label}>
+                <Link
+                  href={link.href}
+                  prefetch={false}
+                  className={`${linkClass} inline-flex items-center gap-3`}
+                >
+                  <Image
+                    src={link.src}
+                    alt=""
+                    width={16}
+                    height={16}
+                    unoptimized
+                  />
                   {link.label}
                 </Link>
               </li>
