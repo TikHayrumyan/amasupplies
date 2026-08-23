@@ -15,6 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { BrandLogo } from "@/components/brand-logo";
 import { NAV_LINKS } from "@/lib/nav";
 
 export function MobileNav() {
@@ -39,8 +40,8 @@ export function MobileNav() {
           className="h-dvh w-full max-w-none gap-0 border-0 bg-surface p-0 sm:max-w-none"
         >
           <SheetHeader className="flex h-14 flex-row items-center justify-between space-y-0 px-4">
-            <SheetTitle className="text-sm font-semibold tracking-[0.2em] uppercase">
-              AmaSupplies
+            <SheetTitle>
+              <BrandLogo className="h-9 w-auto md:h-9" />
             </SheetTitle>
             <SheetDescription className="sr-only">
               Site navigation
@@ -69,11 +70,8 @@ export function MobileNav() {
         </SheetContent>
       </Sheet>
 
-      <Link
-        href="/"
-        className="justify-self-center text-center text-sm font-semibold tracking-[0.22em] uppercase"
-      >
-        AmaSupplies
+      <Link href="/" className="justify-self-center" aria-label="AmaSupplies">
+        <BrandLogo priority />
       </Link>
 
       <Sheet open={searchOpen} onOpenChange={setSearchOpen}>

@@ -1,6 +1,7 @@
 import { Clock, Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { BrandLogo } from "@/components/brand-logo";
 import { NAV_LINKS } from "@/lib/nav";
 
 const COMPANY_LINKS = NAV_LINKS.filter((link) => link.href !== "/");
@@ -33,11 +34,8 @@ export function Footer() {
     <footer className="border-t border-border bg-background">
       <div className="container mx-auto grid gap-12 px-4 py-16 md:grid-cols-2 lg:grid-cols-4">
         <div>
-          <Link
-            href="/"
-            className="text-sm font-semibold tracking-[0.22em] uppercase transition-colors hover:text-primary"
-          >
-            AmaSupplies
+          <Link href="/" aria-label="AmaSupplies">
+            <BrandLogo className="h-15 w-auto md:h-15"/>
           </Link>
           <div className="mt-8 flex items-center gap-4">
             {SOCIAL_LINKS.map((link) => (
