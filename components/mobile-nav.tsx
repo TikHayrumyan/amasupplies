@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, Search, X } from "lucide-react";
+import { ChevronDown, Menu, Search, X } from "lucide-react";
 import Form from "next/form";
 import Link from "next/link";
 import { useState } from "react";
@@ -16,14 +16,16 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { BrandLogo } from "@/components/brand-logo";
-import { NAV_LINKS } from "@/lib/nav";
+import { NAV_LINKS, type NavCategory } from "@/lib/nav";
+import { cn } from "@/lib/utils";
 
-export function MobileNav() {
+export function MobileNav({ categories }: { categories: NavCategory[] }) {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [productsOpen, setProductsOpen] = useState(false);
 
   return (
     <div className="grid w-full grid-cols-[2.5rem_1fr_2.5rem] items-center md:hidden">
-      <Sheet>
+      <Sheet onOpenChange={(open) => !open && setProductsOpen(false)}>
         <SheetTrigger asChild>
           <Button
             variant="ghost"
@@ -56,16 +58,58 @@ export function MobileNav() {
             aria-label="Mobile"
             className="flex flex-1 flex-col justify-center gap-2 px-8 pb-24"
           >
-            {NAV_LINKS.map((link) => (
-              <SheetClose asChild key={link.href}>
-                <Link
-                  href={link.href}
-                  className="py-2 text-3xl font-medium tracking-tight text-foreground transition-colors hover:text-primary"
-                >
-                  {link.label}
-                </Link>
-              </SheetClose>
-            ))}
+            {NAV_LINKS.map((link) =>
+              link.href === "/products" && categories.length > 0 ? (
+                <div key={link.href}>
+                  <button
+                    type="button"
+                    aria-expanded={productsOpen}
+                    onClick={() => setProductsOpen((open) => !open)}
+                    className="flex w-full items-center justify-between py-2 text-left text-3xl font-medium tracking-tight text-foreground"
+                  >
+                    {link.label}
+                    <ChevronDown
+                      className={cn(
+                        "size-5 text-muted-foreground transition-transform",
+                        productsOpen && "rotate-180",
+                      )}
+                      strokeWidth={1.5}
+                    />
+                  </button>
+                  {productsOpen ? (
+                    <div className="mb-2 flex flex-col gap-1 pb-2 pl-1">
+                      <SheetClose asChild>
+                        <Link
+                          href="/products"
+                          className="py-1.5 text-lg text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          All products
+                        </Link>
+                      </SheetClose>
+                      {categories.map((category) => (
+                        <SheetClose asChild key={category.slug}>
+                          <Link
+                            href={`/products/${category.slug}`}
+                            className="py-1.5 text-lg text-muted-foreground transition-colors hover:text-foreground"
+                          >
+                            {category.title}
+                          </Link>
+                        </SheetClose>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
+                <SheetClose asChild key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="py-2 text-3xl font-medium tracking-tight text-foreground transition-colors hover:text-primary"
+                  >
+                    {link.label}
+                  </Link>
+                </SheetClose>
+              ),
+            )}
           </nav>
         </SheetContent>
       </Sheet>

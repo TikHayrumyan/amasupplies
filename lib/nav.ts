@@ -5,3 +5,8 @@ export const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
   { href: "/blog", label: "Blog" },
 ] as const;
+
+export type NavCategory = {
+  title: string;
+  slug: string;
+};
