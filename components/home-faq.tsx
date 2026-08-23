@@ -53,8 +53,11 @@ export function HomeFaq() {
     <section className="bg-background py-16 md:py-24">
       <div className="container mx-auto grid gap-10 px-4 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-4">
-          <h2 className="text-3xl font-medium tracking-tight md:text-4xl">
-            FAQ
+          <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+            Frequently asked questions
+          </p>
+          <h2 className="mt-5 text-3xl font-medium tracking-tight md:text-4xl">
+            Got a question?
           </h2>
         </div>
 
