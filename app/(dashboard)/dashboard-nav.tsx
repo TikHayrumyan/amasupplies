@@ -32,6 +32,7 @@ export function DashboardNav({ isAdmin }: { isAdmin: boolean }) {
   return (
     <nav className="flex items-center gap-6 text-[13px] tracking-[0.12em]">
       <NavLink href="/dashboard">Home</NavLink>
+      <NavLink href="/dashboard/categories">Categories</NavLink>
       {isAdmin ? <NavLink href="/dashboard/account">Account</NavLink> : null}
       {!isAdmin ? (
         <form action={logout}>
