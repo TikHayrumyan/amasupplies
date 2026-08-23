@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { listBrands } from "@/lib/brand";
 import { getHero } from "@/lib/hero";
 import { updateHero } from "./actions";
+import { BrandManager } from "./brand-manager";
 import { HeroEditor } from "./hero-editor";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +12,7 @@ export default async function DashboardPage({
 }: PageProps<"/dashboard">) {
   const params = await searchParams;
   const forbidden = params.error === "forbidden";
-  const hero = await getHero();
+  const [hero, brands] = await Promise.all([getHero(), listBrands()]);
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
@@ -62,6 +64,19 @@ export default async function DashboardPage({
             action={updateHero}
           />
         </div>
+      </section>
+
+      <section className="mt-14 border-t border-border/80 pt-12">
+        <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+          02 · Trusted brands
+        </p>
+        <p className="mt-3 max-w-xl text-muted-foreground">
+          Logos in the homepage marquee. Drag to set the order shoppers see.
+        </p>
+        <BrandManager
+          key={brands.map((brand) => `${brand.id}-${brand.sortOrder}-${brand.updatedAt}`).join()}
+          brands={brands}
+        />
       </section>
     </div>
   );

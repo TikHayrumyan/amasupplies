@@ -25,3 +25,15 @@ model Category {
   @@rls
   @@map("category")
 }
+
+model Brand {
+  id          Int         @id @default(autoincrement())
+  title       String
+  imageUrl    String
+  sortOrder   Float       @default(0)
+  isPublished Boolean     @default(true)
+  updatedAt   Timestamptz @default(now())
+
+  @@rls
+  @@map("brand")
+}

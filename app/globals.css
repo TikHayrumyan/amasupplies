@@ -38,6 +38,13 @@
   --text-caption--line-height: 1.4;
 
   --default-transition-duration: 150ms;
+  --animate-marquee: marquee 40s linear infinite;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 @layer base {
