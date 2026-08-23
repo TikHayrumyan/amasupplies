@@ -58,7 +58,7 @@ export function HeroBanner({
       ) : null}
 
       {hasMedia ? (
-        <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/15 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/35 lg:via-black/15 to-transparent" />
       ) : null}
 
       <div
