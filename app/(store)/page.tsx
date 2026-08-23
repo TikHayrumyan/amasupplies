@@ -1,5 +1,6 @@
 import { HeroBanner } from "@/components/hero-banner";
 import { HomeHighlights } from "@/components/home-highlights";
+import { HomeInfoBar } from "@/components/home-info-bar";
 import { ShopByCategory } from "@/components/shop-by-category";
 import { getHero } from "@/lib/hero";
 
@@ -20,6 +21,7 @@ export default async function Home() {
       </section>
       <HomeHighlights />
       <ShopByCategory />
+      <HomeInfoBar />
     </>
   );
 }
