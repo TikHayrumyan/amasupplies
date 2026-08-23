@@ -67,7 +67,7 @@ export function WhoWeAreSlider() {
             aria-label={`Go to slide ${index + 1}`}
             onClick={() => api?.scrollTo(index)}
             className={cn(
-              "h-px w-6 bg-white/40 transition-colors",
+              "h-px w-12 bg-white/40 transition-colors",
               current === index && "bg-white",
             )}
           />
