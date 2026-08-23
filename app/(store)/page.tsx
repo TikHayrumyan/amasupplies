@@ -2,6 +2,7 @@ import { HeroBanner } from "@/components/hero-banner";
 import { HomeHighlights } from "@/components/home-highlights";
 import { HomeInfoBar } from "@/components/home-info-bar";
 import { ShopByCategory } from "@/components/shop-by-category";
+import { HomeFaq } from "@/components/home-faq";
 import { TrustedBrands } from "@/components/trusted-brands";
 import { WhoWeAre } from "@/components/who-we-are";
 import { getHero } from "@/lib/hero";
@@ -26,6 +27,7 @@ export default async function Home() {
       <HomeInfoBar />
       <WhoWeAre />
       <TrustedBrands />
+      <HomeFaq />
     </>
   );
 }
