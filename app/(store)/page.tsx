@@ -1,5 +1,6 @@
 import { HeroBanner } from "@/components/hero-banner";
 import { HomeHighlights } from "@/components/home-highlights";
+import { ShopByCategory } from "@/components/shop-by-category";
 import { getHero } from "@/lib/hero";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export default async function Home() {
         />
       </section>
       <HomeHighlights />
+      <ShopByCategory />
     </>
   );
 }
