@@ -80,7 +80,7 @@ export function ProfileEditor({
               name="name"
               required
               defaultValue={name}
-              className="h-11 rounded-none border-0 border-b border-border bg-transparent px-0 shadow-none focus-visible:border-foreground focus-visible:ring-0"
+              variant="line"
             />
           </label>
           <div className="mt-6 flex items-center gap-6">

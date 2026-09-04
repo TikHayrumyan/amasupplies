@@ -29,6 +29,7 @@ import {
 } from "@/lib/category-fields";
 import type { CategoryRecord } from "@/lib/category-fields";
 import type { ProductTypeRecord } from "@/lib/product-type-fields";
+import { IconButton } from "@/components/icon-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -41,9 +42,6 @@ import {
 import { cn } from "@/lib/utils";
 import { moveCategory, removeCategory, saveCategory } from "./actions";
 import { TypeManager } from "./type-manager";
-
-const fieldClass =
-  "h-11 rounded-none border-0 border-b border-border bg-transparent px-0 shadow-none focus-visible:border-foreground focus-visible:ring-0";
 
 type Result = { error: string | null; done?: boolean };
 type Panel =
@@ -79,15 +77,9 @@ function SortableRow({
         isDragging && "relative z-10 bg-background opacity-80",
       )}
     >
-      <button
-        type="button"
-        aria-label={`Reorder ${category.title}`}
-        className="inline-flex size-8 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground"
-        {...attributes}
-        {...listeners}
-      >
+      <IconButton aria-label={`Reorder ${category.title}`} {...attributes} {...listeners}>
         <GripVertical className="size-4" />
-      </button>
+      </IconButton>
       <div className="relative size-14 shrink-0 overflow-hidden bg-surface">
         <Image
           src={category.imageUrl}
@@ -105,30 +97,15 @@ function SortableRow({
           {category.isPublished ? "" : " · Hidden"}
         </p>
       </div>
-      <button
-        type="button"
-        aria-label="Types"
-        className="inline-flex size-8 items-center justify-center text-muted-foreground hover:text-foreground"
-        onClick={onTypes}
-      >
+      <IconButton aria-label="Types" onClick={onTypes}>
         <Layers className="size-4" />
-      </button>
-      <button
-        type="button"
-        aria-label="Edit"
-        className="inline-flex size-8 items-center justify-center text-muted-foreground hover:text-foreground"
-        onClick={onEdit}
-      >
+      </IconButton>
+      <IconButton aria-label="Edit" onClick={onEdit}>
         <Pencil className="size-4" />
-      </button>
-      <button
-        type="button"
-        aria-label="Delete"
-        className="inline-flex size-8 items-center justify-center text-muted-foreground hover:text-danger"
-        onClick={onDelete}
-      >
+      </IconButton>
+      <IconButton aria-label="Delete" danger onClick={onDelete}>
         <Trash2 className="size-4" />
-      </button>
+      </IconButton>
     </div>
   );
 }
@@ -401,7 +378,7 @@ function CategoryForm({
               setSlug(slugify(value));
             }
           }}
-          className={fieldClass}
+          variant="line"
         />
         <span className="text-xs text-muted-foreground">
           {title.trim().length}/{CATEGORY_TITLE_MAX}
@@ -419,7 +396,7 @@ function CategoryForm({
             setSlugTouched(true);
             setSlug(slugify(event.target.value));
           }}
-          className={fieldClass}
+          variant="line"
         />
       </label>
 

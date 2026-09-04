@@ -25,6 +25,7 @@ import {
   validateSizeCopy,
   type SizeRecord,
 } from "@/lib/size-fields";
+import { IconButton } from "@/components/icon-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -36,9 +37,6 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { moveSize, removeSize, saveSize } from "./actions";
-
-const fieldClass =
-  "h-11 rounded-none border-0 border-b border-border bg-transparent px-0 shadow-none focus-visible:border-foreground focus-visible:ring-0";
 
 type Result = { error: string | null; done?: boolean };
 type Panel =
@@ -70,35 +68,19 @@ function SortableRow({
         isDragging && "relative z-10 bg-background opacity-80",
       )}
     >
-      <button
-        type="button"
-        aria-label={`Reorder ${size.title}`}
-        className="inline-flex size-8 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground"
-        {...attributes}
-        {...listeners}
-      >
+      <IconButton aria-label={`Reorder ${size.title}`} {...attributes} {...listeners}>
         <GripVertical className="size-4" />
-      </button>
+      </IconButton>
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium">{size.title}</p>
         <p className="mt-1 truncate text-sm text-muted-foreground">/{size.slug}</p>
       </div>
-      <button
-        type="button"
-        aria-label="Edit"
-        className="inline-flex size-8 items-center justify-center text-muted-foreground hover:text-foreground"
-        onClick={onEdit}
-      >
+      <IconButton aria-label="Edit" onClick={onEdit}>
         <Pencil className="size-4" />
-      </button>
-      <button
-        type="button"
-        aria-label="Delete"
-        className="inline-flex size-8 items-center justify-center text-muted-foreground hover:text-danger"
-        onClick={onDelete}
-      >
+      </IconButton>
+      <IconButton aria-label="Delete" danger onClick={onDelete}>
         <Trash2 className="size-4" />
-      </button>
+      </IconButton>
     </div>
   );
 }
@@ -253,7 +235,7 @@ function SizeForm({
               setSlug(slugify(value));
             }
           }}
-          className={fieldClass}
+          variant="line"
         />
       </label>
       <label className="flex flex-col gap-3">
@@ -267,7 +249,7 @@ function SizeForm({
             setSlugTouched(true);
             setSlug(slugify(event.target.value));
           }}
-          className={fieldClass}
+          variant="line"
         />
       </label>
       <Button

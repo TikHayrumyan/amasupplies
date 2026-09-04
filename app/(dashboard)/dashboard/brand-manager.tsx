@@ -26,6 +26,7 @@ import {
   validateBrandCopy,
   type BrandRecord,
 } from "@/lib/brand-fields";
+import { IconButton } from "@/components/icon-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -37,9 +38,6 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { moveBrand, removeBrand, saveBrand } from "./actions";
-
-const fieldClass =
-  "h-11 rounded-none border-0 border-b border-border bg-transparent px-0 shadow-none focus-visible:border-foreground focus-visible:ring-0";
 
 type Result = { error: string | null; done?: boolean };
 type Panel =
@@ -71,15 +69,9 @@ function SortableRow({
         isDragging && "relative z-10 bg-background opacity-80",
       )}
     >
-      <button
-        type="button"
-        aria-label={`Reorder ${brand.title}`}
-        className="inline-flex size-8 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground"
-        {...attributes}
-        {...listeners}
-      >
+      <IconButton aria-label={`Reorder ${brand.title}`} {...attributes} {...listeners}>
         <GripVertical className="size-4" />
-      </button>
+      </IconButton>
       <div className="relative size-14 shrink-0 bg-surface">
         <Image
           src={brand.imageUrl}
@@ -95,22 +87,12 @@ function SortableRow({
           <p className="mt-1 text-sm text-muted-foreground">Hidden</p>
         )}
       </div>
-      <button
-        type="button"
-        aria-label="Edit"
-        className="inline-flex size-8 items-center justify-center text-muted-foreground hover:text-foreground"
-        onClick={onEdit}
-      >
+      <IconButton aria-label="Edit" onClick={onEdit}>
         <Pencil className="size-4" />
-      </button>
-      <button
-        type="button"
-        aria-label="Delete"
-        className="inline-flex size-8 items-center justify-center text-muted-foreground hover:text-danger"
-        onClick={onDelete}
-      >
+      </IconButton>
+      <IconButton aria-label="Delete" danger onClick={onDelete}>
         <Trash2 className="size-4" />
-      </button>
+      </IconButton>
     </div>
   );
 }
@@ -354,7 +336,7 @@ function BrandForm({
           value={title}
           maxLength={BRAND_TITLE_MAX}
           onChange={(event) => setTitle(event.target.value)}
-          className={fieldClass}
+          variant="line"
         />
         <span className="text-xs text-muted-foreground">
           {title.trim().length}/{BRAND_TITLE_MAX}

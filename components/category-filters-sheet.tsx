@@ -24,17 +24,18 @@ export function CategoryFiltersSheet({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button
+        <Button
           type="button"
+          variant="ghost"
           className={cn(
-            "caption whitespace-nowrap tracking-[0.16em] uppercase transition-colors",
+            "caption h-auto whitespace-nowrap rounded-none px-0 tracking-[0.16em] uppercase hover:bg-transparent",
             active
               ? "text-foreground"
               : "text-muted-foreground hover:text-foreground",
           )}
         >
           Filters
-        </button>
+        </Button>
       </SheetTrigger>
       <SheetContent
         side="left"

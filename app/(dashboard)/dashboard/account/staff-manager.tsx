@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useState } from "react";
+import { useActionState, useCallback, useState } from "react";
 import {
   createStaffMember,
   deleteStaffMember,
@@ -8,6 +8,9 @@ import {
 } from "./actions";
 import { Pencil, Trash2, UserPlus } from "lucide-react";
 import type { StaffUser } from "@/lib/staff";
+import { Field } from "@/components/field";
+import { FieldSelect } from "@/components/field-select";
+import { IconButton } from "@/components/icon-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,9 +21,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 
-const fieldClass =
-  "h-11 rounded-none border-0 border-b border-border bg-transparent px-0 shadow-none focus-visible:border-foreground focus-visible:ring-0";
-
 type Result = { error: string | null; done?: boolean };
 type Panel =
   | { type: "add" }
@@ -28,34 +28,22 @@ type Panel =
   | { type: "delete"; user: StaffUser }
   | null;
 
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="flex flex-col gap-3">
-      <span className="caption tracking-[0.16em] text-muted-foreground uppercase">
-        {label}
-      </span>
-      {children}
-    </label>
-  );
-}
+const ROLE_OPTIONS = [
+  { value: "manager", label: "Manager" },
+  { value: "admin", label: "Admin" },
+];
 
 function RoleSelect({ defaultValue }: { defaultValue: string }) {
+  const [role, setRole] = useState(defaultValue);
   return (
-    <select
+    <FieldSelect
       name="role"
-      required
-      defaultValue={defaultValue}
-      className="h-11 border-0 border-b border-border bg-transparent text-sm outline-none focus-visible:border-foreground"
-    >
-      <option value="manager">Manager</option>
-      <option value="admin">Admin</option>
-    </select>
+      value={role}
+      placeholder="Select role"
+      options={ROLE_OPTIONS}
+      onChange={setRole}
+      variant="line"
+    />
   );
 }
 
@@ -121,23 +109,21 @@ export function StaffManager({
                     {user.role}
                   </td>
                   <td className="py-4 text-right">
-                    <button
-                      type="button"
+                    <IconButton
                       aria-label="Edit"
-                      className="inline-flex size-8 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
                       onClick={() => setPanel({ type: "edit", user })}
                     >
                       <Pencil className="size-4" />
-                    </button>
+                    </IconButton>
                     {user.id !== currentUserId ? (
-                      <button
-                        type="button"
+                      <IconButton
                         aria-label="Delete"
-                        className="ml-1 inline-flex size-8 items-center justify-center text-muted-foreground transition-colors hover:text-danger"
+                        danger
+                        className="ml-1"
                         onClick={() => setPanel({ type: "delete", user })}
                       >
                         <Trash2 className="size-4" />
-                      </button>
+                      </IconButton>
                     ) : null}
                   </td>
                 </tr>
@@ -196,19 +182,21 @@ export function StaffManager({
 
 function AddForm({ onDone }: { onDone: () => void }) {
   const [state, formAction, pending] = useActionState(
-    async (_prev: Result, formData: FormData) => createStaffMember(formData),
+    async (_prev: Result, formData: FormData) => {
+      const result = await createStaffMember(formData);
+      if (result.done) {
+        onDone();
+      }
+      return result;
+    },
     { error: null },
   );
-
-  useEffect(() => {
-    if (state.done) onDone();
-  }, [state.done, onDone]);
 
   return (
     <form action={formAction} className="flex flex-col gap-8 px-6 pb-8">
       {state.error ? <p className="text-sm text-danger">{state.error}</p> : null}
       <Field label="Name">
-        <Input name="name" required autoComplete="off" className={fieldClass} />
+        <Input name="name" required autoComplete="off" variant="line" />
       </Field>
       <Field label="Email">
         <Input
@@ -216,7 +204,7 @@ function AddForm({ onDone }: { onDone: () => void }) {
           name="email"
           required
           autoComplete="off"
-          className={fieldClass}
+          variant="line"
         />
       </Field>
       <Field label="Password">
@@ -226,7 +214,7 @@ function AddForm({ onDone }: { onDone: () => void }) {
           required
           minLength={8}
           autoComplete="new-password"
-          className={fieldClass}
+          variant="line"
         />
       </Field>
       <Field label="Role">
@@ -251,13 +239,15 @@ function EditForm({
   onDone: () => void;
 }) {
   const [state, formAction, pending] = useActionState(
-    async (_prev: Result, formData: FormData) => updateStaffMember(formData),
+    async (_prev: Result, formData: FormData) => {
+      const result = await updateStaffMember(formData);
+      if (result.done) {
+        onDone();
+      }
+      return result;
+    },
     { error: null },
   );
-
-  useEffect(() => {
-    if (state.done) onDone();
-  }, [state.done, onDone]);
 
   return (
     <form action={formAction} className="flex flex-col gap-8 px-6 pb-8">
@@ -268,7 +258,7 @@ function EditForm({
           name="name"
           required
           defaultValue={user.name}
-          className={fieldClass}
+          variant="line"
         />
       </Field>
       <Field label="Email">
@@ -277,7 +267,7 @@ function EditForm({
           name="email"
           required
           defaultValue={user.email}
-          className={fieldClass}
+          variant="line"
         />
       </Field>
       <Field label="Password">
@@ -287,11 +277,11 @@ function EditForm({
           minLength={8}
           autoComplete="new-password"
           placeholder="Unchanged"
-          className={fieldClass}
+          variant="line"
         />
       </Field>
       <Field label="Role">
-        <RoleSelect defaultValue={user.role} />
+        <RoleSelect key={user.id} defaultValue={user.role} />
       </Field>
       <Button
         type="submit"
@@ -312,13 +302,15 @@ function DeleteForm({
   onDone: () => void;
 }) {
   const [state, formAction, pending] = useActionState(
-    async (_prev: Result, formData: FormData) => deleteStaffMember(formData),
+    async (_prev: Result, formData: FormData) => {
+      const result = await deleteStaffMember(formData);
+      if (result.done) {
+        onDone();
+      }
+      return result;
+    },
     { error: null },
   );
-
-  useEffect(() => {
-    if (state.done) onDone();
-  }, [state.done, onDone]);
 
   return (
     <form action={formAction} className="flex flex-col gap-8 px-6 pb-8">

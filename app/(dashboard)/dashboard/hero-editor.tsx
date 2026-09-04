@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { HeroBanner } from "@/components/hero-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   HERO_DESCRIPTION_MAX,
   HERO_MEDIA_MAX_BYTES,
@@ -13,9 +14,6 @@ import {
   type HeroMediaKind,
 } from "@/lib/hero-media";
 import { cn } from "@/lib/utils";
-
-const fieldClass =
-  "h-11 rounded-none border-0 border-b border-border bg-transparent px-0 shadow-none focus-visible:border-foreground focus-visible:ring-0";
 
 const ACCEPT: Record<HeroMediaKind, string> = {
   image: "image/jpeg,image/png,image/webp,image/avif",
@@ -224,29 +222,27 @@ export function HeroEditor({
           <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
             Background
           </p>
-          <div
-            role="radiogroup"
+          <ToggleGroup
+            type="single"
+            value={kind}
+            onValueChange={(value) => {
+              if (value === "image" || value === "video") {
+                chooseKind(value);
+              }
+            }}
             aria-label="Background type"
-            className="mt-4 flex gap-6"
+            className="mt-4 flex gap-6 rounded-none bg-transparent"
           >
             {(["image", "video"] as const).map((option) => (
-              <button
+              <ToggleGroupItem
                 key={option}
-                type="button"
-                role="radio"
-                aria-checked={kind === option}
-                onClick={() => chooseKind(option)}
-                className={cn(
-                  "caption border-b pb-1 tracking-[0.16em] uppercase transition-colors",
-                  kind === option
-                    ? "border-foreground text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground",
-                )}
+                value={option}
+                className="caption h-auto min-w-0 rounded-none border-0 border-b bg-transparent px-0 pb-1 tracking-[0.16em] uppercase shadow-none hover:bg-transparent hover:text-foreground focus-visible:ring-0 data-[state=off]:border-transparent data-[state=off]:text-muted-foreground data-[state=on]:border-foreground data-[state=on]:bg-transparent data-[state=on]:text-foreground first:rounded-none last:rounded-none"
               >
                 {option}
-              </button>
+              </ToggleGroupItem>
             ))}
-          </div>
+          </ToggleGroup>
         </div>
 
         <div
@@ -321,7 +317,7 @@ export function HeroEditor({
             value={title}
             maxLength={HERO_TITLE_MAX}
             onChange={(event) => setTitle(event.target.value)}
-            className={fieldClass}
+            variant="line"
           />
           <CharCount value={titleCount} max={HERO_TITLE_MAX} />
         </label>

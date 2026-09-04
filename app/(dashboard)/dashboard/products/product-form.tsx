@@ -4,7 +4,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ImagePlus, Plus, X } from "lucide-react";
+import { ImagePlus, Plus, X } from "lucide-react";
 import {
   PRODUCT_IMAGE_MAX_BYTES,
   PRODUCT_ITEM_NUMBER_MAX,
@@ -21,14 +21,12 @@ import type { ProductBrandRecord } from "@/lib/product-brand-fields";
 import type { CategoryRecord } from "@/lib/category-fields";
 import type { ProductTypeRecord } from "@/lib/product-type-fields";
 import type { SizeRecord } from "@/lib/size-fields";
+import { FieldSelect } from "@/components/field-select";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { removeProduct, saveProduct } from "./actions";
-
-const fieldClass =
-  "h-12 w-full rounded-none border border-border bg-surface px-4 text-sm shadow-none transition-colors placeholder:text-muted-foreground/60 focus-visible:border-foreground focus-visible:bg-background focus-visible:ring-0";
 
 type Result = { error: string | null; done?: boolean };
 type GalleryDraft = { file: File; url: string };
@@ -57,86 +55,6 @@ function RemoveMark({
     >
       <X className="size-3.5" strokeWidth={2.5} />
     </button>
-  );
-}
-
-function FieldSelect({
-  name,
-  value,
-  placeholder,
-  options,
-  onChange,
-}: {
-  name: string;
-  value: number;
-  placeholder: string;
-  options: { id: number; title: string }[];
-  onChange: (id: number) => void;
-}) {
-  const rootRef = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(false);
-  const selected = options.find((option) => option.id === value);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    function onPointer(event: PointerEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("pointerdown", onPointer);
-    return () => document.removeEventListener("pointerdown", onPointer);
-  }, [open]);
-
-  return (
-    <div ref={rootRef} className="relative">
-      <input type="hidden" name={name} value={value || ""} />
-      <button
-        type="button"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        onClick={() => setOpen((current) => !current)}
-        className={cn(fieldClass, "flex items-center justify-between gap-3 text-left")}
-      >
-        <span className={cn("truncate", !selected && "text-muted-foreground/60")}>
-          {selected?.title ?? placeholder}
-        </span>
-        <ChevronDown
-          className={cn(
-            "size-4 shrink-0 text-muted-foreground transition-transform",
-            open && "rotate-180",
-          )}
-        />
-      </button>
-      {open ? (
-        <ul
-          role="listbox"
-          className="absolute z-20 mt-1 max-h-60 w-full overflow-y-auto border border-border bg-background"
-        >
-          {options.map((option) => (
-            <li key={option.id}>
-              <button
-                type="button"
-                role="option"
-                aria-selected={option.id === value}
-                onClick={() => {
-                  onChange(option.id);
-                  setOpen(false);
-                }}
-                className={cn(
-                  "flex h-11 w-full items-center px-4 text-left text-sm transition-colors hover:bg-surface",
-                  option.id === value && "bg-surface",
-                )}
-              >
-                {option.title}
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-    </div>
   );
 }
 
@@ -435,7 +353,7 @@ export function ProductForm({
               setSlug(slugify(value));
             }
           }}
-          className={fieldClass}
+          variant="box"
         />
       </label>
 
@@ -451,7 +369,7 @@ export function ProductForm({
             setSlugTouched(true);
             setSlug(slugify(event.target.value));
           }}
-          className={fieldClass}
+          variant="box"
         />
       </label>
 
@@ -466,7 +384,7 @@ export function ProductForm({
             maxLength={PRODUCT_SKU_MAX}
             placeholder="SKU-1001"
             onChange={(event) => setSku(event.target.value)}
-            className={fieldClass}
+            variant="box"
           />
         </label>
         <label className="flex flex-col gap-3">
@@ -479,7 +397,7 @@ export function ProductForm({
             maxLength={PRODUCT_ITEM_NUMBER_MAX}
             placeholder="ITM-1001"
             onChange={(event) => setItemNumber(event.target.value)}
-            className={fieldClass}
+            variant="box"
           />
         </label>
       </div>
@@ -491,11 +409,14 @@ export function ProductForm({
         </span>
         <FieldSelect
           name="categoryId"
-          value={categoryId}
+          value={categoryId ? String(categoryId) : ""}
           placeholder="Select category"
-          options={categories}
+          options={categories.map((category) => ({
+            value: String(category.id),
+            label: category.title,
+          }))}
           onChange={(id) => {
-            setCategoryId(id);
+            setCategoryId(Number(id));
             setTypeId(0);
           }}
         />
@@ -506,10 +427,13 @@ export function ProductForm({
         </span>
         <FieldSelect
           name="brandId"
-          value={brandId}
+          value={brandId ? String(brandId) : ""}
           placeholder="Select brand"
-          options={brands}
-          onChange={setBrandId}
+          options={brands.map((brand) => ({
+            value: String(brand.id),
+            label: brand.title,
+          }))}
+          onChange={(id) => setBrandId(Number(id))}
         />
       </div>
       {typesForCategory.length > 0 ? (
@@ -519,10 +443,13 @@ export function ProductForm({
           </span>
           <FieldSelect
             name="typeId"
-            value={typeId}
+            value={typeId ? String(typeId) : ""}
             placeholder="Select type"
-            options={typesForCategory}
-            onChange={setTypeId}
+            options={typesForCategory.map((type) => ({
+              value: String(type.id),
+              label: type.title,
+            }))}
+            onChange={(id) => setTypeId(Number(id))}
           />
         </div>
       ) : null}
@@ -537,34 +464,26 @@ export function ProductForm({
             Add sizes first in Sizes.
           </p>
         ) : (
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-4">
             {sizeIds.map((id) => (
               <input key={id} type="hidden" name="sizeId" value={id} />
             ))}
-            {sizes.map((size) => {
-              const selected = sizeIds.includes(size.id);
-              return (
-                <button
+            <ToggleGroup
+              type="multiple"
+              value={sizeIds.map(String)}
+              onValueChange={(values) => setSizeIds(values.map(Number))}
+              className="flex w-full flex-wrap gap-2 rounded-none"
+            >
+              {sizes.map((size) => (
+                <ToggleGroupItem
                   key={size.id}
-                  type="button"
-                  onClick={() => {
-                    setSizeIds((current) =>
-                      selected
-                        ? current.filter((id) => id !== size.id)
-                        : [...current, size.id],
-                    );
-                  }}
-                  className={cn(
-                    "h-10 border px-4 text-sm transition-colors",
-                    selected
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border bg-surface text-foreground hover:border-foreground/50",
-                  )}
+                  value={String(size.id)}
+                  className="h-10 min-w-0 flex-none rounded-none border border-border bg-surface px-4 text-sm shadow-none hover:border-foreground/50 hover:bg-surface hover:text-foreground focus-visible:ring-0 data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:hover:bg-foreground data-[state=on]:hover:text-background first:rounded-none last:rounded-none"
                 >
                   {size.title}
-                </button>
-              );
-            })}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           </div>
         )}
       </fieldset>
@@ -579,7 +498,7 @@ export function ProductForm({
           maxLength={PRODUCT_META_TITLE_MAX}
           placeholder="Leave blank to use the product title"
           onChange={(event) => setMetaTitle(event.target.value)}
-          className={fieldClass}
+          variant="box"
         />
         <span className="text-xs text-muted-foreground">
           {metaTitle.trim().length}/{PRODUCT_META_TITLE_MAX}

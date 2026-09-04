@@ -18,7 +18,7 @@ export function SearchBar() {
           name="query"
           placeholder="Search"
           aria-label="Search"
-          className="h-12 border-0 bg-transparent px-4 shadow-none focus-visible:border-0 focus-visible:ring-0 md:text-sm"
+          variant="ghost"
         />
       </Form>
     </div>

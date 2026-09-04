@@ -23,6 +23,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { CategoryRecord } from "@/lib/category-fields";
 import type { ProductListItem } from "@/lib/product-fields";
+import { FieldSelect } from "@/components/field-select";
+import { IconButton } from "@/components/icon-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,9 +36,6 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { moveProduct, removeProduct } from "./actions";
-
-const fieldClass =
-  "h-11 rounded-none border-0 border-b border-border bg-transparent px-0 shadow-none focus-visible:border-foreground focus-visible:ring-0";
 
 type Result = { error: string | null; done?: boolean };
 
@@ -67,15 +66,13 @@ function SortableRow({
       )}
     >
       {sortable ? (
-        <button
-          type="button"
+        <IconButton
           aria-label={`Reorder ${product.title}`}
-          className="inline-flex size-8 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground"
           {...attributes}
           {...listeners}
         >
           <GripVertical className="size-4" />
-        </button>
+        </IconButton>
       ) : (
         <span className="size-8 shrink-0" />
       )}
@@ -97,21 +94,14 @@ function SortableRow({
           {product.isPublished ? "" : " · Hidden"}
         </p>
       </div>
-      <Link
-        href={`/dashboard/products/${product.id}`}
-        aria-label="Edit"
-        className="inline-flex size-8 items-center justify-center text-muted-foreground hover:text-foreground"
-      >
-        <Pencil className="size-4" />
-      </Link>
-      <button
-        type="button"
-        aria-label="Delete"
-        className="inline-flex size-8 items-center justify-center text-muted-foreground hover:text-danger"
-        onClick={onDelete}
-      >
+      <IconButton asChild>
+        <Link href={`/dashboard/products/${product.id}`} aria-label="Edit">
+          <Pencil className="size-4" />
+        </Link>
+      </IconButton>
+      <IconButton aria-label="Delete" danger onClick={onDelete}>
         <Trash2 className="size-4" />
-      </button>
+      </IconButton>
     </div>
   );
 }
@@ -196,18 +186,19 @@ export function ProductManager({
             <span className="caption tracking-[0.16em] text-muted-foreground uppercase">
               Category
             </span>
-            <select
-              value={categoryId}
-              onChange={(event) => setCategoryId(Number(event.target.value))}
-              className={fieldClass}
-            >
-              <option value={0}>All</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.title}
-                </option>
-              ))}
-            </select>
+            <FieldSelect
+              variant="line"
+              value={String(categoryId)}
+              placeholder="All"
+              options={[
+                { value: "0", label: "All" },
+                ...categories.map((category) => ({
+                  value: String(category.id),
+                  label: category.title,
+                })),
+              ]}
+              onChange={(id) => setCategoryId(Number(id))}
+            />
           </label>
           <label className="flex min-w-48 flex-1 flex-col gap-3">
             <span className="caption tracking-[0.16em] text-muted-foreground uppercase">
@@ -217,7 +208,7 @@ export function ProductManager({
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Title, SKU, or item number"
-              className={fieldClass}
+              variant="line"
             />
           </label>
         </div>

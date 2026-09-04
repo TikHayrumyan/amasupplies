@@ -2,9 +2,6 @@ import { login } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const fieldClass =
-  "h-12 rounded-none border-0 border-b border-border bg-transparent px-0 shadow-none focus-visible:border-foreground focus-visible:ring-0";
-
 export default async function LoginPage({
   searchParams,
 }: PageProps<"/login">) {
@@ -74,7 +71,8 @@ export default async function LoginPage({
                 name="email"
                 required
                 autoComplete="email"
-                className={fieldClass}
+                variant="line"
+                className="h-12"
               />
             </label>
             <label className="flex flex-col gap-3">
@@ -86,7 +84,8 @@ export default async function LoginPage({
                 name="password"
                 required
                 autoComplete="current-password"
-                className={fieldClass}
+                variant="line"
+                className="h-12"
               />
             </label>
             <Button

@@ -153,7 +153,8 @@ export function MobileNav({ categories }: { categories: NavCategory[] }) {
               placeholder="Search"
               aria-label="Search"
               autoFocus
-              className="h-12 border-0 bg-transparent px-0 shadow-none focus-visible:border-0 focus-visible:ring-0 md:text-base"
+              variant="ghost"
+              className="px-0 md:text-base"
             />
             <SheetClose asChild>
               <Button variant="ghost" size="icon" className="size-10" aria-label="Close search">
