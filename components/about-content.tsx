@@ -45,7 +45,7 @@ const REASONS = [
 
 function SectionCaption({ children }: { children: React.ReactNode }) {
   return (
-    <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+    <p className="caption tracking-[0.16em] text-primary uppercase">
       {children}
     </p>
   );
@@ -92,7 +92,8 @@ export function AboutContent() {
             </p>
           </div>
 
-          <p className="mt-16 max-w-3xl text-3xl font-medium tracking-tight md:mt-20 md:text-5xl">
+          <div className="mt-16 h-px w-12 bg-primary md:mt-20" />
+          <p className="mt-6 max-w-3xl text-3xl font-medium tracking-tight md:text-5xl">
             We are not a retail store.
           </p>
         </div>
@@ -155,7 +156,7 @@ export function AboutContent() {
             </p>
           </div>
           <div className="lg:col-span-7 lg:pt-12">
-            <ul className="border-l border-foreground pl-6 md:pl-8">
+            <ul className="border-l-2 border-primary pl-6 md:pl-8">
               {ACCESS.map((item) => (
                 <li
                   key={item}
@@ -239,7 +240,7 @@ export function AboutContent() {
                 >
                   <span
                     aria-hidden
-                    className="mt-2 size-1.5 shrink-0 bg-foreground"
+                    className="mt-2 size-1.5 shrink-0 bg-primary"
                   />
                   {item}
                 </li>
@@ -265,7 +266,7 @@ export function AboutContent() {
                 key={item}
                 className="flex gap-6 border-t border-border/80 py-6"
               >
-                <span className="caption w-8 shrink-0 tracking-[0.16em] text-muted-foreground">
+                <span className="caption w-8 shrink-0 tracking-[0.16em] text-primary">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span className="text-lg font-medium tracking-tight md:text-xl">
@@ -300,7 +301,7 @@ export function AboutContent() {
             <Button
               asChild
               variant="outline"
-              className="h-12 rounded-none px-8 text-sm tracking-[0.16em] uppercase"
+              className="h-12 rounded-none border-primary px-8 text-sm tracking-[0.16em] text-primary uppercase hover:bg-primary hover:text-primary-foreground"
             >
               <Link href="/products">View Products</Link>
             </Button>
