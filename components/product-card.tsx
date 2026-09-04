@@ -14,16 +14,31 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           alt=""
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
-          className="object-cover"
+          className="object-contain"
         />
         <div className="absolute inset-0 bg-foreground/0 transition-colors duration-300 group-hover:bg-foreground/15" />
       </div>
+
       <h2 className="mt-4 text-lg font-medium tracking-tight">{product.title}</h2>
-      <p className="mt-1 text-sm text-muted-foreground">{product.brandTitle}</p>
-      <p className="mt-1 text-sm text-muted-foreground">{product.itemNumber}</p>
-      <p className="caption mt-3 tracking-[0.14em] text-muted-foreground uppercase">
+
+      <div className="mt-3 grid grid-cols-2 gap-4">
+        <div>
+          <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+            Brand
+          </p>
+          <p className="mt-1 truncate text-sm">{product.brandTitle}</p>
+        </div>
+        <div>
+          <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+            Item number
+          </p>
+          <p className="mt-1 truncate text-sm">{product.itemNumber}</p>
+        </div>
+      </div>
+
+      <span className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-none bg-foreground text-sm tracking-[0.16em] text-background uppercase transition-colors group-hover:bg-primary">
         See more
-      </p>
+      </span>
     </Link>
   );
 }
