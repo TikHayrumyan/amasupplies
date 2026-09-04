@@ -27,7 +27,7 @@ export function ProductGallery({
           fill
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover"
+          className="object-contain"
         />
       </div>
       {images.length > 1 ? (
@@ -44,7 +44,7 @@ export function ProductGallery({
                 index === active && "ring-1 ring-foreground",
               )}
             >
-              <Image src={image} alt="" fill sizes="120px" className="object-cover" />
+              <Image src={image} alt="" fill sizes="120px" className="object-contain" />
             </button>
           ))}
         </div>
