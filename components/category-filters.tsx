@@ -113,6 +113,7 @@ export function CategoryFilters({
   pathname,
   filters,
   facets,
+  showHeading = true,
 }: {
   pathname: string;
   filters: CatalogFilters;
@@ -121,6 +122,7 @@ export function CategoryFilters({
     brands: CatalogFacet[];
     sizes: CatalogFacet[];
   };
+  showHeading?: boolean;
 }) {
   const active = hasActiveCatalogFilters(filters);
   const hasFacets =
@@ -138,11 +140,23 @@ export function CategoryFilters({
 
   return (
     <div>
-      <div className="flex items-baseline justify-between gap-4 border-b border-border/80 pb-4">
-        <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
-          Filter
-        </p>
-        {active ? (
+      {showHeading ? (
+        <div className="flex items-baseline justify-between gap-4 border-b border-border/80 pb-4">
+          <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+            Filter
+          </p>
+          {active ? (
+            <Link
+              href={pathname}
+              scroll={false}
+              className="caption tracking-[0.16em] text-muted-foreground uppercase transition-colors hover:text-foreground"
+            >
+              Clear
+            </Link>
+          ) : null}
+        </div>
+      ) : active ? (
+        <div className="flex justify-end border-b border-border/80 pb-4">
           <Link
             href={pathname}
             scroll={false}
@@ -150,8 +164,8 @@ export function CategoryFilters({
           >
             Clear
           </Link>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
       <FilterDropdown
         label="Type"
         options={facets.types}

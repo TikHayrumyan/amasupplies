@@ -3,9 +3,13 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
 import { CategoryFilters } from "@/components/category-filters";
+import { CategoryFiltersSheet } from "@/components/category-filters-sheet";
 import { ProductCard } from "@/components/product-card";
 import { crumbs } from "@/lib/breadcrumbs";
-import { parseCatalogFilters } from "@/lib/catalog-fields";
+import {
+  hasActiveCatalogFilters,
+  parseCatalogFilters,
+} from "@/lib/catalog-fields";
 import { getCategoryCatalog } from "@/lib/catalog";
 import { getCategoryBySlug } from "@/lib/category";
 
@@ -92,7 +96,7 @@ export default async function CategoryPage({
             }
           >
             {hasFilters ? (
-              <aside className="mb-12 lg:sticky lg:top-28 lg:mb-0 lg:self-start">
+              <aside className="hidden lg:sticky lg:top-32 lg:block lg:self-start">
                 <CategoryFilters
                   pathname={pathname}
                   filters={catalog.filters}
@@ -101,11 +105,27 @@ export default async function CategoryPage({
               </aside>
             ) : null}
             <div>
-              <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
-                {catalog.products.length === catalog.total
-                  ? `${catalog.total} ${catalog.total === 1 ? "product" : "products"}`
-                  : `${catalog.products.length} of ${catalog.total}`}
-              </p>
+              <div className="flex items-center justify-between gap-4">
+                <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+                  {catalog.products.length === catalog.total
+                    ? `${catalog.total} ${catalog.total === 1 ? "product" : "products"}`
+                    : `${catalog.products.length} of ${catalog.total}`}
+                </p>
+                {hasFilters ? (
+                  <div className="lg:hidden">
+                    <CategoryFiltersSheet
+                      active={hasActiveCatalogFilters(catalog.filters)}
+                    >
+                      <CategoryFilters
+                        pathname={pathname}
+                        filters={catalog.filters}
+                        facets={catalog.facets}
+                        showHeading={false}
+                      />
+                    </CategoryFiltersSheet>
+                  </div>
+                ) : null}
+              </div>
               {catalog.products.length === 0 ? (
                 <p className="mt-10 text-muted-foreground">
                   No products match these filters.
