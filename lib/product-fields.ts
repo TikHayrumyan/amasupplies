@@ -12,6 +12,7 @@ export type ProductRecord = {
   itemNumber: string;
   brandId: number;
   categoryId: number;
+  typeId: number | null;
   sortOrder: number;
   isPublished: boolean;
   createdAt: Date | string;
@@ -27,8 +28,11 @@ export type ProductImageRecord = {
 
 export type ProductListItem = ProductRecord & {
   brandTitle: string;
+  brandSlug: string;
   categoryTitle: string;
   categorySlug: string;
+  typeTitle: string | null;
+  typeSlug: string | null;
 };
 
 export type ProductDetail = ProductListItem & {
@@ -55,6 +59,8 @@ export function validateProductCopy(input: {
   metaDescription: string;
   categoryId: number;
   brandId: number;
+  typeId: number;
+  typeRequired: boolean;
 }) {
   if (!input.title) {
     return "Title is required.";
@@ -88,6 +94,9 @@ export function validateProductCopy(input: {
   }
   if (!input.brandId) {
     return "Brand is required.";
+  }
+  if (input.typeRequired && !input.typeId) {
+    return "Type is required.";
   }
   return null;
 }

@@ -13,6 +13,7 @@ import {
   type ProductListItem,
   type ProductRecord,
 } from "@/lib/product-fields";
+import { listProductTypes } from "@/lib/product-type";
 import { listSizes } from "@/lib/size";
 import {
   SORT_GAP,
@@ -33,6 +34,7 @@ const PRODUCT_FIELDS = [
   "itemNumber",
   "brandId",
   "categoryId",
+  "typeId",
   "sortOrder",
   "isPublished",
   "createdAt",
@@ -93,22 +95,33 @@ async function nextSortOrder(categoryId: number) {
 }
 
 async function hydrate(rows: Product[]): Promise<ProductListItem[]> {
-  const [brands, categories] = await Promise.all([
+  const [brands, categories, types] = await Promise.all([
     listProductBrands(),
     listCategories(),
+    listProductTypes(),
   ]);
-  const brandMap = new Map(brands.map((row) => [row.id, row.title]));
+  const brandMap = new Map(
+    brands.map((row) => [row.id, { title: row.title, slug: row.slug }]),
+  );
   const categoryMap = new Map(
     categories.map((row) => [row.id, { title: row.title, slug: row.slug }]),
+  );
+  const typeMap = new Map(
+    types.map((row) => [row.id, { title: row.title, slug: row.slug }]),
   );
 
   return rows.map((row) => {
     const category = categoryMap.get(row.categoryId);
+    const brand = brandMap.get(row.brandId);
+    const type = row.typeId ? typeMap.get(row.typeId) : undefined;
     return {
       ...row,
-      brandTitle: brandMap.get(row.brandId) ?? "Brand",
+      brandTitle: brand?.title ?? "Brand",
+      brandSlug: brand?.slug ?? "",
       categoryTitle: category?.title ?? "Category",
       categorySlug: category?.slug ?? "",
+      typeTitle: type?.title ?? null,
+      typeSlug: type?.slug ?? null,
     };
   });
 }
@@ -241,6 +254,7 @@ export async function createProduct(input: {
   itemNumber: string;
   brandId: number;
   categoryId: number;
+  typeId: number | null;
   isPublished: boolean;
   sizeIds: number[];
   galleryUrls: string[];
@@ -259,6 +273,7 @@ export async function createProduct(input: {
     itemNumber,
     brandId: input.brandId,
     categoryId: input.categoryId,
+    typeId: input.typeId,
     isPublished: input.isPublished,
     sortOrder: await nextSortOrder(input.categoryId),
     createdAt: new Date(),
@@ -288,6 +303,7 @@ export async function updateProduct(
     itemNumber: string;
     brandId: number;
     categoryId: number;
+    typeId: number | null;
     isPublished: boolean;
     sizeIds: number[];
     galleryUrls: string[];
@@ -313,6 +329,7 @@ export async function updateProduct(
     itemNumber,
     brandId: input.brandId,
     categoryId: input.categoryId,
+    typeId: input.typeId,
     isPublished: input.isPublished,
     ...(categoryChanged
       ? { sortOrder: await nextSortOrder(input.categoryId) }
@@ -385,8 +402,11 @@ export async function reorderProduct(input: {
     without.splice(insertAt, 0, {
       ...current,
       brandTitle: "",
+      brandSlug: "",
       categoryTitle: "",
       categorySlug: "",
+      typeTitle: null,
+      typeSlug: null,
     });
     const orders = rebalanceOrders(without.length);
     await Promise.all(

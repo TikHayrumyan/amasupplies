@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { listCategories } from "@/lib/category";
 import { listProductBrands } from "@/lib/product-brand";
 import { getProductDetail } from "@/lib/product";
+import { listProductTypes } from "@/lib/product-type";
 import { listSizes } from "@/lib/size";
 import { DeleteProductButton, ProductForm } from "../product-form";
 
@@ -16,10 +17,11 @@ export default async function EditProductPage({
     notFound();
   }
 
-  const [product, categories, brands, sizes] = await Promise.all([
+  const [product, categories, brands, types, sizes] = await Promise.all([
     getProductDetail(productId),
     listCategories(),
     listProductBrands(),
+    listProductTypes(),
     listSizes(),
   ]);
 
@@ -37,6 +39,7 @@ export default async function EditProductPage({
         product={product}
         categories={categories}
         brands={brands}
+        types={types}
         sizes={sizes}
       />
       <DeleteProductButton id={product.id} />

@@ -130,9 +130,11 @@ export async function deleteCategory(id: number) {
     return;
   }
   const { countProductsForCategory } = await import("@/lib/product");
+  const { deleteProductTypesForCategory } = await import("@/lib/product-type");
   if ((await countProductsForCategory(id)) > 0) {
     throw new Error("This category still has products.");
   }
+  await deleteProductTypesForCategory(id);
   await db.orm.public.Category.where({ id }).delete();
   await removeCategoryMedia([current.imageUrl]);
 }

@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
+import { CategoryFilters } from "@/components/category-filters";
 import { ProductCard } from "@/components/product-card";
 import { crumbs } from "@/lib/breadcrumbs";
+import { parseCatalogFilters } from "@/lib/catalog-fields";
+import { getCategoryCatalog } from "@/lib/catalog";
 import { getCategoryBySlug } from "@/lib/category";
-import { listPublishedProductsByCategory } from "@/lib/product";
 
 export const dynamic = "force-dynamic";
 
@@ -25,15 +27,21 @@ export async function generateMetadata({
 
 export default async function CategoryPage({
   params,
+  searchParams,
 }: PageProps<"/products/[slug]">) {
   const { slug } = await params;
+  const query = await searchParams;
   const category = await getCategoryBySlug(slug);
 
   if (!category || !category.isPublished) {
     notFound();
   }
 
-  const products = await listPublishedProductsByCategory(category.id);
+  const catalog = await getCategoryCatalog(
+    category.id,
+    parseCatalogFilters(query),
+  );
+  const pathname = `/products/${category.slug}`;
 
   return (
     <div>
@@ -69,14 +77,29 @@ export default async function CategoryPage({
         </div>
       </div>
       <div className="container mx-auto px-4 py-16">
-        {products.length === 0 ? (
+        {catalog.total === 0 ? (
           <p className="text-muted-foreground">No products in this category yet.</p>
         ) : (
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <>
+            <CategoryFilters
+              pathname={pathname}
+              filters={catalog.filters}
+              facets={catalog.facets}
+              shown={catalog.products.length}
+              total={catalog.total}
+            />
+            {catalog.products.length === 0 ? (
+              <p className="mt-10 text-muted-foreground">
+                No products match these filters.
+              </p>
+            ) : (
+              <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                {catalog.products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

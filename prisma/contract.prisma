@@ -60,6 +60,20 @@ model ProductBrand {
   @@map("product_brand")
 }
 
+model ProductType {
+  id         Int         @id @default(autoincrement())
+  categoryId Int
+  title      String
+  slug       String
+  sortOrder  Float       @default(0)
+  updatedAt  Timestamptz @default(now())
+
+  @@unique([categoryId, slug])
+  @@unique([categoryId, title])
+  @@rls
+  @@map("product_type")
+}
+
 model Product {
   id              Int         @id @default(autoincrement())
   title           String
@@ -72,6 +86,7 @@ model Product {
   itemNumber      String      @unique
   brandId         Int
   categoryId      Int
+  typeId          Int?
   sortOrder       Float       @default(0)
   isPublished     Boolean     @default(true)
   createdAt       Timestamptz @default(now())

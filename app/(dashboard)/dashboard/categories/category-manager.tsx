@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Pencil, Plus, Trash2 } from "lucide-react";
+import { GripVertical, Layers, Pencil, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import {
   CATEGORY_DESCRIPTION_MAX,
@@ -28,6 +28,7 @@ import {
   validateCategoryCopy,
 } from "@/lib/category-fields";
 import type { CategoryRecord } from "@/lib/category-fields";
+import type { ProductTypeRecord } from "@/lib/product-type-fields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -39,6 +40,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { moveCategory, removeCategory, saveCategory } from "./actions";
+import { TypeManager } from "./type-manager";
 
 const fieldClass =
   "h-11 rounded-none border-0 border-b border-border bg-transparent px-0 shadow-none focus-visible:border-foreground focus-visible:ring-0";
@@ -51,11 +53,15 @@ type Panel =
 
 function SortableRow({
   category,
+  typeCount,
   onEdit,
+  onTypes,
   onDelete,
 }: {
   category: CategoryRecord;
+  typeCount: number;
   onEdit: () => void;
+  onTypes: () => void;
   onDelete: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -95,9 +101,18 @@ function SortableRow({
         <p className="truncate font-medium">{category.title}</p>
         <p className="mt-1 truncate text-sm text-muted-foreground">
           /{category.slug}
+          {typeCount > 0 ? ` · ${typeCount} type${typeCount === 1 ? "" : "s"}` : ""}
           {category.isPublished ? "" : " · Hidden"}
         </p>
       </div>
+      <button
+        type="button"
+        aria-label="Types"
+        className="inline-flex size-8 items-center justify-center text-muted-foreground hover:text-foreground"
+        onClick={onTypes}
+      >
+        <Layers className="size-4" />
+      </button>
       <button
         type="button"
         aria-label="Edit"
@@ -120,11 +135,14 @@ function SortableRow({
 
 export function CategoryManager({
   categories,
+  types,
 }: {
   categories: CategoryRecord[];
+  types: ProductTypeRecord[];
 }) {
   const [items, setItems] = useState(categories);
   const [panel, setPanel] = useState<Panel>(null);
+  const [typesCategory, setTypesCategory] = useState<CategoryRecord | null>(null);
 
   useEffect(() => {
     setItems(categories);
@@ -194,7 +212,9 @@ export function CategoryManager({
                 <SortableRow
                   key={category.id}
                   category={category}
+                  typeCount={types.filter((row) => row.categoryId === category.id).length}
                   onEdit={() => setPanel({ type: "edit", category })}
+                  onTypes={() => setTypesCategory(category)}
                   onDelete={() => setPanel({ type: "delete", category })}
                 />
               ))}
@@ -235,6 +255,13 @@ export function CategoryManager({
           ) : null}
         </SheetContent>
       </Sheet>
+
+      <TypeManager
+        category={typesCategory}
+        types={types.filter((row) => row.categoryId === typesCategory?.id)}
+        open={typesCategory !== null}
+        onClose={() => setTypesCategory(null)}
+      />
     </div>
   );
 }

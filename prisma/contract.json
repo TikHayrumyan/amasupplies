@@ -32,6 +32,10 @@
       "model": "ProductSize",
       "namespace": "public"
     },
+    "product_type": {
+      "model": "ProductType",
+      "namespace": "public"
+    },
     "size": {
       "model": "Size",
       "namespace": "public"
@@ -374,6 +378,13 @@
                   "kind": "scalar"
                 }
               },
+              "typeId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -426,6 +437,9 @@
                 },
                 "title": {
                   "column": "title"
+                },
+                "typeId": {
+                  "column": "typeId"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -588,6 +602,77 @@
               "table": "product_size"
             }
           },
+          "ProductType": {
+            "fields": {
+              "categoryId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "slug": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sortOrder": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "title": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "categoryId": {
+                  "column": "categoryId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "slug": {
+                  "column": "slug"
+                },
+                "sortOrder": {
+                  "column": "sortOrder"
+                },
+                "title": {
+                  "column": "title"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "product_type"
+            }
+          },
           "Size": {
             "fields": {
               "id": {
@@ -692,6 +777,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "product_size"
+            },
+            "product_type": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "product_type"
             },
             "size": {
               "kind": "rls",
@@ -994,6 +1084,11 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "typeId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
                 "updatedAt": {
                   "codecId": "pg/timestamptz@1",
                   "default": {
@@ -1167,6 +1262,73 @@
                 }
               ]
             },
+            "product_type": {
+              "columns": {
+                "categoryId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "slug": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "sortOrder": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": false
+                },
+                "title": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "categoryId",
+                    "slug"
+                  ]
+                },
+                {
+                  "columns": [
+                    "categoryId",
+                    "title"
+                  ]
+                }
+              ]
+            },
             "size": {
               "columns": {
                 "id": {
@@ -1233,7 +1395,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "6640d8c51f2b06475a0c4cdf6905f4774445f8d2432f68a900b008db9c569c46"
+    "storageHash": "cb3e1e3ce280240ddbd0c2aa9a7c8f54384b0bc06f39ee35272ba161a9c0cbe6"
   },
   "capabilities": {
     "postgres": {

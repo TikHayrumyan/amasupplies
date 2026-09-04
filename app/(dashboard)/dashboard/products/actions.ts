@@ -6,6 +6,7 @@ import {
   validateProductCopy,
 } from "@/lib/product-fields";
 import { getCategoryById } from "@/lib/category";
+import { resolveProductTypeId } from "@/lib/product-type";
 import {
   createProduct,
   deleteProduct,
@@ -56,6 +57,7 @@ export async function saveProduct(formData: FormData): Promise<Result> {
   const description = isEmptyHtml(descriptionRaw) ? "" : descriptionRaw;
   const categoryId = Number(formData.get("categoryId") ?? 0);
   const brandId = Number(formData.get("brandId") ?? 0);
+  const typeId = Number(formData.get("typeId") ?? 0) || null;
   const isPublished = formData.get("isPublished") === "on";
   const sizeIds = formData
     .getAll("sizeId")
@@ -66,6 +68,20 @@ export async function saveProduct(formData: FormData): Promise<Result> {
     .map((value) => Number(value))
     .filter((value) => value > 0);
 
+  const category = await getCategoryById(categoryId);
+  if (!category) {
+    return { error: "Category is required." };
+  }
+
+  let resolvedTypeId: number | null;
+  try {
+    resolvedTypeId = await resolveProductTypeId(categoryId, typeId);
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Type is required.",
+    };
+  }
+
   const copyError = validateProductCopy({
     title,
     slug,
@@ -75,6 +91,8 @@ export async function saveProduct(formData: FormData): Promise<Result> {
     metaDescription,
     categoryId,
     brandId,
+    typeId: resolvedTypeId ?? 0,
+    typeRequired: resolvedTypeId !== null,
   });
   if (copyError) {
     return { error: copyError };
@@ -108,6 +126,7 @@ export async function saveProduct(formData: FormData): Promise<Result> {
         imageUrl,
         brandId,
         categoryId,
+        typeId: resolvedTypeId,
         isPublished,
         sizeIds,
         galleryUrls,
@@ -128,6 +147,7 @@ export async function saveProduct(formData: FormData): Promise<Result> {
         imageUrl,
         brandId,
         categoryId,
+        typeId: resolvedTypeId,
         isPublished,
         sizeIds,
         galleryUrls,
@@ -139,8 +159,7 @@ export async function saveProduct(formData: FormData): Promise<Result> {
     };
   }
 
-  const category = await getCategoryById(categoryId);
-  refresh(slug, category?.slug);
+  refresh(slug, category.slug);
   return { error: null, done: true };
 }
 

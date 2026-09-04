@@ -30,7 +30,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'6640d8c51f2b06475a0c4cdf6905f4774445f8d2432f68a900b008db9c569c46'>;
+  StorageHashBase<'cb3e1e3ce280240ddbd0c2aa9a7c8f54384b0bc06f39ee35272ba161a9c0cbe6'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -231,6 +231,7 @@ export type FieldOutputTypes = {
       readonly itemNumber: CodecTypes['pg/text@1']['output'];
       readonly brandId: CodecTypes['pg/int4@1']['output'];
       readonly categoryId: CodecTypes['pg/int4@1']['output'];
+      readonly typeId: CodecTypes['pg/int4@1']['output'] | null;
       readonly sortOrder: CodecTypes['pg/float8@1']['output'];
       readonly isPublished: CodecTypes['pg/bool@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz@1']['output'];
@@ -253,6 +254,14 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly productId: CodecTypes['pg/int4@1']['output'];
       readonly sizeId: CodecTypes['pg/int4@1']['output'];
+    };
+    readonly ProductType: {
+      readonly id: CodecTypes['pg/int4@1']['output'];
+      readonly categoryId: CodecTypes['pg/int4@1']['output'];
+      readonly title: CodecTypes['pg/text@1']['output'];
+      readonly slug: CodecTypes['pg/text@1']['output'];
+      readonly sortOrder: CodecTypes['pg/float8@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz@1']['output'];
     };
     readonly Size: {
       readonly id: CodecTypes['pg/int4@1']['output'];
@@ -303,6 +312,7 @@ export type FieldInputTypes = {
       readonly itemNumber: CodecTypes['pg/text@1']['input'];
       readonly brandId: CodecTypes['pg/int4@1']['input'];
       readonly categoryId: CodecTypes['pg/int4@1']['input'];
+      readonly typeId: CodecTypes['pg/int4@1']['input'] | null;
       readonly sortOrder: CodecTypes['pg/float8@1']['input'];
       readonly isPublished: CodecTypes['pg/bool@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz@1']['input'];
@@ -325,6 +335,14 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly productId: CodecTypes['pg/int4@1']['input'];
       readonly sizeId: CodecTypes['pg/int4@1']['input'];
+    };
+    readonly ProductType: {
+      readonly id: CodecTypes['pg/int4@1']['input'];
+      readonly categoryId: CodecTypes['pg/int4@1']['input'];
+      readonly title: CodecTypes['pg/text@1']['input'];
+      readonly slug: CodecTypes['pg/text@1']['input'];
+      readonly sortOrder: CodecTypes['pg/float8@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz@1']['input'];
     };
     readonly Size: {
       readonly id: CodecTypes['pg/int4@1']['input'];
@@ -378,6 +396,7 @@ export type StorageColumnTypes = {
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly sortOrder: CodecTypes['pg/float8@1']['output'];
       readonly title: CodecTypes['pg/text@1']['output'];
+      readonly typeId: CodecTypes['pg/int4@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz@1']['output'];
     };
     readonly product_brand: {
@@ -397,6 +416,14 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly productId: CodecTypes['pg/int4@1']['output'];
       readonly sizeId: CodecTypes['pg/int4@1']['output'];
+    };
+    readonly product_type: {
+      readonly categoryId: CodecTypes['pg/int4@1']['output'];
+      readonly id: CodecTypes['pg/int4@1']['output'];
+      readonly slug: CodecTypes['pg/text@1']['output'];
+      readonly sortOrder: CodecTypes['pg/float8@1']['output'];
+      readonly title: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz@1']['output'];
     };
     readonly size: {
       readonly id: CodecTypes['pg/int4@1']['output'];
@@ -450,6 +477,7 @@ export type StorageColumnInputTypes = {
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly sortOrder: CodecTypes['pg/float8@1']['input'];
       readonly title: CodecTypes['pg/text@1']['input'];
+      readonly typeId: CodecTypes['pg/int4@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz@1']['input'];
     };
     readonly product_brand: {
@@ -469,6 +497,14 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly productId: CodecTypes['pg/int4@1']['input'];
       readonly sizeId: CodecTypes['pg/int4@1']['input'];
+    };
+    readonly product_type: {
+      readonly categoryId: CodecTypes['pg/int4@1']['input'];
+      readonly id: CodecTypes['pg/int4@1']['input'];
+      readonly slug: CodecTypes['pg/text@1']['input'];
+      readonly sortOrder: CodecTypes['pg/float8@1']['input'];
+      readonly title: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz@1']['input'];
     };
     readonly size: {
       readonly id: CodecTypes['pg/int4@1']['input'];
@@ -737,6 +773,11 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/int4@1';
                   readonly nullable: false;
                 };
+                readonly typeId: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
                 readonly sortOrder: {
                   readonly nativeType: 'float8';
                   readonly codecId: 'pg/float8@1';
@@ -885,6 +926,56 @@ type ContractBase = Omit<
               indexes: readonly [];
               foreignKeys: readonly [];
             };
+            readonly product_type: {
+              columns: {
+                readonly id: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'function';
+                    readonly expression: 'autoincrement()';
+                  };
+                };
+                readonly categoryId: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly title: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly slug: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly sortOrder: {
+                  readonly nativeType: 'float8';
+                  readonly codecId: 'pg/float8@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/float8@1', 0>;
+                  };
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [
+                { readonly columns: readonly ['categoryId', 'slug'] },
+                { readonly columns: readonly ['categoryId', 'title'] },
+              ];
+              indexes: readonly [];
+              foreignKeys: readonly [];
+            };
             readonly size: {
               columns: {
                 readonly id: {
@@ -948,6 +1039,10 @@ type ContractBase = Omit<
     readonly product_brand: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ProductBrand';
+    };
+    readonly product_type: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ProductType';
     };
     readonly product: { readonly namespace: 'public' & NamespaceId; readonly model: 'Product' };
     readonly product_size: {
@@ -1142,6 +1237,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
+              readonly typeId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
               readonly sortOrder: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
@@ -1175,6 +1274,7 @@ type ContractBase = Omit<
                 readonly itemNumber: { readonly column: 'itemNumber' };
                 readonly brandId: { readonly column: 'brandId' };
                 readonly categoryId: { readonly column: 'categoryId' };
+                readonly typeId: { readonly column: 'typeId' };
                 readonly sortOrder: { readonly column: 'sortOrder' };
                 readonly isPublished: { readonly column: 'isPublished' };
                 readonly createdAt: { readonly column: 'createdAt' };
@@ -1272,6 +1372,47 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly productId: { readonly column: 'productId' };
                 readonly sizeId: { readonly column: 'sizeId' };
+              };
+            };
+          };
+          readonly ProductType: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly categoryId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly title: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly slug: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly sortOrder: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/timestamptz@1' };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'product_type';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly categoryId: { readonly column: 'categoryId' };
+                readonly title: { readonly column: 'title' };
+                readonly slug: { readonly column: 'slug' };
+                readonly sortOrder: { readonly column: 'sortOrder' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
               };
             };
           };

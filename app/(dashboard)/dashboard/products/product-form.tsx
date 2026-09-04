@@ -19,6 +19,7 @@ import {
 } from "@/lib/product-fields";
 import type { ProductBrandRecord } from "@/lib/product-brand-fields";
 import type { CategoryRecord } from "@/lib/category-fields";
+import type { ProductTypeRecord } from "@/lib/product-type-fields";
 import type { SizeRecord } from "@/lib/size-fields";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { Button } from "@/components/ui/button";
@@ -143,11 +144,13 @@ export function ProductForm({
   product,
   categories,
   brands,
+  types,
   sizes,
 }: {
   product: ProductDetail | null;
   categories: Pick<CategoryRecord, "id" | "title">[];
   brands: Pick<ProductBrandRecord, "id" | "title">[];
+  types: Pick<ProductTypeRecord, "id" | "title" | "categoryId">[];
   sizes: Pick<SizeRecord, "id" | "title">[];
 }) {
   const router = useRouter();
@@ -166,6 +169,18 @@ export function ProductForm({
     product?.metaDescription ?? "",
   );
   const [categoryId, setCategoryId] = useState(product?.categoryId ?? 0);
+  const [typeId, setTypeId] = useState(() => {
+    const current = product?.typeId ?? 0;
+    if (
+      current &&
+      types.some(
+        (row) => row.id === current && row.categoryId === product?.categoryId,
+      )
+    ) {
+      return current;
+    }
+    return 0;
+  });
   const [brandId, setBrandId] = useState(product?.brandId ?? 0);
   const [sizeIds, setSizeIds] = useState<number[]>(product?.sizeIds ?? []);
   const [mainPreview, setMainPreview] = useState<string | null>(
@@ -177,6 +192,7 @@ export function ProductForm({
   const [galleryItems, setGalleryItems] = useState<GalleryDraft[]>([]);
   const [localError, setLocalError] = useState<string | null>(null);
 
+  const typesForCategory = types.filter((row) => row.categoryId === categoryId);
   const copyError = validateProductCopy({
     title: title.trim(),
     slug: slug.trim(),
@@ -186,6 +202,8 @@ export function ProductForm({
     metaDescription: metaDescription.trim(),
     categoryId,
     brandId,
+    typeId,
+    typeRequired: typesForCategory.length > 0,
   });
   const canSave = !copyError && Boolean(mainPreview);
 
@@ -476,7 +494,10 @@ export function ProductForm({
           value={categoryId}
           placeholder="Select category"
           options={categories}
-          onChange={setCategoryId}
+          onChange={(id) => {
+            setCategoryId(id);
+            setTypeId(0);
+          }}
         />
       </div>
       <div className="flex flex-col gap-3">
@@ -491,6 +512,20 @@ export function ProductForm({
           onChange={setBrandId}
         />
       </div>
+      {typesForCategory.length > 0 ? (
+        <div className="flex flex-col gap-3">
+          <span className="caption tracking-[0.16em] text-muted-foreground uppercase">
+            Type
+          </span>
+          <FieldSelect
+            name="typeId"
+            value={typeId}
+            placeholder="Select type"
+            options={typesForCategory}
+            onChange={setTypeId}
+          />
+        </div>
+      ) : null}
       </div>
 
       <fieldset>

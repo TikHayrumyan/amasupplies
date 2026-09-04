@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { listProductBrands } from "@/lib/product-brand";
 import { listCategories } from "@/lib/category";
+import { listProductTypes } from "@/lib/product-type";
 import { listSizes } from "@/lib/size";
 import { ProductForm } from "../product-form";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewProductPage() {
-  const [categories, brands, sizes] = await Promise.all([
+  const [categories, brands, types, sizes] = await Promise.all([
     listCategories(),
     listProductBrands(),
+    listProductTypes(),
     listSizes(),
   ]);
 
@@ -36,6 +38,7 @@ export default async function NewProductPage() {
           product={null}
           categories={categories}
           brands={brands}
+          types={types}
           sizes={sizes}
         />
       )}
