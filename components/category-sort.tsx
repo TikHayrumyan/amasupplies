@@ -18,9 +18,11 @@ import { cn } from "@/lib/utils";
 export function CategorySort({
   pathname,
   query,
+  align = "end",
 }: {
   pathname: string;
   query: CatalogQuery;
+  align?: "start" | "end";
 }) {
   const router = useRouter();
   const current =
@@ -29,13 +31,13 @@ export function CategorySort({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="caption flex items-center gap-2 tracking-[0.16em] uppercase outline-none">
+      <DropdownMenuTrigger className="caption flex items-center gap-2 whitespace-nowrap tracking-[0.16em] uppercase outline-none">
         <span className="text-muted-foreground">Sort</span>
         <span>{current.label}</span>
         <ChevronDown className="size-3.5 text-muted-foreground" strokeWidth={1.5} />
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        align="end"
+        align={align}
         className="min-w-44 rounded-none border-border bg-background p-1 shadow-none"
       >
         {CATALOG_SORT_OPTIONS.map((option) => {

@@ -27,7 +27,7 @@ export function CategoryFiltersSheet({
         <button
           type="button"
           className={cn(
-            "caption tracking-[0.16em] uppercase transition-colors",
+            "caption whitespace-nowrap tracking-[0.16em] uppercase transition-colors",
             active
               ? "text-foreground"
               : "text-muted-foreground hover:text-foreground",

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
 import { CategoryFilters } from "@/components/category-filters";
@@ -8,6 +9,7 @@ import { CategorySort } from "@/components/category-sort";
 import { ProductCard } from "@/components/product-card";
 import { crumbs } from "@/lib/breadcrumbs";
 import {
+  catalogHref,
   hasActiveCatalogFilters,
   parseCatalogQuery,
 } from "@/lib/catalog-fields";
@@ -48,10 +50,20 @@ export default async function CategoryPage({
   );
   const pathname = `/products/${category.slug}`;
   const catalogQuery = { ...catalog.filters, sort: catalog.sort };
+  const filtersActive = hasActiveCatalogFilters(catalog.filters);
   const hasFilters =
     catalog.facets.types.length > 0 ||
     catalog.facets.brands.length > 0 ||
     catalog.facets.sizes.length > 0;
+  const countLabel =
+    catalog.products.length === catalog.total
+      ? `${catalog.total} ${catalog.total === 1 ? "product" : "products"}`
+      : `${catalog.products.length} of ${catalog.total}`;
+  const clearHref = catalogHref(pathname, catalogQuery, {
+    type: null,
+    brand: null,
+    size: null,
+  });
 
   return (
     <div>
@@ -107,29 +119,44 @@ export default async function CategoryPage({
               </aside>
             ) : null}
             <div>
-              <div className="flex items-center justify-between gap-4">
-                <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
-                  {catalog.products.length === catalog.total
-                    ? `${catalog.total} ${catalog.total === 1 ? "product" : "products"}`
-                    : `${catalog.products.length} of ${catalog.total}`}
-                </p>
-                <div className="flex items-center gap-6">
-                  <CategorySort pathname={pathname} query={catalogQuery} />
-                  {hasFilters ? (
-                    <div className="lg:hidden">
-                      <CategoryFiltersSheet
-                        active={hasActiveCatalogFilters(catalog.filters)}
-                      >
-                        <CategoryFilters
-                          pathname={pathname}
-                          query={catalogQuery}
-                          facets={catalog.facets}
-                          showHeading={false}
-                        />
-                      </CategoryFiltersSheet>
-                    </div>
+              <div className="lg:hidden">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+                    {countLabel}
+                  </p>
+                  {filtersActive ? (
+                    <Link
+                      href={clearHref}
+                      scroll={false}
+                      className="caption tracking-[0.16em] text-muted-foreground uppercase transition-colors hover:text-foreground"
+                    >
+                      Clear
+                    </Link>
                   ) : null}
                 </div>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <CategorySort
+                    pathname={pathname}
+                    query={catalogQuery}
+                    align="start"
+                  />
+                  {hasFilters ? (
+                    <CategoryFiltersSheet active={filtersActive}>
+                      <CategoryFilters
+                        pathname={pathname}
+                        query={catalogQuery}
+                        facets={catalog.facets}
+                        showHeading={false}
+                      />
+                    </CategoryFiltersSheet>
+                  ) : null}
+                </div>
+              </div>
+              <div className="hidden items-center justify-between gap-4 lg:flex">
+                <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+                  {countLabel}
+                </p>
+                <CategorySort pathname={pathname} query={catalogQuery} />
               </div>
               {catalog.products.length === 0 ? (
                 <p className="mt-10 text-muted-foreground">
