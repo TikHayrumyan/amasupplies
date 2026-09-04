@@ -5,6 +5,8 @@ import {
   catalogFacetVisible,
   type CatalogFacet,
   type CatalogFilters,
+  type CatalogQuery,
+  type CatalogSort,
 } from "@/lib/catalog-fields";
 import { listPublishedProductsByCategory, type ProductListItem } from "@/lib/product";
 import { listProductTypesByCategory } from "@/lib/product-type";
@@ -48,7 +50,7 @@ function facetFrom(
 
 export async function getCategoryCatalog(
   categoryId: number,
-  raw: CatalogFilters,
+  raw: CatalogQuery,
 ) {
   const [products, types, sizes] = await Promise.all([
     listPublishedProductsByCategory(categoryId),
@@ -135,14 +137,37 @@ export async function getCategoryCatalog(
   );
   const sizeFacets = facetFrom(sizeItems, countBy("size", (row) => row.sizeSlugs));
 
+  const filtered = sortCatalog(
+    catalog.filter((row) => matches(row, filters)),
+    raw.sort,
+  );
+
   return {
-    products: catalog.filter((row) => matches(row, filters)),
+    products: filtered,
     total: catalog.length,
     filters,
+    sort: raw.sort,
     facets: {
       types: catalogFacetVisible(typeFacets, filters.type) ? typeFacets : [],
       brands: catalogFacetVisible(brandFacets, filters.brand) ? brandFacets : [],
       sizes: catalogFacetVisible(sizeFacets, filters.size) ? sizeFacets : [],
     },
   };
+}
+
+function sortCatalog(products: CatalogProduct[], sort: CatalogSort) {
+  const rows = [...products];
+  if (sort === "az") {
+    return rows.sort(
+      (left, right) =>
+        left.title.localeCompare(right.title) || left.sortOrder - right.sortOrder,
+    );
+  }
+  if (sort === "za") {
+    return rows.sort(
+      (left, right) =>
+        right.title.localeCompare(left.title) || left.sortOrder - right.sortOrder,
+    );
+  }
+  return rows.sort((left, right) => left.sortOrder - right.sortOrder);
 }

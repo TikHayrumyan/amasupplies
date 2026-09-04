@@ -4,7 +4,7 @@ import {
   catalogHref,
   hasActiveCatalogFilters,
   type CatalogFacet,
-  type CatalogFilters,
+  type CatalogQuery,
 } from "@/lib/catalog-fields";
 import { cn } from "@/lib/utils";
 
@@ -111,12 +111,12 @@ function FilterDropdown({
 
 export function CategoryFilters({
   pathname,
-  filters,
+  query,
   facets,
   showHeading = true,
 }: {
   pathname: string;
-  filters: CatalogFilters;
+  query: CatalogQuery;
   facets: {
     types: CatalogFacet[];
     brands: CatalogFacet[];
@@ -124,7 +124,7 @@ export function CategoryFilters({
   };
   showHeading?: boolean;
 }) {
-  const active = hasActiveCatalogFilters(filters);
+  const active = hasActiveCatalogFilters(query);
   const hasFacets =
     facets.types.length > 0 ||
     facets.brands.length > 0 ||
@@ -134,8 +134,14 @@ export function CategoryFilters({
     return null;
   }
 
-  function hrefFor(key: keyof CatalogFilters, slug: string | null) {
-    return catalogHref(pathname, filters, { [key]: slug });
+  const clearHref = catalogHref(pathname, query, {
+    type: null,
+    brand: null,
+    size: null,
+  });
+
+  function hrefFor(key: "type" | "brand" | "size", slug: string | null) {
+    return catalogHref(pathname, query, { [key]: slug });
   }
 
   return (
@@ -147,7 +153,7 @@ export function CategoryFilters({
           </p>
           {active ? (
             <Link
-              href={pathname}
+              href={clearHref}
               scroll={false}
               className="caption tracking-[0.16em] text-muted-foreground uppercase transition-colors hover:text-foreground"
             >
@@ -158,7 +164,7 @@ export function CategoryFilters({
       ) : active ? (
         <div className="flex justify-end border-b border-border/80 pb-4">
           <Link
-            href={pathname}
+            href={clearHref}
             scroll={false}
             className="caption tracking-[0.16em] text-muted-foreground uppercase transition-colors hover:text-foreground"
           >
@@ -169,21 +175,21 @@ export function CategoryFilters({
       <FilterDropdown
         label="Type"
         options={facets.types}
-        selected={filters.type}
+        selected={query.type}
         allHref={hrefFor("type", null)}
         hrefFor={(slug) => hrefFor("type", slug)}
       />
       <FilterDropdown
         label="Brand"
         options={facets.brands}
-        selected={filters.brand}
+        selected={query.brand}
         allHref={hrefFor("brand", null)}
         hrefFor={(slug) => hrefFor("brand", slug)}
       />
       <FilterDropdown
         label="Size"
         options={facets.sizes}
-        selected={filters.size}
+        selected={query.size}
         allHref={hrefFor("size", null)}
         hrefFor={(slug) => hrefFor("size", slug)}
       />

@@ -4,11 +4,12 @@ import { notFound } from "next/navigation";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
 import { CategoryFilters } from "@/components/category-filters";
 import { CategoryFiltersSheet } from "@/components/category-filters-sheet";
+import { CategorySort } from "@/components/category-sort";
 import { ProductCard } from "@/components/product-card";
 import { crumbs } from "@/lib/breadcrumbs";
 import {
   hasActiveCatalogFilters,
-  parseCatalogFilters,
+  parseCatalogQuery,
 } from "@/lib/catalog-fields";
 import { getCategoryCatalog } from "@/lib/catalog";
 import { getCategoryBySlug } from "@/lib/category";
@@ -43,9 +44,10 @@ export default async function CategoryPage({
 
   const catalog = await getCategoryCatalog(
     category.id,
-    parseCatalogFilters(query),
+    parseCatalogQuery(query),
   );
   const pathname = `/products/${category.slug}`;
+  const catalogQuery = { ...catalog.filters, sort: catalog.sort };
   const hasFilters =
     catalog.facets.types.length > 0 ||
     catalog.facets.brands.length > 0 ||
@@ -99,7 +101,7 @@ export default async function CategoryPage({
               <aside className="hidden lg:sticky lg:top-32 lg:block lg:self-start">
                 <CategoryFilters
                   pathname={pathname}
-                  filters={catalog.filters}
+                  query={catalogQuery}
                   facets={catalog.facets}
                 />
               </aside>
@@ -111,20 +113,23 @@ export default async function CategoryPage({
                     ? `${catalog.total} ${catalog.total === 1 ? "product" : "products"}`
                     : `${catalog.products.length} of ${catalog.total}`}
                 </p>
-                {hasFilters ? (
-                  <div className="lg:hidden">
-                    <CategoryFiltersSheet
-                      active={hasActiveCatalogFilters(catalog.filters)}
-                    >
-                      <CategoryFilters
-                        pathname={pathname}
-                        filters={catalog.filters}
-                        facets={catalog.facets}
-                        showHeading={false}
-                      />
-                    </CategoryFiltersSheet>
-                  </div>
-                ) : null}
+                <div className="flex items-center gap-6">
+                  <CategorySort pathname={pathname} query={catalogQuery} />
+                  {hasFilters ? (
+                    <div className="lg:hidden">
+                      <CategoryFiltersSheet
+                        active={hasActiveCatalogFilters(catalog.filters)}
+                      >
+                        <CategoryFilters
+                          pathname={pathname}
+                          query={catalogQuery}
+                          facets={catalog.facets}
+                          showHeading={false}
+                        />
+                      </CategoryFiltersSheet>
+                    </div>
+                  ) : null}
+                </div>
               </div>
               {catalog.products.length === 0 ? (
                 <p className="mt-10 text-muted-foreground">
