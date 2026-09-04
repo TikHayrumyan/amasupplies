@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import {
   catalogHref,
   hasActiveCatalogFilters,
@@ -7,6 +7,57 @@ import {
   type CatalogFilters,
 } from "@/lib/catalog-fields";
 import { cn } from "@/lib/utils";
+
+function FilterCheck({ checked }: { checked: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "mt-px flex size-3.5 shrink-0 items-center justify-center border transition-colors",
+        checked
+          ? "border-foreground bg-foreground"
+          : "border-foreground/30 bg-background group-hover:border-foreground/60",
+      )}
+    >
+      {checked ? (
+        <Check className="size-2.5 text-background" strokeWidth={3} />
+      ) : null}
+    </span>
+  );
+}
+
+function FilterOption({
+  href,
+  label,
+  checked,
+}: {
+  href: string;
+  label: string;
+  checked: boolean;
+}) {
+  return (
+    <li>
+      <Link
+        href={href}
+        scroll={false}
+        aria-current={checked ? "true" : undefined}
+        className="group flex items-start gap-3 py-2"
+      >
+        <FilterCheck checked={checked} />
+        <span
+          className={cn(
+            "text-sm leading-snug transition-colors",
+            checked
+              ? "text-foreground"
+              : "text-muted-foreground group-hover:text-foreground",
+          )}
+        >
+          {label}
+        </span>
+      </Link>
+    </li>
+  );
+}
 
 function FilterDropdown({
   label,
@@ -28,7 +79,7 @@ function FilterDropdown({
   const current = options.find((option) => option.slug === selected);
 
   return (
-    <details className="group border-b border-border/80">
+    <details className="group/filter border-b border-border/80">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 [&::-webkit-details-marker]:hidden">
         <span className="min-w-0">
           <span className="caption block tracking-[0.16em] text-muted-foreground uppercase">
@@ -39,44 +90,20 @@ function FilterDropdown({
           </span>
         </span>
         <ChevronDown
-          className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180"
+          className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open/filter:rotate-180"
           strokeWidth={1.5}
         />
       </summary>
-      <ul className="pb-5">
-        <li>
-          <Link
-            href={allHref}
-            scroll={false}
-            className={cn(
-              "block py-1.5 text-sm transition-colors",
-              selected
-                ? "text-muted-foreground hover:text-foreground"
-                : "text-foreground",
-            )}
-          >
-            All
-          </Link>
-        </li>
-        {options.map((option) => {
-          const active = selected === option.slug;
-          return (
-            <li key={option.slug}>
-              <Link
-                href={hrefFor(option.slug)}
-                scroll={false}
-                className={cn(
-                  "block py-1.5 text-sm transition-colors",
-                  active
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {option.title}
-              </Link>
-            </li>
-          );
-        })}
+      <ul className="pt-1 pb-5 pl-5">
+        <FilterOption href={allHref} label="All" checked={!selected} />
+        {options.map((option) => (
+          <FilterOption
+            key={option.slug}
+            href={hrefFor(option.slug)}
+            label={option.title}
+            checked={selected === option.slug}
+          />
+        ))}
       </ul>
     </details>
   );

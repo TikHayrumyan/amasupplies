@@ -19,7 +19,9 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         <div className="absolute inset-0 bg-foreground/0 transition-colors duration-300 group-hover:bg-foreground/15" />
       </div>
 
-      <h2 className="mt-4 text-lg font-medium tracking-tight">{product.title}</h2>
+      <h2 className="mt-4 line-clamp-2 h-[2lh] text-lg font-medium leading-snug tracking-tight">
+        {product.title}
+      </h2>
 
       <div className="mt-3 grid grid-cols-2 gap-4">
         <div>
