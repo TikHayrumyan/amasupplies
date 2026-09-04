@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
+import { crumbs } from "@/lib/breadcrumbs";
 import { listPublishedCategories } from "@/lib/category";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +18,10 @@ export default async function ProductsPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
-      <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+      <PageBreadcrumbs
+        items={crumbs({ label: "Products", href: "/products" })}
+      />
+      <p className="caption mt-8 tracking-[0.16em] text-muted-foreground uppercase">
         Catalog
       </p>
       <h1 className="mt-4 font-medium tracking-tight">
