@@ -45,17 +45,6 @@ export function catalogHref(
   return query ? `${pathname}?${query}` : pathname;
 }
 
-export function toggleCatalogFilter(
-  filters: CatalogFilters,
-  key: keyof CatalogFilters,
-  slug: string,
-): CatalogFilters {
-  return {
-    ...filters,
-    [key]: filters[key] === slug ? null : slug,
-  };
-}
-
 export function hasActiveCatalogFilters(filters: CatalogFilters) {
   return Boolean(filters.type || filters.brand || filters.size);
 }

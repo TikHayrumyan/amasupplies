@@ -42,6 +42,10 @@ export default async function CategoryPage({
     parseCatalogFilters(query),
   );
   const pathname = `/products/${category.slug}`;
+  const hasFilters =
+    catalog.facets.types.length > 0 ||
+    catalog.facets.brands.length > 0 ||
+    catalog.facets.sizes.length > 0;
 
   return (
     <div>
@@ -80,26 +84,41 @@ export default async function CategoryPage({
         {catalog.total === 0 ? (
           <p className="text-muted-foreground">No products in this category yet.</p>
         ) : (
-          <>
-            <CategoryFilters
-              pathname={pathname}
-              filters={catalog.filters}
-              facets={catalog.facets}
-              shown={catalog.products.length}
-              total={catalog.total}
-            />
-            {catalog.products.length === 0 ? (
-              <p className="mt-10 text-muted-foreground">
-                No products match these filters.
+          <div
+            className={
+              hasFilters
+                ? "lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-x-16 xl:grid-cols-[16rem_minmax(0,1fr)]"
+                : undefined
+            }
+          >
+            {hasFilters ? (
+              <aside className="mb-12 lg:sticky lg:top-28 lg:mb-0 lg:self-start">
+                <CategoryFilters
+                  pathname={pathname}
+                  filters={catalog.filters}
+                  facets={catalog.facets}
+                />
+              </aside>
+            ) : null}
+            <div>
+              <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+                {catalog.products.length === catalog.total
+                  ? `${catalog.total} ${catalog.total === 1 ? "product" : "products"}`
+                  : `${catalog.products.length} of ${catalog.total}`}
               </p>
-            ) : (
-              <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-                {catalog.products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
-          </>
+              {catalog.products.length === 0 ? (
+                <p className="mt-10 text-muted-foreground">
+                  No products match these filters.
+                </p>
+              ) : (
+                <div className="mt-8 grid gap-10 sm:grid-cols-2 xl:grid-cols-3">
+                  {catalog.products.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         )}
       </div>
     </div>
