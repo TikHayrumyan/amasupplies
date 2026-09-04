@@ -7,9 +7,9 @@ import {
   rebalanceOrders,
   sortBetween,
 } from "@/lib/sort-order";
-import type { SizeRecord } from "@/lib/size-fields";
+import { slugify, type SizeRecord } from "@/lib/size-fields";
 
-const SIZE_FIELDS = ["id", "title", "sortOrder", "updatedAt"] as const;
+const SIZE_FIELDS = ["id", "title", "slug", "sortOrder", "updatedAt"] as const;
 
 export type Size = SizeRecord;
 
@@ -26,6 +26,26 @@ export async function getSizeById(id: number) {
   return db.orm.public.Size.select(...SIZE_FIELDS).where({ id }).first();
 }
 
+export async function getSizeBySlug(slug: string) {
+  return db.orm.public.Size.select(...SIZE_FIELDS).where({ slug }).first();
+}
+
+async function uniqueSlug(base: string, excludeId?: number) {
+  const root = slugify(base) || "size";
+  const rows = await db.orm.public.Size.select("id", "slug").all();
+  const taken = new Set(
+    rows.filter((row) => row.id !== excludeId).map((row) => row.slug),
+  );
+  if (!taken.has(root)) {
+    return root;
+  }
+  let index = 2;
+  while (taken.has(`${root}-${index}`)) {
+    index += 1;
+  }
+  return `${root}-${index}`;
+}
+
 async function nextSortOrder() {
   const rows = await db.orm.public.Size.select("sortOrder").all();
   if (rows.length === 0) {
@@ -34,25 +54,27 @@ async function nextSortOrder() {
   return Math.max(...rows.map((row) => row.sortOrder)) + SORT_GAP;
 }
 
-export async function createSize(title: string) {
+export async function createSize(title: string, slug: string) {
   const taken = await db.orm.public.Size.select("id").where({ title }).first();
   if (taken) {
     throw new Error("This size already exists.");
   }
   await db.orm.public.Size.create({
     title,
+    slug: await uniqueSlug(slug || title),
     sortOrder: await nextSortOrder(),
     updatedAt: new Date(),
   });
 }
 
-export async function updateSize(id: number, title: string) {
+export async function updateSize(id: number, title: string, slug: string) {
   const taken = await db.orm.public.Size.select("id").where({ title }).first();
   if (taken && taken.id !== id) {
     throw new Error("This size already exists.");
   }
   await db.orm.public.Size.where({ id }).update({
     title,
+    slug: await uniqueSlug(slug || title, id),
     updatedAt: new Date(),
   });
 }

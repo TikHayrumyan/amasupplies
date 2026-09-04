@@ -444,6 +444,13 @@
                   "kind": "scalar"
                 }
               },
+              "slug": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "sortOrder": {
                 "nullable": false,
                 "type": {
@@ -471,6 +478,9 @@
               "fields": {
                 "id": {
                   "column": "id"
+                },
+                "slug": {
+                  "column": "slug"
                 },
                 "sortOrder": {
                   "column": "sortOrder"
@@ -587,6 +597,13 @@
                   "kind": "scalar"
                 }
               },
+              "slug": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "sortOrder": {
                 "nullable": false,
                 "type": {
@@ -614,6 +631,9 @@
               "fields": {
                 "id": {
                   "column": "id"
+                },
+                "slug": {
+                  "column": "slug"
                 },
                 "sortOrder": {
                   "column": "sortOrder"
@@ -1020,6 +1040,11 @@
                   "nativeType": "int4",
                   "nullable": false
                 },
+                "slug": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "sortOrder": {
                   "codecId": "pg/float8@1",
                   "default": {
@@ -1055,6 +1080,11 @@
                 {
                   "columns": [
                     "title"
+                  ]
+                },
+                {
+                  "columns": [
+                    "slug"
                   ]
                 }
               ]
@@ -1148,6 +1178,11 @@
                   "nativeType": "int4",
                   "nullable": false
                 },
+                "slug": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "sortOrder": {
                   "codecId": "pg/float8@1",
                   "default": {
@@ -1184,6 +1219,11 @@
                   "columns": [
                     "title"
                   ]
+                },
+                {
+                  "columns": [
+                    "slug"
+                  ]
                 }
               ]
             }
@@ -1193,7 +1233,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "83ce2ed3045fd08ee1b04ec464a774318614a159a5acdd4ea4ef1384359c6c93"
+    "storageHash": "6640d8c51f2b06475a0c4cdf6905f4774445f8d2432f68a900b008db9c569c46"
   },
   "capabilities": {
     "postgres": {

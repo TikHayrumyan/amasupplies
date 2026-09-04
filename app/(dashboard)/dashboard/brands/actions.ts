@@ -15,6 +15,7 @@ type Result = { error: string | null; done?: boolean };
 function refresh() {
   revalidatePath("/dashboard/brands");
   revalidatePath("/dashboard/products");
+  revalidatePath("/products");
 }
 
 export async function saveBrand(formData: FormData): Promise<Result> {
@@ -22,16 +23,17 @@ export async function saveBrand(formData: FormData): Promise<Result> {
   const idValue = String(formData.get("id") ?? "");
   const id = idValue ? Number(idValue) : null;
   const title = String(formData.get("title") ?? "").trim();
-  const copyError = validateProductBrandCopy(title);
+  const slug = String(formData.get("slug") ?? "").trim();
+  const copyError = validateProductBrandCopy(title, slug);
   if (copyError) {
     return { error: copyError };
   }
 
   try {
     if (id) {
-      await updateProductBrand(id, title);
+      await updateProductBrand(id, title, slug);
     } else {
-      await createProductBrand(title);
+      await createProductBrand(title, slug);
     }
   } catch (error) {
     return {

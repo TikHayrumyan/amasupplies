@@ -21,6 +21,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Pencil, Plus, Trash2 } from "lucide-react";
 import {
   SIZE_TITLE_MAX,
+  slugify,
   validateSizeCopy,
   type SizeRecord,
 } from "@/lib/size-fields";
@@ -78,7 +79,10 @@ function SortableRow({
       >
         <GripVertical className="size-4" />
       </button>
-      <p className="min-w-0 flex-1 truncate font-medium">{size.title}</p>
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium">{size.title}</p>
+        <p className="mt-1 truncate text-sm text-muted-foreground">/{size.slug}</p>
+      </div>
       <button
         type="button"
         aria-label="Edit"
@@ -214,7 +218,9 @@ function SizeForm({
   onDone: () => void;
 }) {
   const [title, setTitle] = useState(size?.title ?? "");
-  const copyError = validateSizeCopy(title.trim());
+  const [slug, setSlug] = useState(size?.slug ?? "");
+  const [slugTouched, setSlugTouched] = useState(Boolean(size));
+  const copyError = validateSizeCopy(title.trim(), slug.trim());
   const [state, formAction, pending] = useActionState(
     async (_prev: Result, formData: FormData) => {
       const result = await saveSize(formData);
@@ -240,7 +246,27 @@ function SizeForm({
           name="title"
           value={title}
           maxLength={SIZE_TITLE_MAX}
-          onChange={(event) => setTitle(event.target.value)}
+          onChange={(event) => {
+            const value = event.target.value;
+            setTitle(value);
+            if (!slugTouched) {
+              setSlug(slugify(value));
+            }
+          }}
+          className={fieldClass}
+        />
+      </label>
+      <label className="flex flex-col gap-3">
+        <span className="caption tracking-[0.16em] text-muted-foreground uppercase">
+          Slug
+        </span>
+        <Input
+          name="slug"
+          value={slug}
+          onChange={(event) => {
+            setSlugTouched(true);
+            setSlug(slugify(event.target.value));
+          }}
           className={fieldClass}
         />
       </label>

@@ -7,9 +7,9 @@ import {
   rebalanceOrders,
   sortBetween,
 } from "@/lib/sort-order";
-import type { ProductBrandRecord } from "@/lib/product-brand-fields";
+import { slugify, type ProductBrandRecord } from "@/lib/product-brand-fields";
 
-const PRODUCT_BRAND_FIELDS = ["id", "title", "sortOrder", "updatedAt"] as const;
+const PRODUCT_BRAND_FIELDS = ["id", "title", "slug", "sortOrder", "updatedAt"] as const;
 
 export type ProductBrand = ProductBrandRecord;
 
@@ -30,6 +30,28 @@ export async function getProductBrandById(id: number) {
     .first();
 }
 
+export async function getProductBrandBySlug(slug: string) {
+  return db.orm.public.ProductBrand.select(...PRODUCT_BRAND_FIELDS)
+    .where({ slug })
+    .first();
+}
+
+async function uniqueSlug(base: string, excludeId?: number) {
+  const root = slugify(base) || "brand";
+  const rows = await db.orm.public.ProductBrand.select("id", "slug").all();
+  const taken = new Set(
+    rows.filter((row) => row.id !== excludeId).map((row) => row.slug),
+  );
+  if (!taken.has(root)) {
+    return root;
+  }
+  let index = 2;
+  while (taken.has(`${root}-${index}`)) {
+    index += 1;
+  }
+  return `${root}-${index}`;
+}
+
 async function nextSortOrder() {
   const rows = await db.orm.public.ProductBrand.select("sortOrder").all();
   if (rows.length === 0) {
@@ -38,7 +60,7 @@ async function nextSortOrder() {
   return Math.max(...rows.map((row) => row.sortOrder)) + SORT_GAP;
 }
 
-export async function createProductBrand(title: string) {
+export async function createProductBrand(title: string, slug: string) {
   const taken = await db.orm.public.ProductBrand.select("id")
     .where({ title })
     .first();
@@ -47,12 +69,13 @@ export async function createProductBrand(title: string) {
   }
   await db.orm.public.ProductBrand.create({
     title,
+    slug: await uniqueSlug(slug || title),
     sortOrder: await nextSortOrder(),
     updatedAt: new Date(),
   });
 }
 
-export async function updateProductBrand(id: number, title: string) {
+export async function updateProductBrand(id: number, title: string, slug: string) {
   const taken = await db.orm.public.ProductBrand.select("id")
     .where({ title })
     .first();
@@ -61,6 +84,7 @@ export async function updateProductBrand(id: number, title: string) {
   }
   await db.orm.public.ProductBrand.where({ id }).update({
     title,
+    slug: await uniqueSlug(slug || title, id),
     updatedAt: new Date(),
   });
 }

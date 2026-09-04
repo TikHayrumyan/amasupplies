@@ -41,6 +41,7 @@ model Brand {
 model Size {
   id        Int         @id @default(autoincrement())
   title     String      @unique
+  slug      String      @unique
   sortOrder Float       @default(0)
   updatedAt Timestamptz @default(now())
 
@@ -51,6 +52,7 @@ model Size {
 model ProductBrand {
   id        Int         @id @default(autoincrement())
   title     String      @unique
+  slug      String      @unique
   sortOrder Float       @default(0)
   updatedAt Timestamptz @default(now())
 

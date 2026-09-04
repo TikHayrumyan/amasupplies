@@ -15,6 +15,7 @@ type Result = { error: string | null; done?: boolean };
 function refresh() {
   revalidatePath("/dashboard/sizes");
   revalidatePath("/dashboard/products");
+  revalidatePath("/products");
 }
 
 export async function saveSize(formData: FormData): Promise<Result> {
@@ -22,16 +23,17 @@ export async function saveSize(formData: FormData): Promise<Result> {
   const idValue = String(formData.get("id") ?? "");
   const id = idValue ? Number(idValue) : null;
   const title = String(formData.get("title") ?? "").trim();
-  const copyError = validateSizeCopy(title);
+  const slug = String(formData.get("slug") ?? "").trim();
+  const copyError = validateSizeCopy(title, slug);
   if (copyError) {
     return { error: copyError };
   }
 
   try {
     if (id) {
-      await updateSize(id, title);
+      await updateSize(id, title, slug);
     } else {
-      await createSize(title);
+      await createSize(title, slug);
     }
   } catch (error) {
     return {
