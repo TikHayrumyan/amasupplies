@@ -136,6 +136,13 @@ export async function listProducts() {
   );
 }
 
+export const listPublishedProducts = cache(async () => {
+  const rows = await db.orm.public.Product.select(...PRODUCT_FIELDS)
+    .where({ isPublished: true })
+    .all();
+  return hydrate(rows);
+});
+
 export const listPublishedProductsByCategory = cache(async (categoryId: number) => {
   const rows = await db.orm.public.Product.select(...PRODUCT_FIELDS)
     .where({ categoryId, isPublished: true })

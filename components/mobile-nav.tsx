@@ -1,11 +1,9 @@
 "use client";
 
-import { ChevronDown, Menu, Search, X } from "lucide-react";
-import Form from "next/form";
+import { ChevronDown, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetClose,
@@ -16,11 +14,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { BrandLogo } from "@/components/brand-logo";
+import { MobileSearch } from "@/components/mobile-search";
 import { NAV_LINKS, type NavCategory } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
 export function MobileNav({ categories }: { categories: NavCategory[] }) {
-  const [searchOpen, setSearchOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
 
   return (
@@ -118,52 +116,7 @@ export function MobileNav({ categories }: { categories: NavCategory[] }) {
         <BrandLogo priority />
       </Link>
 
-      <Sheet open={searchOpen} onOpenChange={setSearchOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-10 justify-self-end"
-            aria-label="Open search"
-          >
-            <Search className="size-5" strokeWidth={1.5} />
-          </Button>
-        </SheetTrigger>
-        <SheetContent
-          side="top"
-          showCloseButton={false}
-          className="border-b border-border bg-background p-0"
-        >
-          <SheetHeader className="sr-only">
-            <SheetTitle>Search</SheetTitle>
-            <SheetDescription>Search products</SheetDescription>
-          </SheetHeader>
-          <Form
-            action="/search"
-            className="flex h-14 items-center gap-2 px-4"
-            onSubmit={() => setSearchOpen(false)}
-          >
-            <Search
-              className="size-4 shrink-0 text-muted-foreground"
-              strokeWidth={1.5}
-            />
-            <Input
-              type="search"
-              name="query"
-              placeholder="Search"
-              aria-label="Search"
-              autoFocus
-              variant="ghost"
-              className="px-0 md:text-base"
-            />
-            <SheetClose asChild>
-              <Button variant="ghost" size="icon" className="size-10" aria-label="Close search">
-                <X className="size-5" strokeWidth={1.5} />
-              </Button>
-            </SheetClose>
-          </Form>
-        </SheetContent>
-      </Sheet>
+      <MobileSearch />
     </div>
   );
 }

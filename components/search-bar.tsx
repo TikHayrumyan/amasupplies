@@ -1,26 +1,11 @@
-import { Search } from "lucide-react";
-import Form from "next/form";
-import { Input } from "@/components/ui/input";
+import { ProductSearch } from "@/components/product-search";
 
 export function SearchBar() {
   return (
     <div className="border-t border-border/80">
-      <Form
-        action="/search"
-        className="container mx-auto flex h-12 items-center gap-3 px-4"
-      >
-        <Search
-          className="size-4 shrink-0 text-muted-foreground"
-          strokeWidth={1.5}
-        />
-        <Input
-          type="search"
-          name="query"
-          placeholder="Search"
-          aria-label="Search"
-          variant="ghost"
-        />
-      </Form>
+      <div className="container mx-auto px-4">
+        <ProductSearch layout="panel" />
+      </div>
     </div>
   );
 }
