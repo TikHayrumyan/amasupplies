@@ -1,10 +1,27 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
+import { ProductCard } from "@/components/product-card";
 import { crumbs } from "@/lib/breadcrumbs";
 import { getCategoryBySlug } from "@/lib/category";
+import { listPublishedProductsByCategory } from "@/lib/product";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/products/[slug]">): Promise<Metadata> {
+  const { slug } = await params;
+  const category = await getCategoryBySlug(slug);
+  if (!category || !category.isPublished) {
+    return {};
+  }
+  return {
+    title: `${category.title} | AMA Supplies`,
+    description: category.description || undefined,
+  };
+}
 
 export default async function CategoryPage({
   params,
@@ -15,6 +32,8 @@ export default async function CategoryPage({
   if (!category || !category.isPublished) {
     notFound();
   }
+
+  const products = await listPublishedProductsByCategory(category.id);
 
   return (
     <div>
@@ -50,7 +69,15 @@ export default async function CategoryPage({
         </div>
       </div>
       <div className="container mx-auto px-4 py-16">
-        <p className="text-muted-foreground">Products for this category soon.</p>
+        {products.length === 0 ? (
+          <p className="text-muted-foreground">No products in this category yet.</p>
+        ) : (
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

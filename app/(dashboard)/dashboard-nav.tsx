@@ -17,7 +17,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
     <Link
       href={href}
       className={cn(
-        "transition-colors",
+        "shrink-0 whitespace-nowrap transition-colors",
         active
           ? "text-foreground"
           : "text-muted-foreground hover:text-foreground",
@@ -30,9 +30,12 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 
 export function DashboardNav({ isAdmin }: { isAdmin: boolean }) {
   return (
-    <nav className="flex items-center gap-6 text-[13px] tracking-[0.12em]">
+    <nav className="flex items-center gap-5 overflow-x-auto text-[13px] tracking-[0.12em] md:gap-6">
       <NavLink href="/dashboard">Home</NavLink>
       <NavLink href="/dashboard/categories">Categories</NavLink>
+      <NavLink href="/dashboard/products">Products</NavLink>
+      <NavLink href="/dashboard/brands">Brands</NavLink>
+      <NavLink href="/dashboard/sizes">Sizes</NavLink>
       {isAdmin ? <NavLink href="/dashboard/account">Account</NavLink> : null}
       {!isAdmin ? (
         <form action={logout}>

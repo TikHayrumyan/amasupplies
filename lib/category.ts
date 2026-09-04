@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { db } from "@/prisma/db";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
@@ -38,18 +39,18 @@ export async function listCategories() {
   return ordered(rows);
 }
 
-export async function listPublishedCategories() {
+export const listPublishedCategories = cache(async () => {
   const rows = await db.orm.public.Category.select(...CATEGORY_FIELDS)
     .where({ isPublished: true })
     .all();
   return ordered(rows);
-}
+});
 
-export async function getCategoryBySlug(slug: string) {
+export const getCategoryBySlug = cache(async (slug: string) => {
   return db.orm.public.Category.select(...CATEGORY_FIELDS)
     .where({ slug })
     .first();
-}
+});
 
 export async function getCategoryById(id: number) {
   return db.orm.public.Category.select(...CATEGORY_FIELDS)
@@ -127,6 +128,10 @@ export async function deleteCategory(id: number) {
   const current = await getCategoryById(id);
   if (!current) {
     return;
+  }
+  const { countProductsForCategory } = await import("@/lib/product");
+  if ((await countProductsForCategory(id)) > 0) {
+    throw new Error("This category still has products.");
   }
   await db.orm.public.Category.where({ id }).delete();
   await removeCategoryMedia([current.imageUrl]);

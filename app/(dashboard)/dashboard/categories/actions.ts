@@ -17,6 +17,7 @@ type Result = { error: string | null; done?: boolean };
 
 function refresh() {
   revalidatePath("/dashboard/categories");
+  revalidatePath("/dashboard/products");
   revalidatePath("/products");
 }
 

@@ -37,3 +37,64 @@ model Brand {
   @@rls
   @@map("brand")
 }
+
+model Size {
+  id        Int         @id @default(autoincrement())
+  title     String      @unique
+  sortOrder Float       @default(0)
+  updatedAt Timestamptz @default(now())
+
+  @@rls
+  @@map("size")
+}
+
+model ProductBrand {
+  id        Int         @id @default(autoincrement())
+  title     String      @unique
+  sortOrder Float       @default(0)
+  updatedAt Timestamptz @default(now())
+
+  @@rls
+  @@map("product_brand")
+}
+
+model Product {
+  id              Int         @id @default(autoincrement())
+  title           String
+  slug            String      @unique
+  metaTitle       String      @default("")
+  metaDescription String      @default("")
+  description     String      @default("")
+  imageUrl        String
+  sku             String      @unique
+  itemNumber      String      @unique
+  brandId         Int
+  categoryId      Int
+  sortOrder       Float       @default(0)
+  isPublished     Boolean     @default(true)
+  createdAt       Timestamptz @default(now())
+  updatedAt       Timestamptz @default(now())
+
+  @@rls
+  @@map("product")
+}
+
+model ProductSize {
+  id        Int @id @default(autoincrement())
+  productId Int
+  sizeId    Int
+
+  @@unique([productId, sizeId])
+  @@rls
+  @@map("product_size")
+}
+
+model ProductImage {
+  id        Int   @id @default(autoincrement())
+  productId Int
+  imageUrl  String
+  sortOrder Float @default(0)
+
+  @@rls
+  @@map("product_image")
+}
