@@ -62,9 +62,9 @@ export function RichTextEditor({
   });
 
   return (
-    <div className="border-b border-border">
+    <div className="border border-border bg-surface">
       {editor ? (
-        <div className="flex gap-1 pb-2">
+        <div className="flex gap-1 border-b border-border px-2 py-1">
           <ToolButton
             label="Bold"
             active={editor.isActive("bold")}
@@ -89,7 +89,7 @@ export function RichTextEditor({
       ) : null}
       <EditorContent
         editor={editor}
-        className="[&_.tiptap]:min-h-40 [&_.tiptap]:bg-transparent [&_.tiptap]:text-sm [&_.tiptap]:outline-none [&_.tiptap_p]:mb-3 [&_.tiptap_ul]:mb-3 [&_.tiptap_ul]:list-disc [&_.tiptap_ul]:pl-5 [&_.tiptap_ol]:mb-3 [&_.tiptap_ol]:list-decimal [&_.tiptap_ol]:pl-5"
+        className="px-4 py-3 [&_.tiptap]:min-h-40 [&_.tiptap]:bg-transparent [&_.tiptap]:text-sm [&_.tiptap]:outline-none [&_.tiptap_p]:mb-3 [&_.tiptap_ul]:mb-3 [&_.tiptap_ul]:list-disc [&_.tiptap_ul]:pl-5 [&_.tiptap_ol]:mb-3 [&_.tiptap_ol]:list-decimal [&_.tiptap_ol]:pl-5"
       />
       <input type="hidden" name={name} value={html} />
     </div>
