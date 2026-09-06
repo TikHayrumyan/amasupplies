@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
+const EMPTY_VALUE = "__none__";
+
 export function FieldSelect({
   name,
   value,
@@ -27,7 +29,10 @@ export function FieldSelect({
   return (
     <>
       {name ? <input type="hidden" name={name} value={value} /> : null}
-      <Select value={value || undefined} onValueChange={onChange}>
+      <Select
+        value={value || EMPTY_VALUE}
+        onValueChange={(next) => onChange(next === EMPTY_VALUE ? "" : next)}
+      >
         <SelectTrigger
           className={cn(
             "w-full rounded-none shadow-none focus-visible:border-foreground focus-visible:ring-0 dark:hover:bg-transparent",
