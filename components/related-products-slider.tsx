@@ -24,12 +24,7 @@ export function RelatedProductsSlider({
     <section className="mt-20 border-t border-border/80 pt-16 md:mt-24 md:pt-20">
       <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
         <div className="flex items-end justify-between gap-6">
-          <div>
-            <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
-              Related
-            </p>
-            <h2 className="mt-3 font-medium tracking-tight">You may also like</h2>
-          </div>
+          <h2 className="tracking-[0.16em] uppercase">You may also like</h2>
           {products.length > 1 ? (
             <div className="flex gap-2">
               <CarouselPrevious className="static top-auto left-auto size-11 translate-none rounded-none border-border bg-background shadow-none hover:bg-surface disabled:opacity-30" />
@@ -64,6 +59,9 @@ export function RelatedProductsSlider({
                 <p className="mt-2 line-clamp-2 h-[2lh] text-lg font-medium leading-snug tracking-tight">
                   {product.title}
                 </p>
+                <span className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-none bg-foreground text-sm tracking-[0.16em] text-background uppercase transition-colors group-hover:bg-primary">
+                  See more
+                </span>
               </Link>
             </CarouselItem>
           ))}

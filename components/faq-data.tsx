@@ -253,3 +253,11 @@ export const CONTACT_FAQS = pickFaqs([
   "How do I place an order?",
   "Do you ship nationwide?",
 ]);
+
+export const PRODUCT_FAQS = pickFaqs([
+  "Why can’t I see pricing on the website?",
+  "Can I place an order on the website?",
+  "How do I place an order?",
+  "What if I cannot find a product I need?",
+  "What if an item is out of stock?",
+]);
