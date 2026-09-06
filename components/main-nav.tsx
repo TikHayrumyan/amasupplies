@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Phone } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 import { ProductsNavMenu } from "@/components/products-nav-menu";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
@@ -15,8 +16,9 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
         </Link>
         <Link
           href={PHONE_HREF}
-          className="caption shrink-0 whitespace-nowrap border-l border-border/80 pl-5 tracking-[0.12em] text-muted-foreground transition-colors hover:text-primary"
+          className="caption inline-flex shrink-0 items-center gap-2 whitespace-nowrap border-l border-border/80 pl-5 tracking-[0.12em] text-muted-foreground transition-colors hover:text-primary"
         >
+          <Phone className="size-3.5" strokeWidth={1.5} aria-hidden />
           {PHONE_DISPLAY}
         </Link>
       </div>
