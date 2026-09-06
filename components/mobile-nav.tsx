@@ -115,13 +115,13 @@ export function MobileNav({ categories }: { categories: NavCategory[] }) {
               Call
             </p>
             <SheetClose asChild>
-              <a
+              <Link
                 href={PHONE_HREF}
                 className="mt-3 inline-flex items-center gap-3 text-xl font-medium tracking-tight transition-colors hover:text-primary"
               >
                 <Phone className="size-4 text-primary" strokeWidth={1.5} />
                 {PHONE_DISPLAY}
-              </a>
+              </Link>
             </SheetClose>
           </div>
         </SheetContent>

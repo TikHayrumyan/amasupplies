@@ -1,42 +1,46 @@
-import { Phone, Receipt, ShieldCheck, Truck, type LucideIcon } from "lucide-react";
-import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
+import { CreditCard, Phone, Truck, Users, type LucideIcon } from "lucide-react";
+import Link from "next/link";
+import { PHONE_HREF } from "@/lib/contact";
 
-const TERMS: { index: string; title: string; icon: LucideIcon }[] = [
-  { index: "01", title: "Net Terms Available", icon: Receipt },
-  { index: "02", title: "Approved Accounts Only", icon: ShieldCheck },
-  { index: "03", title: "Nationwide Shipping", icon: Truck },
+const ITEMS: { title: string; icon: LucideIcon; href?: string }[] = [
+  { title: "Net Terms Available", icon: Users },
+  { title: "Approved Accounts Only", icon: CreditCard },
+  { title: "Nationwide Shipping", icon: Truck },
+  { title: "Contact Us: 818-913-9975", icon: Phone, href: PHONE_HREF },
 ];
 
 export function HomeInfoBar() {
   return (
-    <section className="bg-surface py-16 md:py-24">
-      <div className="container mx-auto grid items-start gap-14 px-4 lg:grid-cols-12 lg:gap-0">
-        <div className="lg:col-span-5 lg:pr-16">
-          <p className="caption flex items-center gap-2 tracking-[0.16em] text-muted-foreground uppercase">
-            <Phone className="size-4" />
-            Contact us
-          </p>
-          <a
-            href={PHONE_HREF}
-            className="mt-5 block text-4xl font-medium tracking-tight transition-colors hover:text-primary md:text-5xl"
-          >
-            {PHONE_DISPLAY}
-          </a>
-        </div>
+    <section className="bg-surface py-14 md:py-20">
+      <div className="container mx-auto grid grid-cols-2 gap-x-8 gap-y-10 px-4 md:grid-cols-4 md:gap-12">
+        {ITEMS.map((item) => {
+          const title = item.href ? (
+            <Link
+              href={item.href}
+              className="transition-colors hover:text-primary"
+            >
+              {item.title}
+            </Link>
+          ) : (
+            item.title
+          );
 
-        <ul className="lg:col-span-7 lg:border-l lg:border-border lg:pl-16">
-          {TERMS.map((term) => (
-            <li key={term.index} className="border-t border-border py-6 last:pb-0">
-              <p className="caption flex items-center gap-2 tracking-[0.16em] text-muted-foreground">
-                <term.icon className="size-4" />
-                {term.index}
+          return (
+            <div
+              key={item.title}
+              className="flex flex-col items-center text-center"
+            >
+              <item.icon
+                className="size-6 text-foreground"
+                strokeWidth={1.25}
+                aria-hidden
+              />
+              <p className="mt-3 max-w-44  text-balance text-sm leading-snug text-foreground">
+                {title}
               </p>
-              <p className="mt-2 text-xl font-medium tracking-tight md:text-2xl">
-                {term.title}
-              </p>
-            </li>
-          ))}
-        </ul>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

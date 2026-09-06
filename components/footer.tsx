@@ -43,20 +43,20 @@ export function Footer() {
         <div>
           <FooterHeading>Contact us</FooterHeading>
           <div className="mt-5 flex flex-col gap-3 text-sm text-muted-foreground">
-            <a
+            <Link
               href={EMAIL_HREF}
               className="flex items-start gap-3 transition-colors hover:text-foreground"
             >
               <Mail className="mt-0.5 size-4 shrink-0" />
               {EMAIL_DISPLAY}
-            </a>
-            <a
+            </Link>
+            <Link
               href={PHONE_HREF}
               className="flex items-start gap-3 transition-colors hover:text-foreground"
             >
               <Phone className="mt-0.5 size-4 shrink-0" />
               {PHONE_DISPLAY}
-            </a>
+            </Link>
             <p className="flex items-start gap-3">
               <Clock className="mt-0.5 size-4 shrink-0" />
               <span>

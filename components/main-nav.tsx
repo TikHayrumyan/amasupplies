@@ -13,12 +13,12 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
         <Link href="/" className="shrink-0" aria-label="AmaSupplies">
           <BrandLogo className="h-12 w-auto md:h-12" priority />
         </Link>
-        <a
+        <Link
           href={PHONE_HREF}
           className="caption shrink-0 whitespace-nowrap border-l border-border/80 pl-5 tracking-[0.12em] text-muted-foreground transition-colors hover:text-primary"
         >
           {PHONE_DISPLAY}
-        </a>
+        </Link>
       </div>
       <nav aria-label="Main">
         <ul className="flex items-center gap-8 text-[13px] tracking-[0.12em]">
