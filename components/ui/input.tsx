@@ -10,7 +10,7 @@ const inputVariants = cva(
         default:
           "h-9 rounded-md border border-input bg-transparent px-3 py-1 shadow-xs focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:ring-destructive/40",
         line: "h-11 rounded-none border-0 border-b border-border bg-transparent px-0 shadow-none focus-visible:border-foreground focus-visible:ring-0",
-        box: "h-12 rounded-none border border-border bg-surface px-4 shadow-none placeholder:text-muted-foreground/60 focus-visible:border-foreground focus-visible:bg-background focus-visible:ring-0",
+        box: "h-12 rounded-none border border-border bg-surface px-4 shadow-none placeholder:text-muted-foreground/60 focus-visible:border-foreground focus-visible:bg-background focus-visible:ring-0 aria-invalid:border-danger",
         ghost:
           "h-12 rounded-none border-0 bg-transparent px-4 shadow-none focus-visible:border-0 focus-visible:ring-0",
       },

@@ -45,7 +45,7 @@ const REASONS = [
 
 function SectionCaption({ children }: { children: React.ReactNode }) {
   return (
-    <p className="caption tracking-[0.16em] text-primary uppercase">
+    <p className="caption tracking-[0.16em]    uppercase">
       {children}
     </p>
   );

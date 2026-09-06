@@ -2,7 +2,14 @@ import { Clock, Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
-import { EMAIL_DISPLAY, EMAIL_HREF, PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
+import {
+  EMAIL_DISPLAY,
+  EMAIL_HREF,
+  HOURS_SATURDAY,
+  HOURS_WEEKDAY,
+  PHONE_DISPLAY,
+  PHONE_HREF,
+} from "@/lib/contact";
 import { FOOTER_COMPANY, FOOTER_RESOURCES } from "@/lib/nav";
 
 const POLICY_LINKS = [
@@ -100,9 +107,9 @@ export function Footer() {
             <p className="flex items-start gap-3">
               <Clock className="mt-0.5 size-4 shrink-0" />
               <span>
-                Mon–Fri: 9 AM – 6 PM
+                {HOURS_WEEKDAY}
                 <br />
-                Sat: 10 AM – 4 PM
+                {HOURS_SATURDAY}
               </span>
             </p>
           </div>
