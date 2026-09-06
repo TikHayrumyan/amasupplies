@@ -115,3 +115,14 @@ model ProductImage {
   @@rls
   @@map("product_image")
 }
+
+model ProductRelated {
+  id               Int   @id @default(autoincrement())
+  productId        Int
+  relatedProductId Int
+  sortOrder        Float @default(0)
+
+  @@unique([productId, relatedProductId])
+  @@rls
+  @@map("product_related")
+}

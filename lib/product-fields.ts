@@ -39,6 +39,14 @@ export type ProductDetail = ProductListItem & {
   gallery: ProductImageRecord[];
   sizeIds: number[];
   sizeTitles: string[];
+  relatedIds: number[];
+};
+
+export type RelatedProductOption = {
+  id: number;
+  title: string;
+  categoryTitle: string;
+  itemNumber: string;
 };
 
 export const PRODUCT_TITLE_MAX = 80;
@@ -47,6 +55,7 @@ export const PRODUCT_META_DESCRIPTION_MAX = 160;
 export const PRODUCT_SKU_MAX = 60;
 export const PRODUCT_ITEM_NUMBER_MAX = 60;
 export const PRODUCT_IMAGE_MAX_BYTES = 3 * 1024 * 1024;
+export const RELATED_PRODUCT_MAX = 8;
 
 export { slugify };
 

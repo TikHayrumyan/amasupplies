@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { listCategories } from "@/lib/category";
 import { listProductBrands } from "@/lib/product-brand";
-import { getProductDetail } from "@/lib/product";
+import { getProductDetail, listProducts } from "@/lib/product";
 import { listProductTypes } from "@/lib/product-type";
 import { listSizes } from "@/lib/size";
 import { DeleteProductButton, ProductForm } from "../product-form";
@@ -17,13 +17,15 @@ export default async function EditProductPage({
     notFound();
   }
 
-  const [product, categories, brands, types, sizes] = await Promise.all([
-    getProductDetail(productId),
-    listCategories(),
-    listProductBrands(),
-    listProductTypes(),
-    listSizes(),
-  ]);
+  const [product, categories, brands, types, sizes, products] =
+    await Promise.all([
+      getProductDetail(productId),
+      listCategories(),
+      listProductBrands(),
+      listProductTypes(),
+      listSizes(),
+      listProducts(),
+    ]);
 
   if (!product) {
     notFound();
@@ -41,6 +43,12 @@ export default async function EditProductPage({
         brands={brands}
         types={types}
         sizes={sizes}
+        catalog={products.map((row) => ({
+          id: row.id,
+          title: row.title,
+          categoryTitle: row.categoryTitle,
+          itemNumber: row.itemNumber,
+        }))}
       />
       <DeleteProductButton id={product.id} />
     </div>

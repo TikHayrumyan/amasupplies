@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
 import { ProductGallery } from "@/components/product-gallery";
+import { RelatedProductsSlider } from "@/components/related-products-slider";
 import { crumbs } from "@/lib/breadcrumbs";
 import { sanitizeProductHtml } from "@/lib/product-fields";
-import { getPublishedProductBySlug } from "@/lib/product";
+import {
+  getPublishedProductBySlug,
+  listRelatedPublishedProducts,
+} from "@/lib/product";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +41,7 @@ export default async function ProductPage({
     ...product.gallery.map((image) => image.imageUrl),
   ];
   const description = sanitizeProductHtml(product.description);
+  const related = await listRelatedPublishedProducts(product.id);
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
@@ -85,6 +90,8 @@ export default async function ProductPage({
           ) : null}
         </div>
       </div>
+
+      <RelatedProductsSlider products={related} />
     </div>
   );
 }

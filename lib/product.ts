@@ -8,6 +8,7 @@ import { listProductBrands } from "@/lib/product-brand";
 import {
   PRODUCT_IMAGE_MAX_BYTES,
   slugify,
+  RELATED_PRODUCT_MAX,
   type ProductDetail,
   type ProductImageRecord,
   type ProductListItem,
@@ -186,16 +187,41 @@ export async function listProductSizeIds(productId: number) {
   return rows.map((row) => row.sizeId);
 }
 
+export async function listRelatedProductIds(productId: number) {
+  const rows = await db.orm.public.ProductRelated.select(
+    "relatedProductId",
+    "sortOrder",
+  )
+    .where({ productId })
+    .all();
+  return [...rows]
+    .sort((left, right) => left.sortOrder - right.sortOrder)
+    .map((row) => row.relatedProductId);
+}
+
+export async function listRelatedPublishedProducts(productId: number) {
+  const relatedIds = await listRelatedProductIds(productId);
+  if (relatedIds.length === 0) {
+    return [];
+  }
+  const published = await listPublishedProducts();
+  const byId = new Map(published.map((row) => [row.id, row]));
+  return relatedIds
+    .map((id) => byId.get(id))
+    .filter((row): row is ProductListItem => Boolean(row));
+}
+
 export async function getProductDetail(id: number): Promise<ProductDetail | null> {
   const product = await getProductById(id);
   if (!product) {
     return null;
   }
   const [hydrated] = await hydrate([product]);
-  const [gallery, sizeIds, sizes] = await Promise.all([
+  const [gallery, sizeIds, sizes, relatedIds] = await Promise.all([
     listProductImages(id),
     listProductSizeIds(id),
     listSizes(),
+    listRelatedProductIds(id),
   ]);
   const sizeMap = new Map(sizes.map((row) => [row.id, row.title]));
   return {
@@ -205,6 +231,7 @@ export async function getProductDetail(id: number): Promise<ProductDetail | null
     sizeTitles: sizeIds
       .map((sizeId) => sizeMap.get(sizeId))
       .filter((title): title is string => Boolean(title)),
+    relatedIds,
   };
 }
 
@@ -231,6 +258,61 @@ async function replaceProductSizes(productId: number, sizeIds: number[]) {
     [...new Set(sizeIds)].map((sizeId) =>
       db.orm.public.ProductSize.create({ productId, sizeId }),
     ),
+  );
+}
+
+export function sanitizeRelatedProductIds(
+  relatedIds: number[],
+  productId: number,
+  catalogIds: Set<number>,
+) {
+  const seen = new Set<number>();
+  const next: number[] = [];
+  for (const id of relatedIds) {
+    if (
+      id === productId ||
+      !catalogIds.has(id) ||
+      seen.has(id) ||
+      next.length >= RELATED_PRODUCT_MAX
+    ) {
+      continue;
+    }
+    seen.add(id);
+    next.push(id);
+  }
+  return next;
+}
+
+async function replaceProductRelated(productId: number, relatedIds: number[]) {
+  const current = await db.orm.public.ProductRelated.select("id")
+    .where({ productId })
+    .all();
+  await Promise.all(
+    current.map((row) =>
+      db.orm.public.ProductRelated.where({ id: row.id }).delete(),
+    ),
+  );
+  await Promise.all(
+    relatedIds.map((relatedProductId, index) =>
+      db.orm.public.ProductRelated.create({
+        productId,
+        relatedProductId,
+        sortOrder: (index + 1) * SORT_GAP,
+      }),
+    ),
+  );
+}
+
+async function clearProductRelated(productId: number) {
+  const [outgoing, incoming] = await Promise.all([
+    db.orm.public.ProductRelated.select("id").where({ productId }).all(),
+    db.orm.public.ProductRelated.select("id")
+      .where({ relatedProductId: productId })
+      .all(),
+  ]);
+  const ids = new Set([...outgoing, ...incoming].map((row) => row.id));
+  await Promise.all(
+    [...ids].map((id) => db.orm.public.ProductRelated.where({ id }).delete()),
   );
 }
 
@@ -264,6 +346,7 @@ export async function createProduct(input: {
   typeId: number | null;
   isPublished: boolean;
   sizeIds: number[];
+  relatedIds: number[];
   galleryUrls: string[];
 }) {
   const slug = await uniqueValue("slug", input.slug || input.title);
@@ -293,6 +376,7 @@ export async function createProduct(input: {
     throw new Error("Could not save product.");
   }
   await replaceProductSizes(created.id, input.sizeIds);
+  await replaceProductRelated(created.id, input.relatedIds);
   await addProductImages(created.id, input.galleryUrls);
   return created.id;
 }
@@ -313,6 +397,7 @@ export async function updateProduct(
     typeId: number | null;
     isPublished: boolean;
     sizeIds: number[];
+    relatedIds: number[];
     galleryUrls: string[];
     keepImageIds: number[];
   },
@@ -344,6 +429,7 @@ export async function updateProduct(
     updatedAt: new Date(),
   });
   await replaceProductSizes(id, input.sizeIds);
+  await replaceProductRelated(id, input.relatedIds);
   const gallery = await listProductImages(id);
   const removed = gallery.filter((row) => !input.keepImageIds.includes(row.id));
   await Promise.all(
@@ -364,6 +450,7 @@ export async function deleteProduct(id: number) {
   await Promise.all(
     links.map((row) => db.orm.public.ProductSize.where({ id: row.id }).delete()),
   );
+  await clearProductRelated(id);
   await Promise.all(
     current.gallery.map((row) =>
       db.orm.public.ProductImage.where({ id: row.id }).delete(),

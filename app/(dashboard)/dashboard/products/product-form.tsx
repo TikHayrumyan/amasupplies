@@ -16,12 +16,14 @@ import {
   validateProductCopy,
   type ProductDetail,
   type ProductImageRecord,
+  type RelatedProductOption,
 } from "@/lib/product-fields";
 import type { ProductBrandRecord } from "@/lib/product-brand-fields";
 import type { CategoryRecord } from "@/lib/category-fields";
 import type { ProductTypeRecord } from "@/lib/product-type-fields";
 import type { SizeRecord } from "@/lib/size-fields";
 import { FieldSelect } from "@/components/field-select";
+import { RelatedProductsPicker } from "@/components/related-products-picker";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,12 +66,14 @@ export function ProductForm({
   brands,
   types,
   sizes,
+  catalog,
 }: {
   product: ProductDetail | null;
   categories: Pick<CategoryRecord, "id" | "title">[];
   brands: Pick<ProductBrandRecord, "id" | "title">[];
   types: Pick<ProductTypeRecord, "id" | "title" | "categoryId">[];
   sizes: Pick<SizeRecord, "id" | "title">[];
+  catalog: RelatedProductOption[];
 }) {
   const router = useRouter();
   const imageRef = useRef<HTMLInputElement>(null);
@@ -101,6 +105,9 @@ export function ProductForm({
   });
   const [brandId, setBrandId] = useState(product?.brandId ?? 0);
   const [sizeIds, setSizeIds] = useState<number[]>(product?.sizeIds ?? []);
+  const [relatedIds, setRelatedIds] = useState<number[]>(
+    product?.relatedIds ?? [],
+  );
   const [mainPreview, setMainPreview] = useState<string | null>(
     product?.imageUrl ?? null,
   );
@@ -487,6 +494,13 @@ export function ProductForm({
           </div>
         )}
       </fieldset>
+
+      <RelatedProductsPicker
+        catalog={catalog}
+        productId={product?.id ?? null}
+        selectedIds={relatedIds}
+        onChange={setRelatedIds}
+      />
 
       <label className="flex flex-col gap-3">
         <span className="caption tracking-[0.16em] text-muted-foreground uppercase">

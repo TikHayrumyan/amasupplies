@@ -11,8 +11,10 @@ import {
   createProduct,
   deleteProduct,
   getProductById,
+  listProducts,
   removeProductMedia,
   reorderProduct,
+  sanitizeRelatedProductIds,
   updateProduct,
   uploadProductImage,
 } from "@/lib/product";
@@ -61,6 +63,10 @@ export async function saveProduct(formData: FormData): Promise<Result> {
   const isPublished = formData.get("isPublished") === "on";
   const sizeIds = formData
     .getAll("sizeId")
+    .map((value) => Number(value))
+    .filter((value) => value > 0);
+  const relatedIdsRaw = formData
+    .getAll("relatedProductId")
     .map((value) => Number(value))
     .filter((value) => value > 0);
   const keepImageIds = formData
@@ -113,8 +119,14 @@ export async function saveProduct(formData: FormData): Promise<Result> {
       .getAll("gallery")
       .filter((value): value is File => value instanceof File && value.size > 0);
     const galleryUrls = await uploadMany(galleryFiles);
+    const catalogIds = new Set((await listProducts()).map((row) => row.id));
 
     if (current) {
+      const relatedIds = sanitizeRelatedProductIds(
+        relatedIdsRaw,
+        current.id,
+        catalogIds,
+      );
       await updateProduct(current.id, {
         title,
         slug,
@@ -129,6 +141,7 @@ export async function saveProduct(formData: FormData): Promise<Result> {
         typeId: resolvedTypeId,
         isPublished,
         sizeIds,
+        relatedIds,
         galleryUrls,
         keepImageIds,
       });
@@ -150,6 +163,7 @@ export async function saveProduct(formData: FormData): Promise<Result> {
         typeId: resolvedTypeId,
         isPublished,
         sizeIds,
+        relatedIds: sanitizeRelatedProductIds(relatedIdsRaw, 0, catalogIds),
         galleryUrls,
       });
     }

@@ -28,6 +28,10 @@
       "model": "ProductImage",
       "namespace": "public"
     },
+    "product_related": {
+      "model": "ProductRelated",
+      "namespace": "public"
+    },
     "product_size": {
       "model": "ProductSize",
       "namespace": "public"
@@ -561,6 +565,57 @@
               "table": "product_image"
             }
           },
+          "ProductRelated": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "relatedProductId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "sortOrder": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "relatedProductId": {
+                  "column": "relatedProductId"
+                },
+                "sortOrder": {
+                  "column": "sortOrder"
+                }
+              },
+              "namespaceId": "public",
+              "table": "product_related"
+            }
+          },
           "ProductSize": {
             "fields": {
               "id": {
@@ -772,6 +827,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "product_image"
+            },
+            "product_related": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "product_related"
             },
             "product_size": {
               "kind": "rls",
@@ -1224,6 +1284,53 @@
               },
               "uniques": []
             },
+            "product_related": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "productId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "relatedProductId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "sortOrder": {
+                  "codecId": "pg/float8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "float8",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "productId",
+                    "relatedProductId"
+                  ]
+                }
+              ]
+            },
             "product_size": {
               "columns": {
                 "id": {
@@ -1395,7 +1502,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "cb3e1e3ce280240ddbd0c2aa9a7c8f54384b0bc06f39ee35272ba161a9c0cbe6"
+    "storageHash": "53b4f89e01dce0a32d129281fcb8add5ce766041991a8e9dec90ebe7a39bd6da"
   },
   "capabilities": {
     "postgres": {
