@@ -33,7 +33,7 @@ export async function ShopByCategory() {
                 />
                 <div className="absolute inset-0 bg-foreground/0 transition-colors duration-300 group-hover:bg-foreground/15" />
               </div>
-              <p className="mt-3 text-sm tracking-[0.14em] uppercase md:mt-4 md:text-base">
+              <p className="mt-3 text-sm tracking-[0.14em] text-center uppercase md:mt-4 md:text-base">
                 {category.title}
               </p>
             </Link>

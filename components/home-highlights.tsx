@@ -1,5 +1,5 @@
 const ITEMS = [
-  ["24/7 customer", "support"],
+  ["Premium ", "Quality"],
   ["Wholesale", "pricing"],
   ["Fast worldwide", "shipping"],
 ] as const;
