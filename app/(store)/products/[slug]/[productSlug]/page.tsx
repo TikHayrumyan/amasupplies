@@ -5,6 +5,7 @@ import { PRODUCT_FAQS } from "@/components/faq-data";
 import { FaqSection } from "@/components/faq-section";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
 import { ProductGallery } from "@/components/product-gallery";
+import { ProductInquiryDialog } from "@/components/product-inquiry-dialog";
 import { RelatedProductsSlider } from "@/components/related-products-slider";
 import { crumbs } from "@/lib/breadcrumbs";
 import { sanitizeProductHtml } from "@/lib/product-fields";
@@ -86,6 +87,10 @@ export default async function ProductPage({
                 </div>
               ) : null}
             </dl>
+            <ProductInquiryDialog
+              productId={product.id}
+              productTitle={product.title}
+            />
             {description ? (
               <div
                 className="mt-8 text-sm leading-relaxed [&_li]:mb-1 [&_ol]:mb-3 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-3 [&_ul]:mb-3 [&_ul]:list-disc [&_ul]:pl-5"
