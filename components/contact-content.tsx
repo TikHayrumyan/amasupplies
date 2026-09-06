@@ -100,14 +100,7 @@ export function ContactContent() {
         </div>
       </section>
 
-      <FaqSection
-        items={CONTACT_FAQS}
-        caption="Questions"
-        title="Before you write"
-        action={{ href: "/faq", label: "View all FAQs" }}
-        className="border-t border-border/80"
-      />
-
+    
       <section className="bg-surface">
         <div className="container mx-auto px-4 py-16 md:py-24">
           <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
@@ -128,6 +121,15 @@ export function ContactContent() {
           </div>
         </div>
       </section>
+
+      <FaqSection
+        items={CONTACT_FAQS}
+        caption="Questions"
+        title="Before you write"
+        action={{ href: "/faq", label: "View all FAQs" }}
+        className="border-t border-border/80"
+      />
+
     </>
   );
 }
