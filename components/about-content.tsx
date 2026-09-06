@@ -1,8 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
+import { AccountCta } from "@/components/account-cta";
 import { ABOUT_FAQS } from "@/components/faq-data";
 import { FaqSection } from "@/components/faq-section";
-import { Button } from "@/components/ui/button";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=2000&q=80";
@@ -288,36 +287,7 @@ export function AboutContent() {
         className="border-t border-border/80"
       />
 
-      <section className="bg-background">
-        <div className="container mx-auto flex flex-col gap-8 px-4 py-16 md:flex-row md:items-end md:justify-between md:py-24">
-          <div className="max-w-xl">
-            <SectionCaption>Contact</SectionCaption>
-            <h2 className="mt-5 text-3xl font-medium tracking-tight md:text-4xl">
-              Request an Account
-            </h2>
-            <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
-              Our platform is designed specifically for approved business
-              customers who require reliable supply, competitive pricing, and
-              efficient fulfillment.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <Button
-              asChild
-              className="h-12 rounded-none px-8 text-sm tracking-[0.16em] uppercase"
-            >
-              <Link href="/contact">Request an Account</Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-12 rounded-none border-primary px-8 text-sm tracking-[0.16em] text-primary uppercase hover:bg-primary hover:text-primary-foreground"
-            >
-              <Link href="/products">View Products</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      <AccountCta />
     </>
   );
 }

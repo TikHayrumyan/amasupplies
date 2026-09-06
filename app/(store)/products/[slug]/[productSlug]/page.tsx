@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { AccountCta } from "@/components/account-cta";
 import { PRODUCT_FAQS } from "@/components/faq-data";
 import { FaqSection } from "@/components/faq-section";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
@@ -102,6 +103,8 @@ export default async function ProductPage({
         action={{ href: "/faq", label: "View all FAQs" }}
         className="border-t border-border/80"
       />
+
+      <AccountCta />
     </>
   );
 }
