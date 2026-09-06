@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ABOUT_FAQS } from "@/components/faq-data";
+import { FaqSection } from "@/components/faq-section";
 import { Button } from "@/components/ui/button";
 
 const HERO_IMAGE =
@@ -277,6 +279,14 @@ export function AboutContent() {
           </ol>
         </div>
       </section>
+
+      <FaqSection
+        items={ABOUT_FAQS}
+        caption="Accounts"
+        title="Who we work with"
+        action={{ href: "/faq", label: "View all FAQs" }}
+        className="border-t border-border/80"
+      />
 
       <section className="bg-background">
         <div className="container mx-auto flex flex-col gap-8 px-4 py-16 md:flex-row md:items-end md:justify-between md:py-24">

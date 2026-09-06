@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import type { FaqItem } from "@/components/faq-data";
+import type { FaqItem } from "@/lib/faq-fields";
 import { cn } from "@/lib/utils";
 
 type FaqAccordionProps = {

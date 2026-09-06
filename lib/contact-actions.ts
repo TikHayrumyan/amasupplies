@@ -35,16 +35,19 @@ function readFields(formData: FormData): ContactFields {
   };
 }
 
-function firstFieldErrors(
-  error: z.ZodError,
-): ContactState["fieldErrors"] {
-  const flat = z.flattenError(error).fieldErrors;
-  return {
-    name: flat.name?.[0],
-    email: flat.email?.[0],
-    phone: flat.phone?.[0],
-    message: flat.message?.[0],
-  };
+function firstFieldErrors(error: z.ZodError): ContactState["fieldErrors"] {
+  const next: ContactState["fieldErrors"] = {};
+
+  for (const [field, messages] of Object.entries(
+    z.flattenError(error).fieldErrors,
+  )) {
+    const message = Array.isArray(messages) ? messages[0] : undefined;
+    if (message) {
+      next[field as keyof ContactFields] = message;
+    }
+  }
+
+  return next;
 }
 
 function escapeHtml(value: string) {

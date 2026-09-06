@@ -1,17 +1,8 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { EMAIL_DISPLAY, EMAIL_HREF, PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
+import type { FaqGroup, FaqItem } from "@/lib/faq-fields";
 
-export type FaqItem = {
-  question: string;
-  answer: ReactNode;
-};
-
-export type FaqGroup = {
-  id: string;
-  title: string;
-  items: FaqItem[];
-};
+export type { FaqGroup, FaqItem };
 
 const contactLink = (
   <Link
@@ -231,3 +222,34 @@ const PREVIEW_QUESTIONS = new Set([
 export const FAQ_PREVIEW = FAQ_GROUPS.flatMap((group) => group.items).filter(
   (item) => PREVIEW_QUESTIONS.has(item.question),
 );
+
+export function pickFaqs(questions: readonly string[]): FaqItem[] {
+  const map = new Map(
+    FAQ_GROUPS.flatMap((group) => group.items).map((item) => [
+      item.question,
+      item,
+    ]),
+  );
+
+  return questions.map((question) => {
+    const item = map.get(question);
+    if (!item) {
+      throw new Error(`Unknown FAQ question: ${question}`);
+    }
+    return item;
+  });
+}
+
+export const ABOUT_FAQS = pickFaqs([
+  "Do you sell to the public?",
+  "Who can open an account?",
+  "Why can’t I see pricing on the website?",
+  "What do I get after my account is approved?",
+]);
+
+export const CONTACT_FAQS = pickFaqs([
+  "What are your business hours?",
+  "How do I apply for an account?",
+  "How do I place an order?",
+  "Do you ship nationwide?",
+]);

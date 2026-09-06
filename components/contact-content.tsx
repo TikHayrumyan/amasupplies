@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { ContactForm } from "@/components/contact-form";
+import { CONTACT_FAQS } from "@/components/faq-data";
+import { FaqSection } from "@/components/faq-section";
 import {
   ADDRESS_CITY,
   ADDRESS_DISPLAY,
@@ -97,6 +99,14 @@ export function ContactContent() {
           </div>
         </div>
       </section>
+
+      <FaqSection
+        items={CONTACT_FAQS}
+        caption="Questions"
+        title="Before you write"
+        action={{ href: "/faq", label: "View all FAQs" }}
+        className="border-t border-border/80"
+      />
 
       <section className="bg-surface">
         <div className="container mx-auto px-4 py-16 md:py-24">
