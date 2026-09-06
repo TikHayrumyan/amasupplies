@@ -37,7 +37,7 @@ export function FieldSelect({
           className={cn(
             "w-full rounded-none shadow-none focus-visible:border-foreground focus-visible:ring-0 dark:hover:bg-transparent",
             variant === "box"
-              ? "h-12 border-border bg-surface px-4 data-[placeholder]:text-muted-foreground/60"
+              ? "h-12 border-border bg-surface px-4 data-placeholder:text-muted-foreground/60"
               : "h-11 border-0 border-b border-border bg-transparent px-0",
           )}
         >
