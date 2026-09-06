@@ -3,9 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
 import { EMAIL_DISPLAY, EMAIL_HREF, PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
-import { NAV_LINKS } from "@/lib/nav";
-
-const COMPANY_LINKS = NAV_LINKS.filter((link) => link.href !== "/");
+import { FOOTER_COMPANY, FOOTER_RESOURCES } from "@/lib/nav";
 
 const POLICY_LINKS = [
   { href: "#", label: "Privacy policy" },
@@ -30,6 +28,28 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
+function FooterLinks({
+  links,
+}: {
+  links: readonly { href: string; label: string }[];
+}) {
+  return (
+    <ul className="mt-5 flex flex-col gap-3">
+      {links.map((link) => (
+        <li key={link.label}>
+          <Link
+            href={link.href}
+            prefetch={link.href === "#" ? false : undefined}
+            className={linkClass}
+          >
+            {link.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function Footer() {
   return (
     <footer className="border-t border-border bg-background">
@@ -38,6 +58,26 @@ export function Footer() {
           <Link href="/" aria-label="AmaSupplies">
             <BrandLogo className="h-15 w-auto md:h-15" />
           </Link>
+          <ul className="mt-8 flex flex-col gap-3">
+            {SOCIAL_LINKS.map((link) => (
+              <li key={link.label}>
+                <Link
+                  href={link.href}
+                  prefetch={false}
+                  className={`${linkClass} inline-flex items-center gap-3`}
+                >
+                  <Image
+                    src={link.src}
+                    alt=""
+                    width={16}
+                    height={16}
+                    unoptimized
+                  />
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div>
@@ -70,52 +110,17 @@ export function Footer() {
 
         <div>
           <FooterHeading>Company</FooterHeading>
-          <ul className="mt-5 flex flex-col gap-3">
-            {COMPANY_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className={linkClass}>
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <FooterLinks links={FOOTER_COMPANY} />
+        </div>
+
+        <div>
+          <FooterHeading>Resources</FooterHeading>
+          <FooterLinks links={FOOTER_RESOURCES} />
         </div>
 
         <div>
           <FooterHeading>Policies</FooterHeading>
-          <ul className="mt-5 flex flex-col gap-3">
-            {POLICY_LINKS.map((link) => (
-              <li key={link.label}>
-                <Link href={link.href} prefetch={false} className={linkClass}>
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <FooterHeading>Social media</FooterHeading>
-          <ul className="mt-5 flex flex-col gap-3">
-            {SOCIAL_LINKS.map((link) => (
-              <li key={link.label}>
-                <Link
-                  href={link.href}
-                  prefetch={false}
-                  className={`${linkClass} inline-flex items-center gap-3`}
-                >
-                  <Image
-                    src={link.src}
-                    alt=""
-                    width={16}
-                    height={16}
-                    unoptimized
-                  />
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <FooterLinks links={POLICY_LINKS} />
         </div>
       </div>
 
