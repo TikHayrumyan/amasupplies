@@ -105,7 +105,7 @@ export function HeroBanner({
                 "bg-white text-foreground hover:bg-white/90",
             )}
           >
-            <Link href="/">Get Started</Link>
+            <Link href="/contact">Get a Quote </Link>
           </Button>
         </div>
       </div>

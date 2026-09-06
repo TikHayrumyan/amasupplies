@@ -1,9 +1,10 @@
 "use client";
 
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, Phone, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
 import {
   Sheet,
   SheetClose,
@@ -54,7 +55,7 @@ export function MobileNav({ categories }: { categories: NavCategory[] }) {
           </SheetHeader>
           <nav
             aria-label="Mobile"
-            className="flex flex-1 flex-col justify-center gap-2 px-8 pb-24"
+            className="flex flex-1 flex-col justify-center gap-2 px-8 pb-8"
           >
             {NAV_LINKS.map((link) =>
               link.href === "/products" && categories.length > 0 ? (
@@ -109,6 +110,20 @@ export function MobileNav({ categories }: { categories: NavCategory[] }) {
               ),
             )}
           </nav>
+          <div className="px-8 pb-10">
+            <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+              Call
+            </p>
+            <SheetClose asChild>
+              <a
+                href={PHONE_HREF}
+                className="mt-3 inline-flex items-center gap-3 text-xl font-medium tracking-tight transition-colors hover:text-primary"
+              >
+                <Phone className="size-4 text-primary" strokeWidth={1.5} />
+                {PHONE_DISPLAY}
+              </a>
+            </SheetClose>
+          </div>
         </SheetContent>
       </Sheet>
 

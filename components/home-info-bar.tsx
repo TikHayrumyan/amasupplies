@@ -1,4 +1,5 @@
 import { Phone, Receipt, ShieldCheck, Truck, type LucideIcon } from "lucide-react";
+import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
 
 const TERMS: { index: string; title: string; icon: LucideIcon }[] = [
   { index: "01", title: "Net Terms Available", icon: Receipt },
@@ -16,10 +17,10 @@ export function HomeInfoBar() {
             Contact us
           </p>
           <a
-            href="tel:+18189139975"
+            href={PHONE_HREF}
             className="mt-5 block text-4xl font-medium tracking-tight transition-colors hover:text-primary md:text-5xl"
           >
-            818-913-9975
+            {PHONE_DISPLAY}
           </a>
         </div>
 

@@ -2,6 +2,7 @@ import { Clock, Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
+import { EMAIL_DISPLAY, EMAIL_HREF, PHONE_DISPLAY, PHONE_HREF } from "@/lib/contact";
 import { NAV_LINKS } from "@/lib/nav";
 
 const COMPANY_LINKS = NAV_LINKS.filter((link) => link.href !== "/");
@@ -43,18 +44,18 @@ export function Footer() {
           <FooterHeading>Contact us</FooterHeading>
           <div className="mt-5 flex flex-col gap-3 text-sm text-muted-foreground">
             <a
-              href="mailto:amasuppliesinc@gmail.com"
+              href={EMAIL_HREF}
               className="flex items-start gap-3 transition-colors hover:text-foreground"
             >
               <Mail className="mt-0.5 size-4 shrink-0" />
-              amasuppliesinc@gmail.com
+              {EMAIL_DISPLAY}
             </a>
             <a
-              href="tel:+18189139975"
+              href={PHONE_HREF}
               className="flex items-start gap-3 transition-colors hover:text-foreground"
             >
               <Phone className="mt-0.5 size-4 shrink-0" />
-              +1 818 913 9975
+              {PHONE_DISPLAY}
             </a>
             <p className="flex items-start gap-3">
               <Clock className="mt-0.5 size-4 shrink-0" />
