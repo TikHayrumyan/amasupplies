@@ -150,6 +150,7 @@ export function ProductSearch({
       <div
         className={cn(
           "flex items-center",
+          layout === "panel" && "border border-border px-3",
           layout === "overlay" && "border-b border-border/80 px-2",
         )}
       >
@@ -157,7 +158,7 @@ export function ProductSearch({
           action="/search"
           className={cn(
             "flex min-w-0 flex-1 items-center gap-3",
-            layout === "panel" ? "h-12" : "h-14 px-2",
+            layout === "panel" ? "h-11" : "h-14 px-2",
           )}
           onSubmit={() => onNavigate?.()}
         >
