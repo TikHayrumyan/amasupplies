@@ -110,7 +110,7 @@ export default async function CategoryPage({
             }
           >
             {hasFilters ? (
-              <aside className="hidden lg:sticky lg:top-32 lg:block lg:self-start">
+              <aside className="hidden lg:sticky lg:top-36 lg:block lg:self-start">
                 <CategoryFilters
                   pathname={pathname}
                   query={catalogQuery}
