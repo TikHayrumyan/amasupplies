@@ -151,7 +151,7 @@ export default async function BlogPostPage({
 
         {content ? (
           <div
-            className="mt-12 max-w-2xl text-base leading-relaxed [&_li]:mb-1 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-5"
+            className="mt-12 max-w-5xl text-base leading-relaxed [&_li]:mb-1 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-5"
             dangerouslySetInnerHTML={{ __html: content }}
           />
         ) : (
