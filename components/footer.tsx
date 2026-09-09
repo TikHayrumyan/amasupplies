@@ -10,14 +10,7 @@ import {
   PHONE_DISPLAY,
   PHONE_HREF,
 } from "@/lib/contact";
-import { FOOTER_COMPANY, FOOTER_RESOURCES } from "@/lib/nav";
-
-const POLICY_LINKS = [
-  { href: "#", label: "Privacy policy" },
-  { href: "#", label: "Refund policy" },
-  { href: "#", label: "Terms of use" },
-  { href: "#", label: "Disclaimer" },
-] as const;
+import { FOOTER_COMPANY, FOOTER_POLICIES, FOOTER_RESOURCES } from "@/lib/nav";
 
 const SOCIAL_LINKS = [
   { href: "#", label: "Facebook", src: "/icons/facebook.svg" },
@@ -127,7 +120,7 @@ export function Footer() {
 
         <div>
           <FooterHeading>Policies</FooterHeading>
-          <FooterLinks links={POLICY_LINKS} />
+          <FooterLinks links={FOOTER_POLICIES} />
         </div>
       </div>
 

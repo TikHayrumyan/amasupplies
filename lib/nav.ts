@@ -18,6 +18,13 @@ export const FOOTER_RESOURCES = [
   { href: "/blog", label: "Blog" },
 ] as const;
 
+export const FOOTER_POLICIES = [
+  { href: "/privacy", label: "Privacy policy" },
+  { href: "/returns", label: "Refund policy" },
+  { href: "/terms", label: "Terms of use" },
+  { href: "/disclaimer", label: "Disclaimer" },
+] as const;
+
 export type NavCategory = {
   title: string;
   slug: string;
