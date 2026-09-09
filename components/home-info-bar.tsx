@@ -35,7 +35,7 @@ export function HomeInfoBar() {
                 strokeWidth={1.25}
                 aria-hidden
               />
-              <p className="mt-3 max-w-44  text-balance text-sm leading-snug text-foreground">
+              <p className="caption mt-5 max-w-44 text-balance tracking-[0.14em] text-foreground uppercase">
                 {title}
               </p>
             </div>
