@@ -126,3 +126,46 @@ model ProductRelated {
   @@rls
   @@map("product_related")
 }
+
+model BlogCategory {
+  id        Int         @id @default(autoincrement())
+  title     String      @unique
+  slug      String      @unique
+  sortOrder Float       @default(0)
+  updatedAt Timestamptz @default(now())
+
+  @@rls
+  @@map("blog_category")
+}
+
+model BlogPost {
+  id              Int         @id @default(autoincrement())
+  title           String
+  slug            String      @unique
+  excerpt         String      @default("")
+  content         String      @default("")
+  imageUrl        String
+  metaTitle       String      @default("")
+  metaDescription String      @default("")
+  authorName      String      @default("AMA Supplies")
+  categoryId      Int
+  sortOrder       Float       @default(0)
+  isPublished     Boolean     @default(true)
+  publishedAt     Timestamptz @default(now())
+  createdAt       Timestamptz @default(now())
+  updatedAt       Timestamptz @default(now())
+
+  @@rls
+  @@map("blog_post")
+}
+
+model BlogPostProduct {
+  id        Int   @id @default(autoincrement())
+  postId    Int
+  productId Int
+  sortOrder Float @default(0)
+
+  @@unique([postId, productId])
+  @@rls
+  @@map("blog_post_product")
+}

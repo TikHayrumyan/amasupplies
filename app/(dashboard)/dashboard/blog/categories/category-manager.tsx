@@ -1,0 +1,322 @@
+"use client";
+
+import { useActionState, useCallback, useMemo, useState } from "react";
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { GripVertical, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  BLOG_CATEGORY_TITLE_MAX,
+  slugify,
+  validateBlogCategoryCopy,
+  type BlogCategoryRecord,
+} from "@/lib/blog-category-fields";
+import { IconButton } from "@/components/icon-button";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+import {
+  moveBlogCategory,
+  removeBlogCategory,
+  saveBlogCategory,
+} from "./actions";
+
+type Result = { error: string | null; done?: boolean };
+type Panel =
+  | { type: "edit"; category: BlogCategoryRecord | null }
+  | { type: "delete"; category: BlogCategoryRecord }
+  | null;
+
+function SortableRow({
+  category,
+  onEdit,
+  onDelete,
+}: {
+  category: BlogCategoryRecord;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: category.id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+      }}
+      className={cn(
+        "flex items-center gap-4 border-b border-border/80 py-4",
+        isDragging && "relative z-10 bg-background opacity-80",
+      )}
+    >
+      <IconButton
+        aria-label={`Reorder ${category.title}`}
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical className="size-4" />
+      </IconButton>
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium">{category.title}</p>
+        <p className="mt-1 truncate text-sm text-muted-foreground">
+          /{category.slug}
+        </p>
+      </div>
+      <IconButton aria-label="Edit" onClick={onEdit}>
+        <Pencil className="size-4" />
+      </IconButton>
+      <IconButton aria-label="Delete" danger onClick={onDelete}>
+        <Trash2 className="size-4" />
+      </IconButton>
+    </div>
+  );
+}
+
+export function BlogCategoryManager({
+  categories,
+}: {
+  categories: BlogCategoryRecord[];
+}) {
+  const [items, setItems] = useState(categories);
+  const [panel, setPanel] = useState<Panel>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+  const ids = useMemo(() => items.map((item) => item.id), [items]);
+  const close = useCallback(() => setPanel(null), []);
+
+  async function onDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) {
+      return;
+    }
+    const oldIndex = items.findIndex((item) => item.id === active.id);
+    const newIndex = items.findIndex((item) => item.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) {
+      return;
+    }
+    const previous = items;
+    const next = arrayMove(items, oldIndex, newIndex);
+    setItems(next);
+    const moved = next[newIndex];
+    const result = await moveBlogCategory({
+      id: moved.id,
+      beforeId: next[newIndex - 1]?.id ?? null,
+      afterId: next[newIndex + 1]?.id ?? null,
+    });
+    if (result.error) {
+      setItems(previous);
+    }
+  }
+
+  return (
+    <div className="mt-10">
+      <div className="flex flex-wrap items-end justify-between gap-6">
+        <p className="text-sm text-muted-foreground">
+          {items.length === 0
+            ? "Add a category before you write a post."
+            : "Drag to set the order of category filters on the blog."}
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-8 text-[13px] tracking-[0.12em]"
+          onClick={() => setPanel({ type: "edit", category: null })}
+        >
+          <Plus />
+          Add category
+        </Button>
+      </div>
+
+      {items.length === 0 ? (
+        <p className="mt-10 text-muted-foreground">No categories yet.</p>
+      ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={onDragEnd}
+        >
+          <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+            <div className="mt-6">
+              {items.map((category) => (
+                <SortableRow
+                  key={category.id}
+                  category={category}
+                  onEdit={() => setPanel({ type: "edit", category })}
+                  onDelete={() => setPanel({ type: "delete", category })}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
+
+      <Sheet open={panel !== null} onOpenChange={(open) => !open && close()}>
+        <SheetContent
+          side="right"
+          className="w-full gap-0 overflow-y-auto bg-background sm:max-w-md"
+        >
+          {panel?.type === "edit" ? (
+            <>
+              <SheetHeader className="px-6 pt-8">
+                <SheetTitle className="font-medium">
+                  {panel.category ? "Edit category" : "Add category"}
+                </SheetTitle>
+                <SheetDescription>
+                  Used to group posts on the blog.
+                </SheetDescription>
+              </SheetHeader>
+              <CategoryForm category={panel.category} onDone={close} />
+            </>
+          ) : null}
+          {panel?.type === "delete" ? (
+            <>
+              <SheetHeader className="px-6 pt-8">
+                <SheetTitle className="font-medium">Delete category</SheetTitle>
+                <SheetDescription>
+                  {panel.category.title} will be removed. Posts using it must be
+                  updated first.
+                </SheetDescription>
+              </SheetHeader>
+              <DeleteForm category={panel.category} onDone={close} />
+            </>
+          ) : null}
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+}
+
+function CategoryForm({
+  category,
+  onDone,
+}: {
+  category: BlogCategoryRecord | null;
+  onDone: () => void;
+}) {
+  const [title, setTitle] = useState(category?.title ?? "");
+  const [slug, setSlug] = useState(category?.slug ?? "");
+  const [slugTouched, setSlugTouched] = useState(Boolean(category));
+  const copyError = validateBlogCategoryCopy(title.trim(), slug.trim());
+  const [state, formAction, pending] = useActionState(
+    async (_prev: Result, formData: FormData) => {
+      const result = await saveBlogCategory(formData);
+      if (result.done) {
+        onDone();
+      }
+      return result;
+    },
+    { error: null },
+  );
+
+  return (
+    <form action={formAction} className="flex flex-col gap-8 px-6 pb-8">
+      {category ? <input type="hidden" name="id" value={category.id} /> : null}
+      {state.error || copyError ? (
+        <p className="text-sm text-danger">{state.error ?? copyError}</p>
+      ) : null}
+      <label className="flex flex-col gap-3">
+        <span className="caption tracking-[0.16em] text-muted-foreground uppercase">
+          Name
+        </span>
+        <Input
+          name="title"
+          value={title}
+          maxLength={BLOG_CATEGORY_TITLE_MAX}
+          onChange={(event) => {
+            const value = event.target.value;
+            setTitle(value);
+            if (!slugTouched) {
+              setSlug(slugify(value));
+            }
+          }}
+          variant="line"
+        />
+      </label>
+      <label className="flex flex-col gap-3">
+        <span className="caption tracking-[0.16em] text-muted-foreground uppercase">
+          Slug
+        </span>
+        <Input
+          name="slug"
+          value={slug}
+          onChange={(event) => {
+            setSlugTouched(true);
+            setSlug(slugify(event.target.value));
+          }}
+          variant="line"
+        />
+      </label>
+      <Button
+        type="submit"
+        disabled={pending || Boolean(copyError)}
+        className="h-11 rounded-none text-sm tracking-[0.16em] uppercase"
+      >
+        {pending ? "Saving…" : "Save"}
+      </Button>
+    </form>
+  );
+}
+
+function DeleteForm({
+  category,
+  onDone,
+}: {
+  category: BlogCategoryRecord;
+  onDone: () => void;
+}) {
+  const [state, formAction, pending] = useActionState(
+    async (_prev: Result, formData: FormData) => {
+      const result = await removeBlogCategory(formData);
+      if (result.done) {
+        onDone();
+      }
+      return result;
+    },
+    { error: null },
+  );
+
+  return (
+    <form action={formAction} className="flex flex-col gap-8 px-6 pb-8">
+      <input type="hidden" name="id" value={category.id} />
+      {state.error ? <p className="text-sm text-danger">{state.error}</p> : null}
+      <div className="flex gap-6">
+        <Button type="button" variant="ghost" className="h-11 px-0" onClick={onDone}>
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          disabled={pending}
+          variant="ghost"
+          className="h-11 px-0 text-danger hover:text-danger"
+        >
+          {pending ? "Deleting…" : "Delete"}
+        </Button>
+      </div>
+    </form>
+  );
+}

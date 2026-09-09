@@ -34,6 +34,7 @@ export function DashboardNav({ isAdmin }: { isAdmin: boolean }) {
       <NavLink href="/dashboard">Home</NavLink>
       <NavLink href="/dashboard/categories">Categories</NavLink>
       <NavLink href="/dashboard/products">Products</NavLink>
+      <NavLink href="/dashboard/blog">Blog</NavLink>
       <NavLink href="/dashboard/brands">Brands</NavLink>
       <NavLink href="/dashboard/sizes">Sizes</NavLink>
       {isAdmin ? <NavLink href="/dashboard/account">Account</NavLink> : null}

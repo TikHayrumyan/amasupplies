@@ -13,8 +13,10 @@ import type { ProductListItem } from "@/lib/product-fields";
 
 export function RelatedProductsSlider({
   products,
+  title = "You may also like",
 }: {
   products: ProductListItem[];
+  title?: string;
 }) {
   if (products.length === 0) {
     return null;
@@ -24,7 +26,7 @@ export function RelatedProductsSlider({
     <section className="mt-20 border-t border-border/80 pt-16 md:mt-24 md:pt-20">
       <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
         <div className="flex items-end justify-between gap-6">
-          <h2 className="tracking-[0.16em] uppercase">You may also like</h2>
+          <h2 className="tracking-[0.16em] uppercase">{title}</h2>
           {products.length > 1 ? (
             <div className="flex gap-2">
               <CarouselPrevious className="static top-auto left-auto size-11 translate-none rounded-none border-border bg-background shadow-none hover:bg-surface disabled:opacity-30" />

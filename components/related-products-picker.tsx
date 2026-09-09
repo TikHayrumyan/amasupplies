@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,38 +13,44 @@ export function RelatedProductsPicker({
   productId,
   selectedIds,
   onChange,
+  legend = "You may also like",
+  hint,
+  max = RELATED_PRODUCT_MAX,
 }: {
   catalog: RelatedProductOption[];
   productId: number | null;
   selectedIds: number[];
   onChange: (ids: number[]) => void;
+  legend?: string;
+  hint?: string;
+  max?: number;
 }) {
   const [query, setQuery] = useState("");
+  const selectedSet = new Set(selectedIds);
   const options = catalog.filter((row) => row.id !== productId);
-  const selected = selectedIds
-    .map((id) => options.find((row) => row.id === id))
-    .filter((row): row is RelatedProductOption => Boolean(row));
-  const available = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    return options.filter((row) => {
-      if (selectedIds.includes(row.id)) {
-        return false;
-      }
-      if (!needle) {
-        return true;
-      }
-      return (
-        row.title.toLowerCase().includes(needle) ||
-        row.itemNumber.toLowerCase().includes(needle) ||
-        row.categoryTitle.toLowerCase().includes(needle)
-      );
-    });
-  }, [options, query, selectedIds]);
-
-  const atLimit = selectedIds.length >= RELATED_PRODUCT_MAX;
+  const byId = new Map(options.map((row) => [row.id, row]));
+  const selected = selectedIds.flatMap((id) => {
+    const row = byId.get(id);
+    return row ? [row] : [];
+  });
+  const needle = query.trim().toLowerCase();
+  const available = options.filter((row) => {
+    if (selectedSet.has(row.id)) {
+      return false;
+    }
+    if (!needle) {
+      return true;
+    }
+    return (
+      row.title.toLowerCase().includes(needle) ||
+      row.itemNumber.toLowerCase().includes(needle) ||
+      row.categoryTitle.toLowerCase().includes(needle)
+    );
+  });
+  const atLimit = selectedIds.length >= max;
 
   function add(id: number) {
-    if (atLimit || selectedIds.includes(id)) {
+    if (atLimit || selectedSet.has(id)) {
       return;
     }
     onChange([...selectedIds, id]);
@@ -57,21 +63,20 @@ export function RelatedProductsPicker({
   return (
     <fieldset>
       <legend className="caption tracking-[0.16em] text-muted-foreground uppercase">
-        You may also like
+        {legend}
       </legend>
       {selectedIds.map((id) => (
         <input key={id} type="hidden" name="relatedProductId" value={id} />
       ))}
       {options.length === 0 ? (
         <p className="mt-3 text-sm text-muted-foreground">
-          Add another product first, then pick it here. Any category or type is
-          fine.
+          Add a product first, then pick it here. Any category or type is fine.
         </p>
       ) : (
         <div className="mt-4 space-y-4">
           <p className="text-sm text-muted-foreground">
-            Choose up to {RELATED_PRODUCT_MAX} products to show on this product
-            page. They can be from any category or type.
+            {hint ??
+              `Choose up to ${max} products to show on this product page. They can be from any category or type.`}
           </p>
           {selected.length > 0 ? (
             <ul className="space-y-2">
@@ -106,7 +111,7 @@ export function RelatedProductsPicker({
           />
           {atLimit ? (
             <p className="text-sm text-muted-foreground">
-              Maximum of {RELATED_PRODUCT_MAX} products selected.
+              Maximum of {max} products selected.
             </p>
           ) : available.length === 0 ? (
             <p className="text-sm text-muted-foreground">
