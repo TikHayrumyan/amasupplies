@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "@/prisma/db";
+import { cacheStorefront } from "@/lib/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   HERO_MEDIA_MAX_BYTES,
@@ -25,9 +26,12 @@ export type Hero = {
   updatedAt: Date;
 };
 
-export async function getHero(): Promise<Hero | null> {
-  return db.orm.public.Hero.select(...HERO_FIELDS).first();
-}
+export const getHero = cacheStorefront(
+  async (): Promise<Hero | null> => {
+    return db.orm.public.Hero.select(...HERO_FIELDS).first();
+  },
+  ["hero"],
+);
 
 export async function saveHero(input: {
   title: string;

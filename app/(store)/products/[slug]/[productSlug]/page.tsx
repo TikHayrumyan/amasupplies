@@ -11,10 +11,19 @@ import { crumbs } from "@/lib/breadcrumbs";
 import { sanitizeProductHtml } from "@/lib/product-fields";
 import {
   getPublishedProductBySlug,
+  listPublishedProducts,
   listRelatedPublishedProducts,
 } from "@/lib/product";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const products = await listPublishedProducts();
+  return products.map((product) => ({
+    slug: product.categorySlug,
+    productSlug: product.slug,
+  }));
+}
 
 export async function generateMetadata({
   params,
@@ -43,7 +52,7 @@ export default async function ProductPage({
   const images = [
     product.imageUrl,
     ...product.gallery.map((image) => image.imageUrl),
-  ];
+  ].filter(Boolean);
   const description = sanitizeProductHtml(product.description);
   const related = await listRelatedPublishedProducts(product.id);
 

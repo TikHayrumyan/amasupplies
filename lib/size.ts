@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "@/prisma/db";
+import { cacheStorefront } from "@/lib/cache";
 import {
   SORT_GAP,
   needsRebalance,
@@ -17,10 +18,10 @@ function ordered(rows: Size[]) {
   return [...rows].sort((left, right) => left.sortOrder - right.sortOrder);
 }
 
-export async function listSizes() {
+export const listSizes = cacheStorefront(async () => {
   const rows = await db.orm.public.Size.select(...SIZE_FIELDS).all();
   return ordered(rows);
-}
+}, ["sizes"]);
 
 export async function getSizeById(id: number) {
   return db.orm.public.Size.select(...SIZE_FIELDS).where({ id }).first();

@@ -8,7 +8,8 @@ import {
   reorderSize,
   updateSize,
 } from "@/lib/size";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { STOREFRONT_TAG } from "@/lib/cache";
 
 type Result = { error: string | null; done?: boolean };
 
@@ -16,6 +17,7 @@ function refresh() {
   revalidatePath("/dashboard/sizes");
   revalidatePath("/dashboard/products");
   revalidatePath("/products");
+  revalidateTag(STOREFRONT_TAG, "max");
 }
 
 export async function saveSize(formData: FormData): Promise<Result> {

@@ -1,6 +1,8 @@
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 
+export const revalidate = 3600;
+
 export default function StoreLayout({
   children,
 }: {

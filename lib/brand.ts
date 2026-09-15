@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "@/prisma/db";
+import { cacheStorefront } from "@/lib/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   BRAND_IMAGE_MAX_BYTES,
@@ -35,12 +36,12 @@ export async function listBrands() {
   return ordered(rows);
 }
 
-export async function listPublishedBrands() {
+export const listPublishedBrands = cacheStorefront(async () => {
   const rows = await db.orm.public.Brand.select(...BRAND_FIELDS)
     .where({ isPublished: true })
     .all();
   return ordered(rows);
-}
+}, ["published-brands"]);
 
 export async function getBrandById(id: number) {
   return db.orm.public.Brand.select(...BRAND_FIELDS).where({ id }).first();

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "@/prisma/db";
+import { BLOG_TAG, cacheStorefront } from "@/lib/cache";
 import {
   SORT_GAP,
   needsRebalance,
@@ -26,12 +27,12 @@ function ordered(rows: BlogCategory[]) {
   return [...rows].sort((left, right) => left.sortOrder - right.sortOrder);
 }
 
-export async function listBlogCategories() {
+export const listBlogCategories = cacheStorefront(async () => {
   const rows = await db.orm.public.BlogCategory.select(
     ...BLOG_CATEGORY_FIELDS,
   ).all();
   return ordered(rows);
-}
+}, ["blog-categories"], [BLOG_TAG]);
 
 export async function getBlogCategoryById(id: number) {
   return db.orm.public.BlogCategory.select(...BLOG_CATEGORY_FIELDS)

@@ -11,7 +11,8 @@ import {
   updateCategory,
   uploadCategoryImage,
 } from "@/lib/category";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { STOREFRONT_TAG } from "@/lib/cache";
 
 type Result = { error: string | null; done?: boolean };
 
@@ -19,6 +20,8 @@ function refresh() {
   revalidatePath("/dashboard/categories");
   revalidatePath("/dashboard/products");
   revalidatePath("/products");
+  revalidatePath("/");
+  revalidateTag(STOREFRONT_TAG, "max");
 }
 
 export async function saveCategory(formData: FormData): Promise<Result> {

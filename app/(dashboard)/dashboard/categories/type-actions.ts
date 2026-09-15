@@ -9,7 +9,8 @@ import {
   reorderProductType,
   updateProductType,
 } from "@/lib/product-type";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { STOREFRONT_TAG } from "@/lib/cache";
 
 type Result = { error: string | null; done?: boolean };
 
@@ -21,6 +22,7 @@ async function refresh(categoryId: number) {
   if (category?.slug) {
     revalidatePath(`/products/${category.slug}`);
   }
+  revalidateTag(STOREFRONT_TAG, "max");
 }
 
 export async function saveProductType(formData: FormData): Promise<Result> {

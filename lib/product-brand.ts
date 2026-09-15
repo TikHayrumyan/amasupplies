@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "@/prisma/db";
+import { cacheStorefront } from "@/lib/cache";
 import {
   SORT_GAP,
   needsRebalance,
@@ -17,12 +18,12 @@ function ordered(rows: ProductBrand[]) {
   return [...rows].sort((left, right) => left.sortOrder - right.sortOrder);
 }
 
-export async function listProductBrands() {
+export const listProductBrands = cacheStorefront(async () => {
   const rows = await db.orm.public.ProductBrand.select(
     ...PRODUCT_BRAND_FIELDS,
   ).all();
   return ordered(rows);
-}
+}, ["product-brands"]);
 
 export async function getProductBrandById(id: number) {
   return db.orm.public.ProductBrand.select(...PRODUCT_BRAND_FIELDS)

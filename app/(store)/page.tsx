@@ -7,7 +7,7 @@ import { TrustedBrands } from "@/components/trusted-brands";
 import { WhoWeAre } from "@/components/who-we-are";
 import { getHero } from "@/lib/hero";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default async function Home() {
   const hero = await getHero();

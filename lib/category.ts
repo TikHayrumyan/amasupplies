@@ -1,7 +1,7 @@
 import "server-only";
 
-import { cache } from "react";
 import { db } from "@/prisma/db";
+import { cacheStorefront } from "@/lib/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   CATEGORY_IMAGE_MAX_BYTES,
@@ -34,23 +34,23 @@ function ordered(rows: Category[]) {
   return [...rows].sort((left, right) => left.sortOrder - right.sortOrder);
 }
 
-export async function listCategories() {
+export const listCategories = cacheStorefront(async () => {
   const rows = await db.orm.public.Category.select(...CATEGORY_FIELDS).all();
   return ordered(rows);
-}
+}, ["categories"]);
 
-export const listPublishedCategories = cache(async () => {
+export const listPublishedCategories = cacheStorefront(async () => {
   const rows = await db.orm.public.Category.select(...CATEGORY_FIELDS)
     .where({ isPublished: true })
     .all();
   return ordered(rows);
-});
+}, ["published-categories"]);
 
-export const getCategoryBySlug = cache(async (slug: string) => {
+export const getCategoryBySlug = cacheStorefront(async (slug: string) => {
   return db.orm.public.Category.select(...CATEGORY_FIELDS)
     .where({ slug })
     .first();
-});
+}, ["category-by-slug"]);
 
 export async function getCategoryById(id: number) {
   return db.orm.public.Category.select(...CATEGORY_FIELDS)

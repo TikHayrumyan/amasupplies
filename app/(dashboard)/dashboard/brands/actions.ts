@@ -8,7 +8,8 @@ import {
   reorderProductBrand,
   updateProductBrand,
 } from "@/lib/product-brand";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { STOREFRONT_TAG } from "@/lib/cache";
 
 type Result = { error: string | null; done?: boolean };
 
@@ -16,6 +17,7 @@ function refresh() {
   revalidatePath("/dashboard/brands");
   revalidatePath("/dashboard/products");
   revalidatePath("/products");
+  revalidateTag(STOREFRONT_TAG, "max");
 }
 
 export async function saveBrand(formData: FormData): Promise<Result> {

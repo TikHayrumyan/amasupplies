@@ -18,7 +18,8 @@ import {
   updateProduct,
   uploadProductImage,
 } from "@/lib/product";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { STOREFRONT_TAG } from "@/lib/cache";
 
 type Result = { error: string | null; done?: boolean; id?: number };
 
@@ -31,6 +32,7 @@ function refresh(slug?: string, categorySlug?: string) {
   if (slug && categorySlug) {
     revalidatePath(`/products/${categorySlug}/${slug}`);
   }
+  revalidateTag(STOREFRONT_TAG, "max");
 }
 
 async function uploadMany(files: File[]) {
@@ -218,5 +220,6 @@ export async function moveProduct(input: {
   if (category?.slug) {
     revalidatePath(`/products/${category.slug}`);
   }
+  revalidateTag(STOREFRONT_TAG, "max");
   return { error: null, done: true };
 }

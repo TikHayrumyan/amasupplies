@@ -5,7 +5,7 @@ import { crumbs } from "@/lib/breadcrumbs";
 import { normalizeSearchQuery } from "@/lib/search-fields";
 import { searchPublishedProducts } from "@/lib/search";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export async function generateMetadata({
   searchParams,

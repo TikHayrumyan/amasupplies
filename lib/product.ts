@@ -2,6 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 import { db } from "@/prisma/db";
+import { cacheStorefront } from "@/lib/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCategoryBySlug, listCategories } from "@/lib/category";
 import { listProductBrands } from "@/lib/product-brand";
@@ -137,57 +138,60 @@ export async function listProducts() {
   );
 }
 
-export const listPublishedProducts = cache(async () => {
+export const listPublishedProducts = cacheStorefront(async () => {
   const rows = await db.orm.public.Product.select(...PRODUCT_FIELDS)
     .where({ isPublished: true })
     .all();
   return hydrate(rows);
-});
+}, ["published-products"]);
 
-export const listPublishedProductsByCategory = cache(async (categoryId: number) => {
-  const rows = await db.orm.public.Product.select(...PRODUCT_FIELDS)
-    .where({ categoryId, isPublished: true })
-    .all();
-  return ordered(await hydrate(rows));
-});
+export const listPublishedProductsByCategory = cacheStorefront(
+  async (categoryId: number) => {
+    const rows = await db.orm.public.Product.select(...PRODUCT_FIELDS)
+      .where({ categoryId, isPublished: true })
+      .all();
+    return ordered(await hydrate(rows));
+  },
+  ["published-products-by-category"],
+);
 
-export async function getProductById(id: number) {
+export const getProductById = cache(async (id: number) => {
   return db.orm.public.Product.select(...PRODUCT_FIELDS).where({ id }).first();
-}
-
-export const getPublishedProductBySlug = cache(async (
-  categorySlug: string,
-  productSlug: string,
-) => {
-  const rows = await db.orm.public.Product.select(...PRODUCT_FIELDS)
-    .where({ slug: productSlug, isPublished: true })
-    .all();
-  const [hydrated] = await hydrate(rows);
-  if (!hydrated || hydrated.categorySlug !== categorySlug) {
-    return null;
-  }
-  const category = await getCategoryBySlug(categorySlug);
-  if (!category?.isPublished) {
-    return null;
-  }
-  return getProductDetail(hydrated.id);
 });
 
-export async function listProductImages(productId: number) {
+export const getPublishedProductBySlug = cacheStorefront(
+  async (categorySlug: string, productSlug: string) => {
+    const rows = await db.orm.public.Product.select(...PRODUCT_FIELDS)
+      .where({ slug: productSlug, isPublished: true })
+      .all();
+    const [hydrated] = await hydrate(rows);
+    if (!hydrated || hydrated.categorySlug !== categorySlug) {
+      return null;
+    }
+    const category = await getCategoryBySlug(categorySlug);
+    if (!category?.isPublished) {
+      return null;
+    }
+    return getProductDetail(hydrated.id);
+  },
+  ["published-product-by-slug"],
+);
+
+export const listProductImages = cache(async (productId: number) => {
   const rows = await db.orm.public.ProductImage.select(...PRODUCT_IMAGE_FIELDS)
     .where({ productId })
     .all();
   return ordered(rows);
-}
+});
 
-export async function listProductSizeIds(productId: number) {
+export const listProductSizeIds = cache(async (productId: number) => {
   const rows = await db.orm.public.ProductSize.select("sizeId")
     .where({ productId })
     .all();
   return rows.map((row) => row.sizeId);
-}
+});
 
-export async function listRelatedProductIds(productId: number) {
+export const listRelatedProductIds = cache(async (productId: number) => {
   const rows = await db.orm.public.ProductRelated.select(
     "relatedProductId",
     "sortOrder",
@@ -197,19 +201,22 @@ export async function listRelatedProductIds(productId: number) {
   return [...rows]
     .sort((left, right) => left.sortOrder - right.sortOrder)
     .map((row) => row.relatedProductId);
-}
+});
 
-export async function listRelatedPublishedProducts(productId: number) {
-  const relatedIds = await listRelatedProductIds(productId);
-  if (relatedIds.length === 0) {
-    return [];
-  }
-  const published = await listPublishedProducts();
-  const byId = new Map(published.map((row) => [row.id, row]));
-  return relatedIds
-    .map((id) => byId.get(id))
-    .filter((row): row is ProductListItem => Boolean(row));
-}
+export const listRelatedPublishedProducts = cacheStorefront(
+  async (productId: number) => {
+    const relatedIds = await listRelatedProductIds(productId);
+    if (relatedIds.length === 0) {
+      return [];
+    }
+    const published = await listPublishedProducts();
+    const byId = new Map(published.map((row) => [row.id, row]));
+    return relatedIds
+      .map((id) => byId.get(id))
+      .filter((row): row is ProductListItem => Boolean(row));
+  },
+  ["related-published-products"],
+);
 
 export async function getProductDetail(id: number): Promise<ProductDetail | null> {
   const product = await getProductById(id);

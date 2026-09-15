@@ -16,7 +16,7 @@ import {
 import { getCategoryCatalog } from "@/lib/catalog";
 import { getCategoryBySlug } from "@/lib/category";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export async function generateMetadata({
   params,

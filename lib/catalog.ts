@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "@/prisma/db";
+import { cacheStorefront } from "@/lib/cache";
 import {
   catalogFacetVisible,
   type CatalogFacet,
@@ -48,7 +49,7 @@ function facetFrom(
     .filter((item) => item.count > 0);
 }
 
-export async function getCategoryCatalog(
+export const getCategoryCatalog = cacheStorefront(async function getCategoryCatalog(
   categoryId: number,
   raw: CatalogQuery,
 ) {
@@ -153,7 +154,7 @@ export async function getCategoryCatalog(
       sizes: catalogFacetVisible(sizeFacets, filters.size) ? sizeFacets : [],
     },
   };
-}
+}, ["category-catalog"]);
 
 function sortCatalog(products: CatalogProduct[], sort: CatalogSort) {
   const rows = [...products];

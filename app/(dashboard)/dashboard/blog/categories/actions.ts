@@ -8,7 +8,8 @@ import {
   reorderBlogCategory,
   updateBlogCategory,
 } from "@/lib/blog-category";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { BLOG_TAG } from "@/lib/cache";
 
 type Result = { error: string | null; done?: boolean };
 
@@ -16,6 +17,7 @@ function refresh() {
   revalidatePath("/dashboard/blog");
   revalidatePath("/dashboard/blog/categories");
   revalidatePath("/blog");
+  revalidateTag(BLOG_TAG, "max");
 }
 
 export async function saveBlogCategory(formData: FormData): Promise<Result> {

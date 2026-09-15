@@ -5,7 +5,7 @@ import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
 import { crumbs } from "@/lib/breadcrumbs";
 import { listPublishedCategories } from "@/lib/category";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Wholesale Medical Supplies | AMA Supplies",

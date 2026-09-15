@@ -16,7 +16,8 @@ import {
   uploadBlogImage,
 } from "@/lib/blog";
 import { listProducts } from "@/lib/product";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { BLOG_TAG } from "@/lib/cache";
 
 type Result = { error: string | null; done?: boolean };
 
@@ -26,6 +27,7 @@ function refresh(slug?: string) {
   if (slug) {
     revalidatePath(`/blog/${slug}`);
   }
+  revalidateTag(BLOG_TAG, "max");
 }
 
 export async function saveBlogPost(formData: FormData): Promise<Result> {
@@ -155,5 +157,6 @@ export async function moveBlogPost(input: {
   }
   revalidatePath("/dashboard/blog");
   revalidatePath("/blog");
+  revalidateTag(BLOG_TAG, "max");
   return { error: null, done: true };
 }

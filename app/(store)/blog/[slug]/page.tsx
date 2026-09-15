@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { AccountCta } from "@/components/account-cta";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
@@ -13,22 +12,23 @@ import {
 import {
   getPublishedBlogPostBySlug,
   listBlogRelatedPublishedProducts,
+  listPublishedBlogPosts,
 } from "@/lib/blog";
 import { sanitizeProductHtml } from "@/lib/product-fields";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
-async function siteOrigin() {
-  const headerList = await headers();
-  const host =
-    headerList.get("x-forwarded-host") ?? headerList.get("host");
-  if (!host) {
-    return "";
-  }
-  const protocol =
-    headerList.get("x-forwarded-proto") ??
-    (host.startsWith("localhost") ? "http" : "https");
-  return `${protocol}://${host}`;
+export async function generateStaticParams() {
+  const posts = await listPublishedBlogPosts();
+  return posts.map((post) => ({ slug: post.slug }));
+}
+
+/**
+ * Canonical origin for metadata / JSON-LD. Uses a build-time env var so the
+ * page can be statically generated (no per-request `headers()` access).
+ */
+function siteOrigin() {
+  return process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "";
 }
 
 export async function generateMetadata({
@@ -39,7 +39,7 @@ export async function generateMetadata({
   if (!post) {
     return {};
   }
-  const origin = await siteOrigin();
+  const origin = siteOrigin();
   const path = `/blog/${post.slug}`;
   const title = post.metaTitle || post.title;
   const description = post.metaDescription || post.excerpt;
@@ -81,10 +81,8 @@ export default async function BlogPostPage({
     notFound();
   }
 
-  const [related, origin] = await Promise.all([
-    listBlogRelatedPublishedProducts(post.id),
-    siteOrigin(),
-  ]);
+  const related = await listBlogRelatedPublishedProducts(post.id);
+  const origin = siteOrigin();
   const content = sanitizeProductHtml(post.content);
   const published = toIsoDate(post.publishedAt);
   const modified = toIsoDate(post.updatedAt);

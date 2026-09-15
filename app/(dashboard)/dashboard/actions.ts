@@ -13,13 +13,15 @@ import {
 } from "@/lib/brand";
 import { getHero, removeHeroMedia, saveHero, uploadHeroMedia } from "@/lib/hero";
 import { type HeroMediaKind, validateHeroCopy } from "@/lib/hero-media";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { STOREFRONT_TAG } from "@/lib/cache";
 
 type BrandResult = { error: string | null; done?: boolean };
 
 function refreshHome() {
   revalidatePath("/");
   revalidatePath("/dashboard");
+  revalidateTag(STOREFRONT_TAG, "max");
 }
 
 export async function updateHero(formData: FormData) {

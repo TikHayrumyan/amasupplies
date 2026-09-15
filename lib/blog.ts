@@ -1,7 +1,7 @@
 import "server-only";
 
-import { cache } from "react";
 import { db } from "@/prisma/db";
+import { BLOG_TAG, STOREFRONT_TAG, cacheStorefront } from "@/lib/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { listBlogCategories } from "@/lib/blog-category";
 import {
@@ -92,16 +92,20 @@ export async function listBlogPosts() {
   return ordered(await hydrate(rows));
 }
 
-export const listPublishedBlogPosts = cache(async (categorySlug?: string) => {
-  const rows = await db.orm.public.BlogPost.select(...POST_FIELDS)
-    .where({ isPublished: true })
-    .all();
-  const hydrated = ordered(await hydrate(rows));
-  if (!categorySlug) {
-    return hydrated;
-  }
-  return hydrated.filter((row) => row.categorySlug === categorySlug);
-});
+export const listPublishedBlogPosts = cacheStorefront(
+  async (categorySlug?: string) => {
+    const rows = await db.orm.public.BlogPost.select(...POST_FIELDS)
+      .where({ isPublished: true })
+      .all();
+    const hydrated = ordered(await hydrate(rows));
+    if (!categorySlug) {
+      return hydrated;
+    }
+    return hydrated.filter((row) => row.categorySlug === categorySlug);
+  },
+  ["published-blog-posts"],
+  [BLOG_TAG],
+);
 
 export async function getBlogPostById(id: number) {
   return db.orm.public.BlogPost.select(...POST_FIELDS).where({ id }).first();
@@ -133,28 +137,36 @@ export async function getBlogPostDetail(
   };
 }
 
-export const getPublishedBlogPostBySlug = cache(async (slug: string) => {
-  const rows = await db.orm.public.BlogPost.select(...POST_FIELDS)
-    .where({ slug, isPublished: true })
-    .all();
-  const [post] = rows;
-  if (!post) {
-    return null;
-  }
-  return getBlogPostDetail(post.id);
-});
+export const getPublishedBlogPostBySlug = cacheStorefront(
+  async (slug: string) => {
+    const rows = await db.orm.public.BlogPost.select(...POST_FIELDS)
+      .where({ slug, isPublished: true })
+      .all();
+    const [post] = rows;
+    if (!post) {
+      return null;
+    }
+    return getBlogPostDetail(post.id);
+  },
+  ["published-blog-post-by-slug"],
+  [BLOG_TAG],
+);
 
-export async function listBlogRelatedPublishedProducts(postId: number) {
-  const relatedIds = await listBlogRelatedProductIds(postId);
-  if (relatedIds.length === 0) {
-    return [];
-  }
-  const published = await listPublishedProducts();
-  const byId = new Map(published.map((row) => [row.id, row]));
-  return relatedIds
-    .map((id) => byId.get(id))
-    .filter((row): row is ProductListItem => Boolean(row));
-}
+export const listBlogRelatedPublishedProducts = cacheStorefront(
+  async (postId: number) => {
+    const relatedIds = await listBlogRelatedProductIds(postId);
+    if (relatedIds.length === 0) {
+      return [];
+    }
+    const published = await listPublishedProducts();
+    const byId = new Map(published.map((row) => [row.id, row]));
+    return relatedIds
+      .map((id) => byId.get(id))
+      .filter((row): row is ProductListItem => Boolean(row));
+  },
+  ["blog-related-published-products"],
+  [BLOG_TAG, STOREFRONT_TAG],
+);
 
 export function sanitizeBlogRelatedIds(
   relatedIds: number[],

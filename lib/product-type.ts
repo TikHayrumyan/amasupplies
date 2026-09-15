@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "@/prisma/db";
+import { cacheStorefront } from "@/lib/cache";
 import {
   SORT_GAP,
   needsRebalance,
@@ -27,10 +28,10 @@ function ordered(rows: ProductType[]) {
   );
 }
 
-export async function listProductTypes() {
+export const listProductTypes = cacheStorefront(async () => {
   const rows = await db.orm.public.ProductType.select(...TYPE_FIELDS).all();
   return ordered(rows);
-}
+}, ["product-types"]);
 
 export async function listProductTypesByCategory(categoryId: number) {
   const rows = await db.orm.public.ProductType.select(...TYPE_FIELDS)

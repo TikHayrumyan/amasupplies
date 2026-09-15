@@ -9,7 +9,7 @@ import { formatBlogDate, type BlogPostListItem } from "@/lib/blog-fields";
 import { listPublishedBlogPosts } from "@/lib/blog";
 import { cn } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 const LISTING_DESCRIPTION =
   "Articles from AMA Supplies for approved healthcare accounts.";
