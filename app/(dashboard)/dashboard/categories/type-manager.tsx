@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useMemo, useState } from "react";
+import { useActionState, useCallback, useMemo, useState } from "react";
 import {
   DndContext,
   KeyboardSensor,
@@ -100,17 +100,13 @@ export function TypeManager({
   onClose: () => void;
 }) {
   const [items, setItems] = useState(types);
+  const [prevTypes, setPrevTypes] = useState(types);
   const [panel, setPanel] = useState<Panel>(null);
 
-  useEffect(() => {
+  if (types !== prevTypes) {
+    setPrevTypes(types);
     setItems(types);
-  }, [types]);
-
-  useEffect(() => {
-    if (!open) {
-      setPanel(null);
-    }
-  }, [open]);
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -148,7 +144,15 @@ export function TypeManager({
   }
 
   return (
-    <Sheet open={open} onOpenChange={(next) => !next && onClose()}>
+    <Sheet
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) {
+          setPanel(null);
+          onClose();
+        }
+      }}
+    >
       <SheetContent
         side="right"
         className="w-full gap-0 overflow-y-auto bg-background sm:max-w-md"

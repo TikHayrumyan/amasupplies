@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useMemo, useState } from "react";
+import { useActionState, useCallback, useMemo, useState } from "react";
 import {
   DndContext,
   KeyboardSensor,
@@ -114,13 +114,15 @@ export function ProductManager({
   categories: Pick<CategoryRecord, "id" | "title">[];
 }) {
   const [items, setItems] = useState(products);
+  const [prevProducts, setPrevProducts] = useState(products);
   const [categoryId, setCategoryId] = useState(0);
   const [query, setQuery] = useState("");
   const [panel, setPanel] = useState<ProductListItem | null>(null);
 
-  useEffect(() => {
+  if (products !== prevProducts) {
+    setPrevProducts(products);
     setItems(products);
-  }, [products]);
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),

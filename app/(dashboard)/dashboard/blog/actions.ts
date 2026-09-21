@@ -8,7 +8,6 @@ import {
   createBlogPost,
   deleteBlogPost,
   getBlogPostById,
-  listBlogPosts,
   removeBlogMedia,
   reorderBlogPost,
   sanitizeBlogRelatedIds,

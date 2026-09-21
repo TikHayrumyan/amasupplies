@@ -78,8 +78,6 @@ export function HeroEditor({
   const [localError, setLocalError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
 
-  fileRef.current = file;
-
   const [state, formAction, pending] = useActionState(
     async (_prev: Result, formData: FormData) => {
       if (fileRef.current) {
@@ -132,6 +130,7 @@ export function HeroEditor({
     }
     setKind(next);
     setFile(null);
+    fileRef.current = null;
     setLocalUrl(null);
     setRemoveMedia(false);
     setLocalError(null);
@@ -161,6 +160,7 @@ export function HeroEditor({
 
     const objectUrl = URL.createObjectURL(next);
     setFile(next);
+    fileRef.current = next;
     setLocalUrl(objectUrl);
     setRemoveMedia(false);
     setLocalError(null);
@@ -174,6 +174,7 @@ export function HeroEditor({
 
   function clearBackground() {
     setFile(null);
+    fileRef.current = null;
     setLocalUrl(null);
     setRemoveMedia(true);
     setLocalError(null);

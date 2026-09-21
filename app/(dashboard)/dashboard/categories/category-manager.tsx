@@ -118,12 +118,14 @@ export function CategoryManager({
   types: ProductTypeRecord[];
 }) {
   const [items, setItems] = useState(categories);
+  const [prevCategories, setPrevCategories] = useState(categories);
   const [panel, setPanel] = useState<Panel>(null);
   const [typesCategory, setTypesCategory] = useState<CategoryRecord | null>(null);
 
-  useEffect(() => {
+  if (categories !== prevCategories) {
+    setPrevCategories(categories);
     setItems(categories);
-  }, [categories]);
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
