@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { DashboardNav } from "@/app/(dashboard)/dashboard-nav";
+import { InquiryUnreadBadge } from "@/app/(dashboard)/inquiry-unread-badge";
 import { requireStaff } from "@/lib/auth";
 
 export default async function DashboardLayout({
@@ -19,7 +21,14 @@ export default async function DashboardLayout({
           >
             AmaSupplies
           </Link>
-          <DashboardNav isAdmin={role === "admin"} />
+          <DashboardNav
+            isAdmin={role === "admin"}
+            unreadBadge={
+              <Suspense fallback={null}>
+                <InquiryUnreadBadge />
+              </Suspense>
+            }
+          />
         </div>
       </header>
       <main className="flex-1">{children}</main>

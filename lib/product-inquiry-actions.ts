@@ -1,8 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { Resend } from "resend";
-import { INQUIRY_EMAIL } from "@/lib/contact";
+import { escapeHtml } from "@/lib/inquiry-mail";
+import { savePublicInquiry } from "@/lib/inquiry-submit";
 import { getProductById } from "@/lib/product";
 import {
   INITIAL_PRODUCT_INQUIRY_STATE,
@@ -43,14 +43,6 @@ function firstFieldErrors(error: z.ZodError): ProductInquiryState["fieldErrors"]
   return next;
 }
 
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
-
 export async function sendProductInquiry(
   _prev: ProductInquiryState,
   formData: FormData,
@@ -82,55 +74,40 @@ export async function sendProductInquiry(
     };
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
+  const result = await savePublicInquiry({
+    source: "product",
+    name: parsed.data.name,
+    email: parsed.data.email,
+    message: parsed.data.message,
+    productId: product.id,
+    productTitle: product.title,
+    productItemNumber: product.itemNumber,
+    productSku: product.sku,
+    subject: `Product inquiry: ${product.title}`,
+    text: [
+      `Product: ${product.title}`,
+      `Item number: ${product.itemNumber}`,
+      `SKU: ${product.sku}`,
+      "",
+      `Name: ${parsed.data.name}`,
+      `Email: ${parsed.data.email}`,
+      "",
+      parsed.data.message,
+    ].join("\n"),
+    html: `
+      <p><strong>Product:</strong> ${escapeHtml(product.title)}</p>
+      <p><strong>Item number:</strong> ${escapeHtml(product.itemNumber)}</p>
+      <p><strong>SKU:</strong> ${escapeHtml(product.sku)}</p>
+      <p><strong>Name:</strong> ${escapeHtml(parsed.data.name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(parsed.data.email)}</p>
+      <p>${escapeHtml(parsed.data.message).replaceAll("\n", "<br />")}</p>
+    `,
+  });
+
+  if (!result.ok) {
     return {
       ok: false,
-      error: "The inquiry form is not configured yet. Please call or email us.",
-      fieldErrors: {},
-      values,
-    };
-  }
-
-  try {
-    const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
-      from: process.env.RESEND_FROM ?? "AMA Supplies <onboarding@resend.dev>",
-      to: process.env.CONTACT_FORM_TO ?? INQUIRY_EMAIL,
-      replyTo: parsed.data.email,
-      subject: `Product inquiry: ${product.title}`,
-      text: [
-        `Product: ${product.title}`,
-        `Item number: ${product.itemNumber}`,
-        `SKU: ${product.sku}`,
-        "",
-        `Name: ${parsed.data.name}`,
-        `Email: ${parsed.data.email}`,
-        "",
-        parsed.data.message,
-      ].join("\n"),
-      html: `
-        <p><strong>Product:</strong> ${escapeHtml(product.title)}</p>
-        <p><strong>Item number:</strong> ${escapeHtml(product.itemNumber)}</p>
-        <p><strong>SKU:</strong> ${escapeHtml(product.sku)}</p>
-        <p><strong>Name:</strong> ${escapeHtml(parsed.data.name)}</p>
-        <p><strong>Email:</strong> ${escapeHtml(parsed.data.email)}</p>
-        <p>${escapeHtml(parsed.data.message).replaceAll("\n", "<br />")}</p>
-      `,
-    });
-
-    if (error) {
-      return {
-        ok: false,
-        error: "We could not send your message. Please try again or call us.",
-        fieldErrors: {},
-        values,
-      };
-    }
-  } catch {
-    return {
-      ok: false,
-      error: "We could not send your message. Please try again or call us.",
+      error: result.error,
       fieldErrors: {},
       values,
     };

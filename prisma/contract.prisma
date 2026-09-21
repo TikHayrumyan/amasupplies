@@ -169,3 +169,27 @@ model BlogPostProduct {
   @@rls
   @@map("blog_post_product")
 }
+
+model Inquiry {
+  id                Int         @id @default(autoincrement())
+  source            String
+  name              String
+  email             String
+  phone             String      @default("")
+  message           String
+  productId         Int?
+  productTitle      String      @default("")
+  productItemNumber String      @default("")
+  productSku        String      @default("")
+  ip                String      @default("")
+  emailSent         Boolean     @default(false)
+  isRead            Boolean     @default(false)
+  createdAt         Timestamptz @default(now())
+
+  @@index([createdAt])
+  @@index([isRead, createdAt])
+  @@index([email, createdAt])
+  @@index([ip, createdAt])
+  @@rls
+  @@map("inquiry")
+}

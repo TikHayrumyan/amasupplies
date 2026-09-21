@@ -1,8 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { Resend } from "resend";
-import { INQUIRY_EMAIL } from "@/lib/contact";
+import { escapeHtml } from "@/lib/inquiry-mail";
+import { savePublicInquiry } from "@/lib/inquiry-submit";
 import {
   INITIAL_CONTACT_STATE,
   type ContactFields,
@@ -50,14 +50,6 @@ function firstFieldErrors(error: z.ZodError): ContactState["fieldErrors"] {
   return next;
 }
 
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
-
 export async function sendContactMessage(
   _prev: ContactState,
   formData: FormData,
@@ -78,50 +70,32 @@ export async function sendContactMessage(
     };
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
+  const result = await savePublicInquiry({
+    source: "contact",
+    name: parsed.data.name,
+    email: parsed.data.email,
+    phone: parsed.data.phone,
+    message: parsed.data.message,
+    subject: `Website inquiry from ${parsed.data.name}`,
+    text: [
+      `Name: ${parsed.data.name}`,
+      `Email: ${parsed.data.email}`,
+      `Phone: ${parsed.data.phone}`,
+      "",
+      parsed.data.message,
+    ].join("\n"),
+    html: `
+      <p><strong>Name:</strong> ${escapeHtml(parsed.data.name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(parsed.data.email)}</p>
+      <p><strong>Phone:</strong> ${escapeHtml(parsed.data.phone)}</p>
+      <p>${escapeHtml(parsed.data.message).replaceAll("\n", "<br />")}</p>
+    `,
+  });
+
+  if (!result.ok) {
     return {
       ok: false,
-      error: "The contact form is not configured yet. Please call or email us.",
-      fieldErrors: {},
-      values,
-    };
-  }
-
-  try {
-    const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
-      from: process.env.RESEND_FROM ?? "AMA Supplies <onboarding@resend.dev>",
-      to: process.env.CONTACT_FORM_TO ?? INQUIRY_EMAIL,
-      replyTo: parsed.data.email,
-      subject: `Website inquiry from ${parsed.data.name}`,
-      text: [
-        `Name: ${parsed.data.name}`,
-        `Email: ${parsed.data.email}`,
-        `Phone: ${parsed.data.phone}`,
-        "",
-        parsed.data.message,
-      ].join("\n"),
-      html: `
-        <p><strong>Name:</strong> ${escapeHtml(parsed.data.name)}</p>
-        <p><strong>Email:</strong> ${escapeHtml(parsed.data.email)}</p>
-        <p><strong>Phone:</strong> ${escapeHtml(parsed.data.phone)}</p>
-        <p>${escapeHtml(parsed.data.message).replaceAll("\n", "<br />")}</p>
-      `,
-    });
-
-    if (error) {
-      return {
-        ok: false,
-        error: "We could not send your message. Please try again or call us.",
-        fieldErrors: {},
-        values,
-      };
-    }
-  } catch {
-    return {
-      ok: false,
-      error: "We could not send your message. Please try again or call us.",
+      error: result.error,
       fieldErrors: {},
       values,
     };

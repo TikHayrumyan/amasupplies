@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/(auth)/login/actions";
@@ -28,12 +29,22 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
   );
 }
 
-export function DashboardNav({ isAdmin }: { isAdmin: boolean }) {
+export function DashboardNav({
+  isAdmin,
+  unreadBadge,
+}: {
+  isAdmin: boolean;
+  unreadBadge: ReactNode;
+}) {
   return (
     <nav className="flex items-center gap-5 overflow-x-auto text-[13px] tracking-[0.12em] md:gap-6">
       <NavLink href="/dashboard">Home</NavLink>
       <NavLink href="/dashboard/categories">Categories</NavLink>
       <NavLink href="/dashboard/products">Products</NavLink>
+      <NavLink href="/dashboard/inquiries">
+        Inquiries
+        {unreadBadge}
+      </NavLink>
       <NavLink href="/dashboard/blog">Blog</NavLink>
       <NavLink href="/dashboard/brands">Brands</NavLink>
       <NavLink href="/dashboard/sizes">Sizes</NavLink>
