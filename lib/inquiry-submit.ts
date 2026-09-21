@@ -6,6 +6,7 @@ import {
   type InquirySource,
 } from "@/lib/inquiry";
 import { sendInquiryEmail } from "@/lib/inquiry-mail";
+import { sendInquiryTelegram } from "@/lib/inquiry-telegram";
 import {
   RATE_LIMIT_MESSAGE,
   getClientIp,
@@ -55,12 +56,22 @@ export async function savePublicInquiry(input: {
     };
   }
 
-  const emailSent = await sendInquiryEmail({
-    replyTo: email,
-    subject: input.subject,
-    text: input.text,
-    html: input.html,
-  });
+  const [emailSent] = await Promise.all([
+    sendInquiryEmail({
+      replyTo: email,
+      subject: input.subject,
+      text: input.text,
+      html: input.html,
+    }),
+    sendInquiryTelegram({
+      source: input.source,
+      name: input.name,
+      email,
+      phone: input.phone,
+      message: input.message,
+      productTitle: input.productTitle,
+    }),
+  ]);
   try {
     await setInquiryEmailSent(id, emailSent);
   } catch (error) {
