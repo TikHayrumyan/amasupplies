@@ -209,19 +209,43 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
     ],
   },
+  {
+    id: "products",
+    title: "Products",
+    items: [
+      {
+        question:
+          "Where is AMA Supplies located, and do you offer local pickup for wholesale orders?",
+        answer:
+          "AMA Supplies is based at 373 W Palmer Ave, Ste A, Glendale, CA 91204. We are a direct wholesale distributor specializing in bulk healthcare supplies for home care agencies, hospice organizations, and Medical across the greater Los Angeles area and Southern California. You can schedule same-day or next-day warehouse pickup for pallet and case-quantity orders at our Glendale hub, while regional and nationwide accounts benefit from reliable freight and scheduled delivery options.",
+      },
+      {
+        question:
+          "What types of disposable gloves do you supply, and are they medical-Exam grade?",
+        answer:
+          "We stock a complete range of medical-grade hand protection, specializing in powder-free, heavy-duty nitrile exam gloves designed for clinical safety, tactile sensitivity, and chemical resistance. Whether you need chemo-rated gloves, textured exam gloves, or bulk clinic orders, our inventory meets strict barrier protection standards for healthcare, lab, and tattoo professionals.",
+      },
+      {
+        question:
+          "What absorbency levels and sizes are available for Prime Touch disposable underpads (chux)?",
+        answer:
+          'Prime Touch disposable underpads are engineered for bed, chair, and wheelchair surface protection across home care, hospice, and clinical environments. Available in standard to extra-large coverage options (including heavy-duty 30" x 36") 100 pcs, they feature a rapid-wicking fluff and polymer absorbent core that locks away liquid to protect delicate skin from moisture-associated skin damage (MASD). The slip-resistant, waterproof polyethylene backing ensures fluids will not leak through to mattresses or lift chairs.',
+      },
+      {
+        question:
+          "Which high-protein clinical nutritional drinks—such as Ensure and Boost—do you supply for hospice and long-term care?",
+        answer:
+          "AMA Supplies provides case and pallet wholesale distribution of leading medical oral nutrition supplements, including Ensure (Abbott Nutrition) and Boost (Nestlé Health Science). We stock complete, balanced nutritional formulas ranging from standard calorie options to high-protein, calorie-dense, and diabetic-friendly (Glucerna/Boost Glucose Control) varieties. These ready-to-drink shakes are formulated to manage involuntary weight loss, combat malnutrition, and support wound recovery for patients under hospice, home health, and skilled nursing care.",
+      },
+      {
+        question:
+          "Are Prime Touch wet wipes intended for surface cleaning or patient skin care?",
+        answer:
+          'No, Prime Touch wet wipes are exclusively intended for personal patient care. They are pre-moistened adult washcloths designed specifically for sensitive, fragile skin in hospice, home health, and long-term care settings. Each pack contains 48 extra-large wipes measuring 9" x 13". Featuring an alcohol-free, latex-free, and pH-balanced formula enriched with aloe and vitamin E, they soothe and protect the skin barrier while cleansing. The durable spunlace fabric provides maximum coverage, making them ideal for no-rinse bed bathing and gentle daily incontinence care without irritation or sticky residue.',
+      },
+    ],
+  },
 ];
-
-const PREVIEW_QUESTIONS = new Set([
-  "How do I place an order?",
-  "Is there a minimum order quantity?",
-  "What payment methods do you accept?",
-  "Why can’t I see pricing on the website?",
-  "What is your shipping policy?",
-]);
-
-export const FAQ_PREVIEW = FAQ_GROUPS.flatMap((group) => group.items).filter(
-  (item) => PREVIEW_QUESTIONS.has(item.question),
-);
 
 export function pickFaqs(questions: readonly string[]): FaqItem[] {
   const map = new Map(
@@ -239,6 +263,14 @@ export function pickFaqs(questions: readonly string[]): FaqItem[] {
     return item;
   });
 }
+
+export const FAQ_PREVIEW = pickFaqs([
+  "Where is AMA Supplies located, and do you offer local pickup for wholesale orders?",
+  "What types of disposable gloves do you supply, and are they medical-Exam grade?",
+  "What absorbency levels and sizes are available for Prime Touch disposable underpads (chux)?",
+  "Which high-protein clinical nutritional drinks—such as Ensure and Boost—do you supply for hospice and long-term care?",
+  "Are Prime Touch wet wipes intended for surface cleaning or patient skin care?",
+]);
 
 export const ABOUT_FAQS = pickFaqs([
   "Do you sell to the public?",

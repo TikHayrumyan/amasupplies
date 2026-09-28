@@ -19,7 +19,7 @@ export function FaqContent() {
             Frequently asked questions
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-xl font-medium tracking-tight text-foreground/80 md:text-2xl">
-            Answers about ordering, payment, accounts, and shipping.
+            Answers about ordering, payment, accounts, shipping, and products.
           </p>
           <div className="mx-auto mt-16 h-px w-12 bg-primary md:mt-20" />
         </div>
