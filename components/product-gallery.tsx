@@ -26,7 +26,7 @@ export function ProductGallery({
           alt={title}
           fill
           priority
-          sizes="(max-width: 768px) 100vw, 50vw"
+          sizes="(max-width: 1024px) 100vw, 33vw"
           className="object-contain"
         />
       </div>
