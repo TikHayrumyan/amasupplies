@@ -24,6 +24,7 @@ import { STOREFRONT_TAG } from "@/lib/cache";
 type Result = { error: string | null; done?: boolean; id?: number };
 
 function refresh(slug?: string, categorySlug?: string) {
+  revalidatePath("/");
   revalidatePath("/dashboard/products");
   revalidatePath("/products");
   if (categorySlug) {
@@ -63,6 +64,7 @@ export async function saveProduct(formData: FormData): Promise<Result> {
   const brandId = Number(formData.get("brandId") ?? 0);
   const typeId = Number(formData.get("typeId") ?? 0) || null;
   const isPublished = formData.get("isPublished") === "on";
+  const isBestSeller = formData.get("isBestSeller") === "on";
   const sizeIds = formData
     .getAll("sizeId")
     .map((value) => Number(value))
@@ -142,6 +144,7 @@ export async function saveProduct(formData: FormData): Promise<Result> {
         categoryId,
         typeId: resolvedTypeId,
         isPublished,
+        isBestSeller,
         sizeIds,
         relatedIds,
         galleryUrls,
@@ -164,6 +167,7 @@ export async function saveProduct(formData: FormData): Promise<Result> {
         categoryId,
         typeId: resolvedTypeId,
         isPublished,
+        isBestSeller,
         sizeIds,
         relatedIds: sanitizeRelatedProductIds(relatedIdsRaw, 0, catalogIds),
         galleryUrls,

@@ -92,6 +92,7 @@ function SortableRow({
           {showCategory ? ` · ${product.categoryTitle}` : ""}
           {` · ${product.itemNumber}`}
           {product.isPublished ? "" : " · Hidden"}
+          {product.isBestSeller ? " · Best seller" : ""}
         </p>
       </div>
       <IconButton asChild>

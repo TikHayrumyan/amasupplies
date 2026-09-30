@@ -15,6 +15,7 @@ export type ProductRecord = {
   typeId: number | null;
   sortOrder: number;
   isPublished: boolean;
+  isBestSeller: boolean;
   createdAt: Date | string;
   updatedAt: Date | string;
 };

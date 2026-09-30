@@ -89,6 +89,7 @@ model Product {
   typeId          Int?
   sortOrder       Float       @default(0)
   isPublished     Boolean     @default(true)
+  isBestSeller    Boolean     @default(false)
   createdAt       Timestamptz @default(now())
   updatedAt       Timestamptz @default(now())
 

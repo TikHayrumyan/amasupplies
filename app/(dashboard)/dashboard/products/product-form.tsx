@@ -556,6 +556,22 @@ export function ProductForm({
         Visible on the store
       </label>
 
+      <label className="flex items-start gap-3 border border-border bg-surface px-4 py-3 text-sm">
+        <input
+          type="checkbox"
+          name="isBestSeller"
+          defaultChecked={product?.isBestSeller ?? false}
+          className="mt-0.5 size-4 rounded-none accent-primary"
+        />
+        <span>
+          Best seller
+          <span className="mt-1 block text-xs text-muted-foreground">
+            Published best sellers appear in Best Selling Items on the
+            homepage. All of them are shown.
+          </span>
+        </span>
+      </label>
+
       <div className="flex flex-wrap items-center gap-6">
         <Button
           type="submit"

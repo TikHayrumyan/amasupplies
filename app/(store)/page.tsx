@@ -1,3 +1,4 @@
+import { BestSellingItems } from "@/components/best-selling-items";
 import { HeroBanner } from "@/components/hero-banner";
 import { HomeHighlights } from "@/components/home-highlights";
 import { HomeInfoBar } from "@/components/home-info-bar";
@@ -25,6 +26,7 @@ export default async function Home() {
       <HomeHighlights />
       <ShopByCategory />
       <HomeInfoBar />
+      <BestSellingItems />
       <WhoWeAre />
       <TrustedBrands />
       <HomeFaq />

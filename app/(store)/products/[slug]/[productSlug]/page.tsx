@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AccountCta } from "@/components/account-cta";
+import { Badge } from "@/components/ui/badge";
 import { PRODUCT_FAQS } from "@/components/faq-data";
 import { FaqSection } from "@/components/faq-section";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
@@ -8,6 +9,7 @@ import { ProductGallery } from "@/components/product-gallery";
 import { ProductInquiryForm } from "@/components/product-inquiry-form";
 import { RelatedProductsSlider } from "@/components/related-products-slider";
 import { crumbs } from "@/lib/breadcrumbs";
+import { cn } from "@/lib/utils";
 import { sanitizeProductHtml } from "@/lib/product-fields";
 import {
   getPublishedProductBySlug,
@@ -76,7 +78,17 @@ export default async function ProductPage({
         <div className="mt-10 grid items-start gap-10 lg:grid-cols-3 lg:gap-12">
           <ProductGallery images={images} title={product.title} />
           <div>
-            <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+            {product.isBestSeller ? (
+              <Badge className="rounded-none tracking-[0.14em] uppercase">
+                Best seller
+              </Badge>
+            ) : null}
+            <p
+              className={cn(
+                "caption tracking-[0.16em] text-muted-foreground uppercase",
+                product.isBestSeller && "mt-4",
+              )}
+            >
               {product.brandTitle}
             </p>
             <h1 className="mt-3 font-medium tracking-tight">{product.title}</h1>

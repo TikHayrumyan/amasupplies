@@ -766,6 +766,13 @@
                   "kind": "scalar"
                 }
               },
+              "isBestSeller": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "isPublished": {
                 "nullable": false,
                 "type": {
@@ -857,6 +864,9 @@
                 },
                 "imageUrl": {
                   "column": "imageUrl"
+                },
+                "isBestSeller": {
+                  "column": "isBestSeller"
                 },
                 "isPublished": {
                   "column": "isPublished"
@@ -1946,6 +1956,15 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "isBestSeller": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "isPublished": {
                   "codecId": "pg/bool@1",
                   "default": {
@@ -2360,7 +2379,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "a0a532e64333675c503a4bf6821ea3cedbc0feb19a81e12f98aef6b1f3415e64"
+    "storageHash": "28c340b5e0f1737d65dda38e7e2d2ef0414913c41ff4c4d38de6ce4f0bbd029f"
   },
   "capabilities": {
     "postgres": {

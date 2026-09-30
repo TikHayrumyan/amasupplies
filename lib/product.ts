@@ -4,7 +4,11 @@ import { cache } from "react";
 import { db } from "@/prisma/db";
 import { cacheStorefront } from "@/lib/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCategoryBySlug, listCategories } from "@/lib/category";
+import {
+  getCategoryBySlug,
+  listCategories,
+  listPublishedCategories,
+} from "@/lib/category";
 import { listProductBrands } from "@/lib/product-brand";
 import {
   PRODUCT_IMAGE_MAX_BYTES,
@@ -39,6 +43,7 @@ const PRODUCT_FIELDS = [
   "typeId",
   "sortOrder",
   "isPublished",
+  "isBestSeller",
   "createdAt",
   "updatedAt",
 ] as const;
@@ -144,6 +149,27 @@ export const listPublishedProducts = cacheStorefront(async () => {
     .all();
   return hydrate(rows);
 }, ["published-products"]);
+
+function updatedAtTime(value: Date | string) {
+  return value instanceof Date ? value.getTime() : new Date(value).getTime();
+}
+
+export const listBestSellers = cacheStorefront(async () => {
+  const [rows, categories] = await Promise.all([
+    db.orm.public.Product.select(...PRODUCT_FIELDS)
+      .where({ isPublished: true, isBestSeller: true })
+      .all(),
+    listPublishedCategories(),
+  ]);
+  const publishedCategoryIds = new Set(categories.map((category) => category.id));
+  const visible = rows.filter((row) => publishedCategoryIds.has(row.categoryId));
+  const hydrated = await hydrate(visible);
+  return hydrated.sort(
+    (left, right) =>
+      updatedAtTime(right.updatedAt) - updatedAtTime(left.updatedAt) ||
+      left.sortOrder - right.sortOrder,
+  );
+}, ["published-best-sellers"]);
 
 export const listPublishedProductsByCategory = cacheStorefront(
   async (categoryId: number) => {
@@ -352,6 +378,7 @@ export async function createProduct(input: {
   categoryId: number;
   typeId: number | null;
   isPublished: boolean;
+  isBestSeller: boolean;
   sizeIds: number[];
   relatedIds: number[];
   galleryUrls: string[];
@@ -372,6 +399,7 @@ export async function createProduct(input: {
     categoryId: input.categoryId,
     typeId: input.typeId,
     isPublished: input.isPublished,
+    isBestSeller: input.isBestSeller,
     sortOrder: await nextSortOrder(input.categoryId),
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -403,6 +431,7 @@ export async function updateProduct(
     categoryId: number;
     typeId: number | null;
     isPublished: boolean;
+    isBestSeller: boolean;
     sizeIds: number[];
     relatedIds: number[];
     galleryUrls: string[];
@@ -430,6 +459,7 @@ export async function updateProduct(
     categoryId: input.categoryId,
     typeId: input.typeId,
     isPublished: input.isPublished,
+    isBestSeller: input.isBestSeller,
     ...(categoryChanged
       ? { sortOrder: await nextSortOrder(input.categoryId) }
       : {}),

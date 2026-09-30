@@ -5,6 +5,7 @@ import contractJson from "./contract.json" with { type: "json" };
 
 const globalForDb = globalThis as typeof globalThis & {
   prisma?: ReturnType<typeof connect>;
+  prismaProfile?: string;
 };
 
 function connect() {
@@ -18,7 +19,11 @@ function connect() {
   });
 }
 
-export const db = globalForDb.prisma ?? connect();
-if (process.env.NODE_ENV !== "production") {
-  globalForDb.prisma = db;
+const profileHash = contractJson.profileHash;
+
+if (process.env.NODE_ENV !== "production" && globalForDb.prismaProfile !== profileHash) {
+  globalForDb.prisma = connect();
+  globalForDb.prismaProfile = profileHash;
 }
+
+export const db = globalForDb.prisma ?? connect();
