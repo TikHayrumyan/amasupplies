@@ -11,7 +11,7 @@ const ITEMS: { title: string; icon: LucideIcon; href?: string }[] = [
 
 export function HomeInfoBar() {
   return (
-    <section className="bg-surface py-14 md:py-20">
+    <section className="bg-surface py-8 md:py-10">
       <div className="container mx-auto grid grid-cols-2 gap-x-8 gap-y-10 px-4 md:grid-cols-4 md:gap-12">
         {ITEMS.map((item) => {
           const title = item.href ? (
