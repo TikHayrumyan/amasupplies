@@ -17,14 +17,12 @@ export function WhoWeAre() {
             America&apos;s Premier Wholesale Medical Supply Partner
           </h2>
           <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
-            AMA Supplies is a nationwide wholesale distributor of medical
-            supplies, serving healthcare facilities, clinics, hospitals, and
-            medical professionals across the United States.
-          </p>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
-            We work exclusively with approved business accounts, offering
-            negotiated wholesale pricing, flexible net terms, and a catalog of
-            over 10,000 medical supply products ready to ship nationwide.
+            At AMA Supplies, we supply businesses with high-quality wholesale
+            medical products and disposable essentials - including exam gloves,
+            underpads, adult washcloths, wound care, and gurney fitted sheets.
+            Driven by our proprietary PrimeTouch brand and reliable supply
+            chain, we offer competitive pricing, steady inventory, and fast
+            local delivery you can trust.
           </p>
 
           <p className="mt-8 flex items-center gap-3">
