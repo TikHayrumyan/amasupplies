@@ -3,8 +3,7 @@ import { AccountCta } from "@/components/account-cta";
 import { ABOUT_FAQS } from "@/components/faq-data";
 import { FaqSection } from "@/components/faq-section";
 
-const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=2000&q=80";
+
 const OFFER_IMAGE =
   "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=80";
 
@@ -82,34 +81,33 @@ export function AboutContent() {
               Your Trusted Wholesale Medical Supply Partner
             </p>
             <p className="mt-8 text-base leading-relaxed text-muted-foreground md:mt-10 md:text-lg">
-              AMA Supplies is a nationwide distributor of medical and facility
-              supplies, built exclusively for businesses, healthcare providers,
-              and professional organizations across the United States.
+              AMA Supplies is a medical supply wholesaler based in Glendale,
+              California, providing reliable and competitively priced healthcare
+              products to medical supply companies, home care agencies,
+              hospices, clinics, transportation companies, and other businesses
+              throughout Los Angeles, Southern California, and beyond.
             </p>
-            <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
-              We are not a retail store. Our platform is designed specifically
-              for approved business customers who require reliable supply,
-              competitive pricing, and efficient fulfillment.
-            </p>
+            <Body>
+              We offer a growing selection of wholesale medical supplies and
+              disposable healthcare products, including underpads, adult
+              washcloth wipes, exam gloves, wound care supplies, gurney fitted
+              sheets, and other essential medical products.
+            </Body>
+            <Body>
+              Through our PrimeTouch brand and trusted supplier partnerships,
+              we focus on consistent quality, dependable inventory, competitive
+              pricing, responsive customer service, and fast local delivery.
+            </Body>
+            <Body>
+              At AMA Supplies, our goal is to make purchasing medical and
+              incontinence supplies simple, reliable, and convenient while
+              building long-term relationships with the businesses we serve.
+            </Body>
           </div>
 
-          <div className="mt-16 h-px w-12 bg-primary md:mt-20" />
-          <p className="mt-6 max-w-3xl text-3xl font-medium tracking-tight md:text-5xl">
-            We are not a retail store.
-          </p>
         </div>
 
-        <div className="relative mt-4 h-[42vh] min-h-72 overflow-hidden bg-foreground md:h-[52vh]">
-          <Image
-            src={HERO_IMAGE}
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-linear-to-t from-black/45 via-black/10 to-transparent" />
-        </div>
+      
       </section>
 
       <section className="bg-surface">
