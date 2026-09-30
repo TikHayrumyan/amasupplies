@@ -2,14 +2,9 @@ import "server-only";
 
 import { cache } from "react";
 import { db } from "@/prisma/db";
+import { query } from "@/prisma/sql";
 import { cacheStorefront } from "@/lib/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import {
-  getCategoryBySlug,
-  listCategories,
-  listPublishedCategories,
-} from "@/lib/category";
-import { listProductBrands } from "@/lib/product-brand";
 import {
   PRODUCT_IMAGE_MAX_BYTES,
   slugify,
@@ -19,7 +14,6 @@ import {
   type ProductListItem,
   type ProductRecord,
 } from "@/lib/product-fields";
-import { listProductTypes } from "@/lib/product-type";
 import { listSizes } from "@/lib/size";
 import {
   SORT_GAP,
@@ -101,42 +95,84 @@ async function nextSortOrder(categoryId: number) {
   return Math.max(...rows.map((row) => row.sortOrder)) + SORT_GAP;
 }
 
-async function hydrate(rows: Product[]): Promise<ProductListItem[]> {
-  const [brands, categories, types] = await Promise.all([
-    listProductBrands(),
-    listCategories(),
-    listProductTypes(),
-  ]);
-  const brandMap = new Map(
-    brands.map((row) => [row.id, { title: row.title, slug: row.slug }]),
-  );
-  const categoryMap = new Map(
-    categories.map((row) => [row.id, { title: row.title, slug: row.slug }]),
-  );
-  const typeMap = new Map(
-    types.map((row) => [row.id, { title: row.title, slug: row.slug }]),
-  );
+const PRODUCT_LIST_SQL = `
+SELECT
+  p.id,
+  p.title,
+  p.slug,
+  p."metaTitle",
+  p."metaDescription",
+  p.description,
+  p."imageUrl",
+  p.sku,
+  p."itemNumber",
+  p."brandId",
+  p."categoryId",
+  p."typeId",
+  p."sortOrder",
+  p."isPublished",
+  p."isBestSeller",
+  p."createdAt",
+  p."updatedAt",
+  COALESCE(b.title, 'Brand') AS "brandTitle",
+  COALESCE(b.slug, '') AS "brandSlug",
+  c.title AS "categoryTitle",
+  c.slug AS "categorySlug",
+  t.title AS "typeTitle",
+  t.slug AS "typeSlug"
+FROM product p
+JOIN category c ON c.id = p."categoryId"
+LEFT JOIN product_brand b ON b.id = p."brandId"
+LEFT JOIN product_type t ON t.id = p."typeId"
+`;
 
-  return rows.map((row) => {
-    const category = categoryMap.get(row.categoryId);
-    const brand = brandMap.get(row.brandId);
-    const type = row.typeId ? typeMap.get(row.typeId) : undefined;
-    return {
-      ...row,
-      brandTitle: brand?.title ?? "Brand",
-      brandSlug: brand?.slug ?? "",
-      categoryTitle: category?.title ?? "Category",
-      categorySlug: category?.slug ?? "",
-      typeTitle: type?.title ?? null,
-      typeSlug: type?.slug ?? null,
-    };
-  });
+type ProductListFilter = {
+  published?: boolean;
+  bestSeller?: boolean;
+  publishedCategory?: boolean;
+  categoryId?: number;
+  id?: number;
+  slug?: string;
+  categorySlug?: string;
+};
+
+async function listProductItems(filter: ProductListFilter = {}) {
+  const clauses: string[] = [];
+  const values: unknown[] = [];
+
+  if (filter.published) {
+    clauses.push(`p."isPublished" = true`);
+  }
+  if (filter.bestSeller) {
+    clauses.push(`p."isBestSeller" = true`);
+  }
+  if (filter.publishedCategory) {
+    clauses.push(`c."isPublished" = true`);
+  }
+  if (filter.categoryId != null) {
+    values.push(filter.categoryId);
+    clauses.push(`p."categoryId" = $${values.length}`);
+  }
+  if (filter.id != null) {
+    values.push(filter.id);
+    clauses.push(`p.id = $${values.length}`);
+  }
+  if (filter.slug != null) {
+    values.push(filter.slug);
+    clauses.push(`p.slug = $${values.length}`);
+  }
+  if (filter.categorySlug != null) {
+    values.push(filter.categorySlug);
+    clauses.push(`c.slug = $${values.length}`);
+  }
+
+  const where = clauses.length > 0 ? `WHERE ${clauses.join(" AND ")}` : "";
+  return query<ProductListItem>(`${PRODUCT_LIST_SQL} ${where}`, values);
 }
 
 export async function listProducts() {
-  const rows = await db.orm.public.Product.select(...PRODUCT_FIELDS).all();
-  const hydrated = await hydrate(rows);
-  return hydrated.sort(
+  const rows = await listProductItems();
+  return rows.sort(
     (left, right) =>
       left.categoryTitle.localeCompare(right.categoryTitle) ||
       left.sortOrder - right.sortOrder,
@@ -144,41 +180,33 @@ export async function listProducts() {
 }
 
 export const listPublishedProducts = cacheStorefront(async () => {
-  const rows = await db.orm.public.Product.select(...PRODUCT_FIELDS)
-    .where({ isPublished: true })
-    .all();
-  return hydrate(rows);
-}, ["published-products"]);
+  return listProductItems({ published: true });
+}, ["published-products-join"]);
 
 function updatedAtTime(value: Date | string) {
   return value instanceof Date ? value.getTime() : new Date(value).getTime();
 }
 
 export const listBestSellers = cacheStorefront(async () => {
-  const [rows, categories] = await Promise.all([
-    db.orm.public.Product.select(...PRODUCT_FIELDS)
-      .where({ isPublished: true, isBestSeller: true })
-      .all(),
-    listPublishedCategories(),
-  ]);
-  const publishedCategoryIds = new Set(categories.map((category) => category.id));
-  const visible = rows.filter((row) => publishedCategoryIds.has(row.categoryId));
-  const hydrated = await hydrate(visible);
-  return hydrated.sort(
+  const rows = await listProductItems({
+    published: true,
+    bestSeller: true,
+    publishedCategory: true,
+  });
+  return rows.sort(
     (left, right) =>
       updatedAtTime(right.updatedAt) - updatedAtTime(left.updatedAt) ||
       left.sortOrder - right.sortOrder,
   );
-}, ["published-best-sellers"]);
+}, ["published-best-sellers-join"]);
 
 export const listPublishedProductsByCategory = cacheStorefront(
   async (categoryId: number) => {
-    const rows = await db.orm.public.Product.select(...PRODUCT_FIELDS)
-      .where({ categoryId, isPublished: true })
-      .all();
-    return ordered(await hydrate(rows));
+    return ordered(
+      await listProductItems({ categoryId, published: true }),
+    );
   },
-  ["published-products-by-category"],
+  ["published-products-by-category-join"],
 );
 
 export const getProductById = cache(async (id: number) => {
@@ -187,20 +215,18 @@ export const getProductById = cache(async (id: number) => {
 
 export const getPublishedProductBySlug = cacheStorefront(
   async (categorySlug: string, productSlug: string) => {
-    const rows = await db.orm.public.Product.select(...PRODUCT_FIELDS)
-      .where({ slug: productSlug, isPublished: true })
-      .all();
-    const [hydrated] = await hydrate(rows);
-    if (!hydrated || hydrated.categorySlug !== categorySlug) {
+    const [product] = await listProductItems({
+      published: true,
+      publishedCategory: true,
+      slug: productSlug,
+      categorySlug,
+    });
+    if (!product) {
       return null;
     }
-    const category = await getCategoryBySlug(categorySlug);
-    if (!category?.isPublished) {
-      return null;
-    }
-    return getProductDetail(hydrated.id);
+    return getProductDetail(product.id);
   },
-  ["published-product-by-slug"],
+  ["published-product-by-slug-join"],
 );
 
 export const listProductImages = cache(async (productId: number) => {
@@ -241,15 +267,14 @@ export const listRelatedPublishedProducts = cacheStorefront(
       .map((id) => byId.get(id))
       .filter((row): row is ProductListItem => Boolean(row));
   },
-  ["related-published-products"],
+  ["related-published-products-join"],
 );
 
 export async function getProductDetail(id: number): Promise<ProductDetail | null> {
-  const product = await getProductById(id);
+  const [product] = await listProductItems({ id });
   if (!product) {
     return null;
   }
-  const [hydrated] = await hydrate([product]);
   const [gallery, sizeIds, sizes, relatedIds] = await Promise.all([
     listProductImages(id),
     listProductSizeIds(id),
@@ -258,7 +283,7 @@ export async function getProductDetail(id: number): Promise<ProductDetail | null
   ]);
   const sizeMap = new Map(sizes.map((row) => [row.id, row.title]));
   return {
-    ...hydrated,
+    ...product,
     gallery,
     sizeIds,
     sizeTitles: sizeIds

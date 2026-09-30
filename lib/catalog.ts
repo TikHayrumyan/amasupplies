@@ -182,7 +182,7 @@ export const getCatalog = cacheStorefront(async function getCatalog(
       sizes: catalogFacetVisible(sizeFacets, filters.size) ? sizeFacets : [],
     },
   };
-}, ["catalog"]);
+}, ["catalog-join"]);
 
 function sortCatalog(products: CatalogProduct[], sort: CatalogSort) {
   const rows = [...products];
