@@ -23,7 +23,7 @@ export async function ShopByCategory() {
               href={`/products/${category.slug}`}
               className="group block"
             >
-              <div className="relative aspect-3/4 bg-surface">
+              <div className="relative aspect-3/4 overflow-hidden rounded-lg bg-surface">
                 <Image
                   src={category.imageUrl}
                   alt=""
