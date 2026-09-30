@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
@@ -13,7 +12,7 @@ import {
   hasActiveCatalogFilters,
   parseCatalogQuery,
 } from "@/lib/catalog-fields";
-import { getCategoryCatalog } from "@/lib/catalog";
+import { ALL_PRODUCTS_SLUG, getCatalog } from "@/lib/catalog";
 import { getCategoryBySlug } from "@/lib/category";
 
 export const revalidate = 3600;
@@ -22,6 +21,13 @@ export async function generateMetadata({
   params,
 }: PageProps<"/products/[slug]">): Promise<Metadata> {
   const { slug } = await params;
+  if (slug === ALL_PRODUCTS_SLUG) {
+    return {
+      title: "All Products | AMA Supplies",
+      description:
+        "Browse every published product in the AMA Supplies wholesale catalog.",
+    };
+  }
   const category = await getCategoryBySlug(slug);
   if (!category || !category.isPublished) {
     return {};
@@ -38,17 +44,14 @@ export default async function CategoryPage({
 }: PageProps<"/products/[slug]">) {
   const { slug } = await params;
   const query = await searchParams;
-  const category = await getCategoryBySlug(slug);
+  const catalog = await getCatalog(slug, parseCatalogQuery(query));
 
-  if (!category || !category.isPublished) {
+  if (!catalog) {
     notFound();
   }
 
-  const catalog = await getCategoryCatalog(
-    category.id,
-    parseCatalogQuery(query),
-  );
-  const pathname = `/products/${category.slug}`;
+  const category = catalog.category;
+  const pathname = `/products/${category?.slug ?? ALL_PRODUCTS_SLUG}`;
   const catalogQuery = { ...catalog.filters, sort: catalog.sort };
   const filtersActive = hasActiveCatalogFilters(catalog.filters);
   const hasFilters =
@@ -71,36 +74,28 @@ export default async function CategoryPage({
         <PageBreadcrumbs
           items={crumbs(
             { label: "Products", href: "/products" },
-            { label: category.title, href: `/products/${category.slug}` },
+            {
+              label: category?.title ?? "All products",
+              href: pathname,
+            },
           )}
         />
+        <h1 className="mt-8 font-medium tracking-tight">
+          {category?.title ?? "All products"}
+        </h1>
+        {category?.description ? (
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
+            {category.description}
+          </p>
+        ) : null}
       </div>
-      <div className="relative mt-6 h-[40vh] min-h-72 overflow-hidden bg-foreground md:mt-8">
-        <Image
-          src={category.imageUrl}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/15 to-transparent" />
-        <div className="absolute inset-0 flex items-end">
-          <div className="container mx-auto px-4 py-12">
-            <h1 className="font-medium tracking-tight text-white">
-              {category.title}
-            </h1>
-            {category.description ? (
-              <p className="mt-4 max-w-lg text-white/80">
-                {category.description}
-              </p>
-            ) : null}
-          </div>
-        </div>
-      </div>
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-12 md:py-16">
         {catalog.total === 0 ? (
-          <p className="text-muted-foreground">No products in this category yet.</p>
+          <p className="text-muted-foreground">
+            {category
+              ? "No products in this category yet."
+              : "No products yet."}
+          </p>
         ) : (
           <div
             className={

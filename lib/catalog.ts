@@ -9,9 +9,16 @@ import {
   type CatalogQuery,
   type CatalogSort,
 } from "@/lib/catalog-fields";
-import { listPublishedProductsByCategory, type ProductListItem } from "@/lib/product";
-import { listProductTypesByCategory } from "@/lib/product-type";
+import { getCategoryBySlug, listPublishedCategories } from "@/lib/category";
+import {
+  listPublishedProducts,
+  listPublishedProductsByCategory,
+  type ProductListItem,
+} from "@/lib/product";
+import { listProductTypes, listProductTypesByCategory } from "@/lib/product-type";
 import { listSizes } from "@/lib/size";
+
+export const ALL_PRODUCTS_SLUG = "all";
 
 type CatalogProduct = ProductListItem & { sizeSlugs: string[] };
 
@@ -49,17 +56,30 @@ function facetFrom(
     .filter((item) => item.count > 0);
 }
 
-export const getCategoryCatalog = cacheStorefront(async function getCategoryCatalog(
-  categoryId: number,
+export const getCatalog = cacheStorefront(async function getCatalog(
+  slug: string,
   raw: CatalogQuery,
 ) {
-  const [products, types, sizes] = await Promise.all([
-    listPublishedProductsByCategory(categoryId),
-    listProductTypesByCategory(categoryId),
-    listSizes(),
-  ]);
+  const category =
+    slug === ALL_PRODUCTS_SLUG ? null : await getCategoryBySlug(slug);
+  if (slug !== ALL_PRODUCTS_SLUG && (!category || !category.isPublished)) {
+    return null;
+  }
 
-  const productIds = new Set(products.map((row) => row.id));
+  const [products, types, sizes, publishedCategories] = await Promise.all([
+    category
+      ? listPublishedProductsByCategory(category.id)
+      : listPublishedProducts(),
+    category ? listProductTypesByCategory(category.id) : listProductTypes(),
+    listSizes(),
+    category ? Promise.resolve([]) : listPublishedCategories(),
+  ]);
+  const publishedSlugs = new Set(publishedCategories.map((row) => row.slug));
+  const visible = category
+    ? products
+    : products.filter((product) => publishedSlugs.has(product.categorySlug));
+
+  const productIds = new Set(visible.map((row) => row.id));
   const sizeLinks =
     productIds.size === 0
       ? []
@@ -75,7 +95,7 @@ export const getCategoryCatalog = cacheStorefront(async function getCategoryCata
     sizeIdsByProduct.set(link.productId, current);
   }
 
-  const catalog: CatalogProduct[] = products.map((product) => ({
+  const catalog: CatalogProduct[] = visible.map((product) => ({
     ...product,
     sizeSlugs: (sizeIdsByProduct.get(product.id) ?? [])
       .map((sizeId) => sizeSlugById.get(sizeId))
@@ -111,9 +131,16 @@ export const getCategoryCatalog = cacheStorefront(async function getCategoryCata
     return counts;
   }
 
-  const typeItems = types
-    .filter((row) => typeSlugs.has(row.slug))
-    .map((row) => ({ slug: row.slug, title: row.title, sortOrder: row.sortOrder }));
+  const typeItems = [
+    ...new Map(
+      types
+        .filter((row) => typeSlugs.has(row.slug))
+        .map((row) => [
+          row.slug,
+          { slug: row.slug, title: row.title, sortOrder: row.sortOrder },
+        ]),
+    ).values(),
+  ];
 
   const brandItems = [
     ...new Map(
@@ -144,6 +171,7 @@ export const getCategoryCatalog = cacheStorefront(async function getCategoryCata
   );
 
   return {
+    category,
     products: filtered,
     total: catalog.length,
     filters,
@@ -154,7 +182,7 @@ export const getCategoryCatalog = cacheStorefront(async function getCategoryCata
       sizes: catalogFacetVisible(sizeFacets, filters.size) ? sizeFacets : [],
     },
   };
-}, ["category-catalog"]);
+}, ["catalog"]);
 
 function sortCatalog(products: CatalogProduct[], sort: CatalogSort) {
   const rows = [...products];
@@ -170,5 +198,9 @@ function sortCatalog(products: CatalogProduct[], sort: CatalogSort) {
         right.title.localeCompare(left.title) || left.sortOrder - right.sortOrder,
     );
   }
-  return rows.sort((left, right) => left.sortOrder - right.sortOrder);
+  return rows.sort(
+    (left, right) =>
+      left.categoryTitle.localeCompare(right.categoryTitle) ||
+      left.sortOrder - right.sortOrder,
+  );
 }

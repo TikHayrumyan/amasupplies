@@ -60,21 +60,31 @@ export function MobileNav({ categories }: { categories: NavCategory[] }) {
             {NAV_LINKS.map((link) =>
               link.href === "/products" && categories.length > 0 ? (
                 <div key={link.href}>
-                  <button
-                    type="button"
-                    aria-expanded={productsOpen}
-                    onClick={() => setProductsOpen((open) => !open)}
-                    className="flex w-full items-center justify-between py-2 text-left text-3xl font-medium tracking-tight text-foreground"
-                  >
-                    {link.label}
-                    <ChevronDown
-                      className={cn(
-                        "size-5 text-muted-foreground transition-transform",
-                        productsOpen && "rotate-180",
-                      )}
-                      strokeWidth={1.5}
-                    />
-                  </button>
+                  <div className="flex items-center justify-between gap-4">
+                    <SheetClose asChild>
+                      <Link
+                        href="/products/all"
+                        className="py-2 text-3xl font-medium tracking-tight text-foreground transition-colors hover:text-primary"
+                      >
+                        {link.label}
+                      </Link>
+                    </SheetClose>
+                    <button
+                      type="button"
+                      aria-expanded={productsOpen}
+                      aria-label="Product categories"
+                      onClick={() => setProductsOpen((open) => !open)}
+                      className="inline-flex size-10 items-center justify-center text-muted-foreground"
+                    >
+                      <ChevronDown
+                        className={cn(
+                          "size-5 transition-transform",
+                          productsOpen && "rotate-180",
+                        )}
+                        strokeWidth={1.5}
+                      />
+                    </button>
+                  </div>
                   {productsOpen ? (
                     <div className="mb-2 flex flex-col gap-1 pb-2 pl-1">
                       <SheetClose asChild>
