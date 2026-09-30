@@ -21,6 +21,7 @@ model Category {
   sortOrder   Float       @default(0)
   isPublished Boolean     @default(true)
   updatedAt   Timestamptz @default(now())
+  products    Product[]
 
   @@rls
   @@map("category")
@@ -92,7 +93,9 @@ model Product {
   isBestSeller    Boolean     @default(false)
   createdAt       Timestamptz @default(now())
   updatedAt       Timestamptz @default(now())
+  category        Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
+  @@index([categoryId])
   @@rls
   @@map("product")
 }

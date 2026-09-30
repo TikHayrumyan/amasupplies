@@ -468,7 +468,23 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "products": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "categoryId"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "description": {
@@ -844,7 +860,23 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "category": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "categoryId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Category",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "brandId": {
@@ -2036,8 +2068,35 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
-              "indexes": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "categoryId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "product"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "category"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "categoryId"
+                  ],
+                  "name": "product_categoryId_idx_15c304f2",
+                  "prefix": "product_categoryId_idx",
+                  "unique": false
+                }
+              ],
               "primaryKey": {
                 "columns": [
                   "id"
@@ -2379,7 +2438,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "28c340b5e0f1737d65dda38e7e2d2ef0414913c41ff4c4d38de6ce4f0bbd029f"
+    "storageHash": "c3f99a4e9c3c7e3d9e54ee2fc306217535d855badc49801804e83188014f8d80"
   },
   "capabilities": {
     "postgres": {
