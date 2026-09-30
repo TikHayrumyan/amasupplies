@@ -46,7 +46,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       {
         question: "What products do you carry?",
         answer:
-          "AMA Supplies carries a catalog of over 10,000 medical and facility supplies, including incontinence and hygiene products, disinfectants, wound care, disposable gloves, and nutrition shakes. If you need something you do not see listed, ask us when you request a quote.",
+          "We specialize in high-quality personal care, hygiene, and medical supplies. Our product range includes personal care essentials, incontinence products, and disposable healthcare supplies tailored for both business and individual needs. You can browse our full catalog online or contact our sales team for detailed product sheets.",
       },
       {
         question: "What if I cannot find a product I need?",
@@ -84,16 +84,6 @@ export const FAQ_GROUPS: FaqGroup[] = [
         answer:
           "Each approved account receives customized wholesale pricing based on business type, order volume, and requirements. Public website prices are not displayed.",
       },
-      {
-        question: "Will I receive invoices?",
-        answer:
-          "Yes. Approved accounts can manage billing and payments from the account dashboard. If you need a copy of an invoice, contact us and we will assist you.",
-      },
-      {
-        question: "How do I make a payment?",
-        answer:
-          "You can pay by bank transfer, Zelle, check, or credit card. Approved accounts can also manage billing and make payments from the account dashboard.",
-      },
     ],
   },
   {
@@ -104,16 +94,6 @@ export const FAQ_GROUPS: FaqGroup[] = [
         question: "Why can’t I see pricing on the website?",
         answer:
           "To view our prices, you must first contact us to set up an approved account. Once your application is approved, our team will provide you with a comprehensive product list and price guide.",
-      },
-      {
-        question: "Do you sell to the public?",
-        answer:
-          "No. We are not a retail store. AMA Supplies works exclusively with approved business customers.",
-      },
-      {
-        question: "Who can open an account?",
-        answer:
-          "We work with verified businesses such as medical clinics and hospitals, healthcare professionals, dental and specialty practices, and commercial facilities and offices.",
       },
       {
         question: "How do I apply for an account?",
@@ -133,7 +113,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       {
         question: "What do I get after my account is approved?",
         answer:
-          "Approved customers can view product pricing, access negotiated wholesale rates, and place and manage orders. You also get an account dashboard to track orders, save supply lists, reorder products, manage billing, and keep business and delivery information up to date.",
+          "Once approved, a sales representative will contact you with full product pricing and catalog access.",
       },
       {
         question: "How long does account approval take?",
@@ -200,12 +180,8 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         question: "How do I check my order status?",
-        answer: (
-          <>
-            Approved accounts can track orders in the account dashboard. You
-            can also reach us through the {contactLink} for a status update.
-          </>
-        ),
+        answer:
+          "After your order is placed and processed, you will receive an email confirmation with your tracking details.",
       },
     ],
   },
@@ -273,10 +249,10 @@ export const FAQ_PREVIEW = pickFaqs([
 ]);
 
 export const ABOUT_FAQS = pickFaqs([
-  "Do you sell to the public?",
-  "Who can open an account?",
   "Why can’t I see pricing on the website?",
+  "How do I apply for an account?",
   "What do I get after my account is approved?",
+  "How long does account approval take?",
 ]);
 
 export const CONTACT_FAQS = pickFaqs([

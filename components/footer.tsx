@@ -5,16 +5,20 @@ import { BrandLogo } from "@/components/brand-logo";
 import {
   EMAIL_DISPLAY,
   EMAIL_HREF,
+  FACEBOOK_HREF,
+  GOOGLE_BUSINESS_HREF,
   HOURS_SATURDAY,
   HOURS_WEEKDAY,
+  INSTAGRAM_HREF,
   PHONE_DISPLAY,
   PHONE_HREF,
 } from "@/lib/contact";
 import { FOOTER_COMPANY, FOOTER_POLICIES, FOOTER_RESOURCES } from "@/lib/nav";
 
 const SOCIAL_LINKS = [
-  { href: "#", label: "Facebook", src: "/icons/facebook.svg" },
-  { href: "#", label: "Twitter", src: "/icons/twitter.svg" },
+  { href: FACEBOOK_HREF, label: "Facebook", src: "/icons/facebook.svg" },
+  { href: INSTAGRAM_HREF, label: "Instagram", src: "/icons/instagram.svg" },
+  { href: GOOGLE_BUSINESS_HREF, label: "Google", src: "/icons/google.svg" },
 ] as const;
 
 const linkClass =
@@ -63,15 +67,17 @@ export function Footer() {
               <li key={link.label}>
                 <Link
                   href={link.href}
-                  prefetch={false}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`${linkClass} inline-flex items-center gap-3`}
                 >
                   <Image
                     src={link.src}
-                    alt=""
-                    width={16}
-                    height={16}
+                    alt="social media icons"
+                    width={100}
+                    height={100}
                     unoptimized
+                    className="size-5"
                   />
                   {link.label}
                 </Link>
