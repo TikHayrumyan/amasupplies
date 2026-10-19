@@ -36,20 +36,20 @@ export default async function ProductsPage() {
       {categories.length === 0 ? (
         <p className="mt-12 text-muted-foreground">No categories yet.</p>
       ) : (
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid grid-cols-2 gap-x-3 gap-y-8 md:gap-x-6 md:gap-y-12 lg:grid-cols-5">
           {categories.map((category) => (
             <Link
               key={category.id}
               href={`/products/${category.slug}`}
               className="group block"
             >
-              <div className="relative aspect-4/3 bg-surface">
+              <div className="relative aspect-3/4 overflow-hidden rounded-lg bg-surface">
                 <Image
                   src={category.imageUrl}
-                  alt=""
+                  alt="Category Image"
                   fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover"
+                  sizes="(max-width: 1024px) 50vw, 20vw"
+                  className="object-contain"
                 />
                 <div className="absolute inset-0 bg-foreground/0 transition-colors duration-300 group-hover:bg-foreground/15" />
               </div>
