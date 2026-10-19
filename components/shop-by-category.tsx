@@ -26,10 +26,10 @@ export async function ShopByCategory() {
               <div className="relative aspect-3/4 overflow-hidden rounded-lg bg-surface">
                 <Image
                   src={category.imageUrl}
-                  alt=""
+                  alt="Category Image"
                   fill
                   sizes="(max-width: 1024px) 50vw, 20vw"
-                  className="object-cover"
+                  className="object-contain"
                 />
                 <div className="absolute inset-0 bg-foreground/0 transition-colors duration-300 group-hover:bg-foreground/15" />
               </div>

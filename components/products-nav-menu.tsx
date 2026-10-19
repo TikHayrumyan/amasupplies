@@ -30,7 +30,7 @@ export function ProductsNavMenu({
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger asChild className={triggerClass}>
-            <Link href="/products/all">
+            <Link href="/products">
               {label}
               <ChevronDownIcon
                 className="size-3 transition-transform duration-200 group-data-[state=open]:rotate-180"
@@ -42,7 +42,7 @@ export function ProductsNavMenu({
             <ul>
               <li>
                 <NavigationMenuLink asChild className={itemClass}>
-                  <Link href="/products">All products</Link>
+                  <Link href="/products/all">All products</Link>
                 </NavigationMenuLink>
               </li>
               {categories.map((category) => (
