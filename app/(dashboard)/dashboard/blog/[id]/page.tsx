@@ -6,6 +6,8 @@ import { BlogPostForm, DeleteBlogPostButton } from "../post-form";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Edit article" };
+
 export default async function EditBlogPostPage({
   params,
 }: PageProps<"/dashboard/blog/[id]">) {

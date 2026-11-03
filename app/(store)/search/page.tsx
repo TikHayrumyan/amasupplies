@@ -1,21 +1,32 @@
-import type { Metadata } from "next";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
 import { ProductCard } from "@/components/product-card";
 import { crumbs } from "@/lib/breadcrumbs";
 import { normalizeSearchQuery } from "@/lib/search-fields";
 import { searchPublishedProducts } from "@/lib/search";
+import {
+  breadcrumbSchema,
+  createMetadata,
+  JsonLd,
+  webPageSchema,
+} from "@/lib/seo";
 
 export const revalidate = 3600;
 
 export async function generateMetadata({
   searchParams,
-}: PageProps<"/search">): Promise<Metadata> {
+}: PageProps<"/search">) {
   const { query } = await searchParams;
   const q = typeof query === "string" ? normalizeSearchQuery(query) : "";
-  if (!q) {
-    return { title: "Search | AMA Supplies" };
-  }
-  return { title: `Search “${q}” | AMA Supplies` };
+  const title = q ? `Search “${q}”` : "Search";
+  const description = q
+    ? `Products matching “${q}” in the AMA Supplies wholesale catalog.`
+    : "Search the AMA Supplies wholesale catalog.";
+  return createMetadata({
+    title,
+    description,
+    path: q ? `/search?query=${encodeURIComponent(q)}` : "/search",
+    noIndex: true,
+  });
 }
 
 export default async function SearchPage({
@@ -27,8 +38,27 @@ export default async function SearchPage({
     ? await searchPublishedProducts(q)
     : { products: [], total: 0 };
 
+  const title = q ? `Results for “${q}”` : "Search products";
+  const description = q
+    ? `Products matching “${q}” in the AMA Supplies wholesale catalog.`
+    : "Search the AMA Supplies wholesale catalog.";
+
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
+      <JsonLd
+        data={[
+          webPageSchema({
+            path: "/search",
+            name: title,
+            description,
+            type: "SearchResultsPage",
+          }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Search", path: "/search" },
+          ]),
+        ]}
+      />
       <PageBreadcrumbs items={crumbs({ label: "Search", href: "/search" })} />
       <p className="caption mt-8 tracking-[0.16em] text-muted-foreground uppercase">
         Search

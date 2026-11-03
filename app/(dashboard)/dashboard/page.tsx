@@ -7,6 +7,8 @@ import { HeroEditor } from "./hero-editor";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Dashboard" };
+
 export default async function DashboardPage({
   searchParams,
 }: PageProps<"/dashboard">) {

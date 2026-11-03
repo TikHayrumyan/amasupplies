@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
@@ -14,28 +13,57 @@ import {
 } from "@/lib/catalog-fields";
 import { ALL_PRODUCTS_SLUG, getCatalog } from "@/lib/catalog";
 import { getCategoryBySlug } from "@/lib/category";
+import {
+  breadcrumbSchema,
+  createMetadata,
+  itemListSchema,
+  JsonLd,
+  webPageSchema,
+} from "@/lib/seo";
 
 export const revalidate = 3600;
 
+const ALL_TITLE = "All Products";
+const ALL_DESCRIPTION =
+  "Browse every published product in the AMA Supplies wholesale catalog.";
+
 export async function generateMetadata({
   params,
-}: PageProps<"/products/[slug]">): Promise<Metadata> {
+  searchParams,
+}: PageProps<"/products/[slug]">) {
   const { slug } = await params;
+  const query = parseCatalogQuery(await searchParams);
+  const noIndex =
+    hasActiveCatalogFilters(query) || query.sort !== "featured";
+
   if (slug === ALL_PRODUCTS_SLUG) {
-    return {
-      title: "All Products | AMA Supplies",
-      description:
-        "Browse every published product in the AMA Supplies wholesale catalog.",
-    };
+    return createMetadata({
+      title: ALL_TITLE,
+      description: ALL_DESCRIPTION,
+      path: `/products/${ALL_PRODUCTS_SLUG}`,
+      noIndex,
+    });
   }
   const category = await getCategoryBySlug(slug);
   if (!category || !category.isPublished) {
-    return {};
+    return createMetadata({
+      title: "Products",
+      description: "This category is not available.",
+      path: `/products/${slug}`,
+      noIndex: true,
+    });
   }
-  return {
-    title: `${category.title} | AMA Supplies`,
-    description: category.description || undefined,
-  };
+  return createMetadata({
+    title: category.title,
+    description:
+      category.description ||
+      `Wholesale ${category.title} for approved healthcare accounts from AMA Supplies.`,
+    path: `/products/${category.slug}`,
+    image: category.imageUrl
+      ? { url: category.imageUrl, alt: category.title }
+      : undefined,
+    noIndex,
+  });
 }
 
 export default async function CategoryPage({
@@ -68,8 +96,44 @@ export default async function CategoryPage({
     size: null,
   });
 
+  const pageTitle = category?.title ?? "All products";
+  const pageDescription =
+    category?.description ||
+    (category
+      ? `Wholesale ${category.title} for approved healthcare accounts from AMA Supplies.`
+      : ALL_DESCRIPTION);
+  const indexableList =
+    !filtersActive && catalog.sort === "featured";
+
   return (
     <div>
+      <JsonLd
+        data={[
+          webPageSchema({
+            path: pathname,
+            name: pageTitle,
+            description: pageDescription,
+            type: "CollectionPage",
+          }),
+          ...(indexableList
+            ? [
+                itemListSchema({
+                  path: pathname,
+                  name: pageTitle,
+                  items: catalog.products.map((product) => ({
+                    name: product.title,
+                    path: `/products/${product.categorySlug}/${product.slug}`,
+                  })),
+                }),
+              ]
+            : []),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Products", path: "/products" },
+            { name: pageTitle, path: pathname },
+          ]),
+        ]}
+      />
       <div className="container mx-auto px-4 pt-6 md:pt-8">
         <PageBreadcrumbs
           items={crumbs(

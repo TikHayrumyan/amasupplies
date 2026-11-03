@@ -8,6 +8,8 @@ import { ProductForm } from "../product-form";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "New product" };
+
 export default async function NewProductPage() {
   const [categories, brands, types, sizes, products] = await Promise.all([
     listCategories(),

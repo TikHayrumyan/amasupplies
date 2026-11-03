@@ -4,6 +4,8 @@ import { CategoryManager } from "./category-manager";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Categories" };
+
 export default async function CategoriesPage() {
   const [categories, types] = await Promise.all([
     listCategories(),

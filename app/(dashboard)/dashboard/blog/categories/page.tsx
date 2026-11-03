@@ -4,6 +4,8 @@ import { BlogCategoryManager } from "./category-manager";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Blog categories" };
+
 export default async function BlogCategoriesPage() {
   const categories = await listBlogCategories();
 

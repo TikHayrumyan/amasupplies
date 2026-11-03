@@ -4,6 +4,8 @@ import { ProductManager } from "./product-manager";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Products" };
+
 export default async function ProductsDashboardPage() {
   const [products, categories] = await Promise.all([
     listProducts(),

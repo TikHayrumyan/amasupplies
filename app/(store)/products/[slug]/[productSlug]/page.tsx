@@ -1,8 +1,7 @@
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AccountCta } from "@/components/account-cta";
 import { Badge } from "@/components/ui/badge";
-import { PRODUCT_FAQS } from "@/components/faq-data";
+import { PRODUCT_FAQS, faqSchemaItems } from "@/components/faq-data";
 import { FaqSection } from "@/components/faq-section";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
 import { ProductGallery } from "@/components/product-gallery";
@@ -11,6 +10,15 @@ import { RelatedProductsSlider } from "@/components/related-products-slider";
 import { crumbs } from "@/lib/breadcrumbs";
 import { cn } from "@/lib/utils";
 import { sanitizeProductHtml } from "@/lib/product-fields";
+import {
+  asDate,
+  breadcrumbSchema,
+  createMetadata,
+  faqSchema,
+  JsonLd,
+  productSchema,
+  webPageSchema,
+} from "@/lib/seo";
 import {
   getPublishedProductBySlug,
   listPublishedProducts,
@@ -27,18 +35,45 @@ export async function generateStaticParams() {
   }));
 }
 
+function productDescription(product: {
+  title: string;
+  brandTitle: string;
+  metaDescription: string;
+  description: string;
+}) {
+  const written = product.metaDescription.trim();
+  if (written) return written;
+  const plain = product.description
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (plain) return plain.length > 160 ? `${plain.slice(0, 157).trimEnd()}...` : plain;
+  return `${product.title} by ${product.brandTitle}. Wholesale medical supplies for approved AMA Supplies accounts.`;
+}
+
 export async function generateMetadata({
   params,
-}: PageProps<"/products/[slug]/[productSlug]">): Promise<Metadata> {
+}: PageProps<"/products/[slug]/[productSlug]">) {
   const { slug, productSlug } = await params;
   const product = await getPublishedProductBySlug(slug, productSlug);
   if (!product) {
-    return {};
+    return createMetadata({
+      title: "Product",
+      description: "This product is not available.",
+      path: `/products/${slug}/${productSlug}`,
+      noIndex: true,
+    });
   }
-  return {
-    title: `${product.metaTitle || product.title} | AMA Supplies`,
-    description: product.metaDescription || undefined,
-  };
+  const path = `/products/${product.categorySlug}/${product.slug}`;
+  return createMetadata({
+    title: product.metaTitle || product.title,
+    description: productDescription(product),
+    path,
+    image: product.imageUrl
+      ? { url: product.imageUrl, alt: product.title }
+      : undefined,
+  });
 }
 
 export default async function ProductPage({
@@ -57,9 +92,41 @@ export default async function ProductPage({
   ].filter(Boolean);
   const description = sanitizeProductHtml(product.description);
   const related = await listRelatedPublishedProducts(product.id);
+  const path = `/products/${product.categorySlug}/${product.slug}`;
+  const summary = productDescription(product);
 
   return (
     <>
+      <JsonLd
+        data={[
+          webPageSchema({
+            path,
+            name: product.title,
+            description: summary,
+            dateModified: asDate(product.updatedAt),
+          }),
+          productSchema({
+            path,
+            name: product.title,
+            description: summary,
+            images,
+            sku: product.sku,
+            itemNumber: product.itemNumber,
+            brand: product.brandTitle,
+            category: product.categoryTitle,
+          }),
+          faqSchema(faqSchemaItems(PRODUCT_FAQS)),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Products", path: "/products" },
+            {
+              name: product.categoryTitle,
+              path: `/products/${product.categorySlug}`,
+            },
+            { name: product.title, path },
+          ]),
+        ]}
+      />
       <div className="container mx-auto px-4 py-12 md:py-16">
         <PageBreadcrumbs
           items={crumbs(

@@ -8,6 +8,8 @@ import { DeleteProductButton, ProductForm } from "../product-form";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Edit product" };
+
 export default async function EditProductPage({
   params,
 }: PageProps<"/dashboard/products/[id]">) {

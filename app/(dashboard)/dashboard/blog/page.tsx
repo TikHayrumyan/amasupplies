@@ -5,6 +5,8 @@ import { BlogPostManager } from "./post-manager";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Blog" };
+
 export default async function BlogDashboardPage() {
   const [posts, categories] = await Promise.all([
     listBlogPosts(),

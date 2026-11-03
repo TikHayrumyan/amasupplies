@@ -5,6 +5,8 @@ import { BlogPostForm } from "../post-form";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "New article" };
+
 export default async function NewBlogPostPage() {
   const [categories, products] = await Promise.all([
     listBlogCategories(),

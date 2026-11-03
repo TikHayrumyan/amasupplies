@@ -1,8 +1,19 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { DashboardNav } from "@/app/(dashboard)/dashboard-nav";
 import { InquiryUnreadBadge } from "@/app/(dashboard)/inquiry-unread-badge";
 import { requireStaff } from "@/lib/auth";
+import { seo } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  title: {
+    default: `Dashboard | ${seo.siteName}`,
+    template: `%s | ${seo.siteName}`,
+  },
+  description: "Staff dashboard for AMA Supplies.",
+  robots: { index: false, follow: true },
+};
 
 export default async function DashboardLayout({
   children,

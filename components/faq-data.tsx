@@ -4,6 +4,17 @@ import type { FaqGroup, FaqItem } from "@/lib/faq-fields";
 
 export type { FaqGroup, FaqItem };
 
+/** Plain answers for FAQPage JSON-LD. Uses the same wording as the page. */
+export function faqSchemaItems(items: readonly FaqItem[]) {
+  return items.map((item) => {
+    const answer = typeof item.answer === "string" ? item.answer : item.text;
+    if (!answer) {
+      throw new Error(`FAQ is missing plain text: ${item.question}`);
+    }
+    return { question: item.question, answer };
+  });
+}
+
 const contactLink = (
   <Link
     href="/contact"
@@ -20,6 +31,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
     items: [
       {
         question: "How do I place an order?",
+        text: "Getting started is easy. Simply reach out to us by phone or email through our Contact page. One of our representatives will get back to you shortly to walk you through placing your first bulk order and ensure you get exactly what you need.",
         answer: (
           <>
             Getting started is easy. Simply reach out to us by phone or email
@@ -35,6 +47,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         question: "Can I place an order on the website?",
+        text: "The website is for browsing our catalog. To place an order, contact us through the Contact page or request an approved account. Once approved, you can place and manage orders through your account.",
         answer: (
           <>
             The website is for browsing our catalog. To place an order, contact
@@ -50,6 +63,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         question: "What if I cannot find a product I need?",
+        text: "Send us the item name, brand, or item number through the Contact page. We will check availability and help you source the supplies your facility needs.",
         answer: (
           <>
             Send us the item name, brand, or item number through the{" "}
@@ -97,6 +111,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         question: "How do I apply for an account?",
+        text: `Request an account through our Contact page, or call ${PHONE_DISPLAY}. A representative will follow up to complete your application.`,
         answer: (
           <>
             Request an account through our {contactLink}, or call{" "}
@@ -117,6 +132,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         question: "How long does account approval take?",
+        text: "Timing depends on the information you provide. After you contact us, our team will follow up to review your application and confirm next steps. Use the Contact page to get started.",
         answer: (
           <>
             Timing depends on the information you provide. After you contact us,
@@ -127,6 +143,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         question: "What are your business hours?",
+        text: `Monday–Friday, 9 AM – 6 PM, and Saturday, 10 AM – 4 PM. Call ${PHONE_DISPLAY} or email ${EMAIL_DISPLAY}.`,
         answer: (
           <>
             Monday–Friday, 9 AM – 6 PM, and Saturday, 10 AM – 4 PM. Call{" "}
@@ -165,6 +182,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         question: "How long does delivery take?",
+        text: "Lead times vary depending on your destination and product availability. Contact us through the Contact page for an estimate for your location.",
         answer: (
           <>
             Lead times vary depending on your destination and product

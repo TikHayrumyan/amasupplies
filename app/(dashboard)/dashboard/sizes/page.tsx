@@ -3,6 +3,8 @@ import { SizeManager } from "./size-manager";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Sizes" };
+
 export default async function SizesPage() {
   const sizes = await listSizes();
 

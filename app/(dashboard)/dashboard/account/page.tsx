@@ -5,6 +5,8 @@ import { StaffManager } from "./staff-manager";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Account" };
+
 export default async function AccountPage() {
   const { claims, role } = await requireAdmin();
   const { users, error } = await listStaff();

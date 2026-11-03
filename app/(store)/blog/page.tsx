@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,11 +7,17 @@ import { listBlogCategories } from "@/lib/blog-category";
 import { formatBlogDate, type BlogPostListItem } from "@/lib/blog-fields";
 import { listPublishedBlogPosts } from "@/lib/blog";
 import { cn } from "@/lib/utils";
+import {
+  blogSchema,
+  breadcrumbSchema,
+  createMetadata,
+  JsonLd,
+} from "@/lib/seo";
 
 export const revalidate = 3600;
 
 const LISTING_DESCRIPTION =
-  "Articles from AMA Supplies for approved healthcare accounts.";
+  "Notes from AMA Supplies on wholesale medical supplies and working with approved healthcare accounts.";
 
 function categoryParam(
   value: string | string[] | undefined,
@@ -22,23 +27,30 @@ function categoryParam(
 
 export async function generateMetadata({
   searchParams,
-}: PageProps<"/blog">): Promise<Metadata> {
+}: PageProps<"/blog">) {
   const params = await searchParams;
   const slug = categoryParam(params.category);
   if (!slug) {
-    return {
-      title: "Blog | AMA Supplies",
+    return createMetadata({
+      title: "Medical Supply Blog",
       description: LISTING_DESCRIPTION,
-    };
+      path: "/blog",
+    });
   }
   const category = (await listBlogCategories()).find((row) => row.slug === slug);
   if (!category) {
-    return {};
+    return createMetadata({
+      title: "Blog",
+      description: "This blog category is not available.",
+      path: "/blog",
+      noIndex: true,
+    });
   }
-  return {
-    title: `${category.title} | Blog | AMA Supplies`,
-    description: LISTING_DESCRIPTION,
-  };
+  return createMetadata({
+    title: `${category.title} Articles`,
+    description: `${category.title} articles from AMA Supplies for approved healthcare accounts.`,
+    path: `/blog?category=${category.slug}`,
+  });
 }
 
 export default async function BlogPage({
@@ -70,6 +82,20 @@ export default async function BlogPage({
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
+      <JsonLd
+        data={[
+          blogSchema(
+            posts.map((post) => ({
+              title: post.title,
+              path: `/blog/${post.slug}`,
+            })),
+          ),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Blog", path: "/blog" },
+          ]),
+        ]}
+      />
       <PageBreadcrumbs
         items={crumbs({ label: "Blog", href: "/blog" })}
       />

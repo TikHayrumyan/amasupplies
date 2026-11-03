@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+import { seo } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  title: `Sign in | ${seo.siteName}`,
+  description: "Staff sign in for AMA Supplies.",
+  robots: { index: false, follow: true },
+};
+
 export default function AuthLayout({
   children,
 }: LayoutProps<"/">) {

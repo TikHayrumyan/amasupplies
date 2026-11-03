@@ -1,23 +1,52 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
 import { crumbs } from "@/lib/breadcrumbs";
 import { listPublishedCategories } from "@/lib/category";
+import {
+  breadcrumbSchema,
+  createMetadata,
+  itemListSchema,
+  JsonLd,
+  webPageSchema,
+} from "@/lib/seo";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Wholesale Medical Supplies | AMA Supplies",
-  description:
-    "Browse the AMA Supplies wholesale catalog by category. Medical supplies for approved healthcare accounts, with nationwide shipping.",
-};
+const PATH = "/products";
+const title = "Wholesale Medical Supplies";
+const description =
+  "Browse the AMA Supplies wholesale catalog by category. Medical supplies for approved healthcare accounts, with nationwide shipping.";
+
+export const metadata = createMetadata({ title, description, path: PATH });
 
 export default async function ProductsPage() {
   const categories = await listPublishedCategories();
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
+      <JsonLd
+        data={[
+          webPageSchema({
+            path: PATH,
+            name: title,
+            description,
+            type: "CollectionPage",
+          }),
+          itemListSchema({
+            path: PATH,
+            name: title,
+            items: categories.map((category) => ({
+              name: category.title,
+              path: `/products/${category.slug}`,
+            })),
+          }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Products", path: PATH },
+          ]),
+        ]}
+      />
       <PageBreadcrumbs
         items={crumbs({ label: "Products", href: "/products" })}
       />

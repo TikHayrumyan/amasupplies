@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { AccountCta } from "@/components/account-cta";
@@ -7,8 +6,15 @@ import { RelatedProductsSlider } from "@/components/related-products-slider";
 import { crumbs } from "@/lib/breadcrumbs";
 import {
   formatBlogDate,
+  toBlogDate,
   toIsoDate,
 } from "@/lib/blog-fields";
+import {
+  blogPostingSchema,
+  breadcrumbSchema,
+  createMetadata,
+  JsonLd,
+} from "@/lib/seo";
 import {
   getPublishedBlogPostBySlug,
   listBlogRelatedPublishedProducts,
@@ -23,50 +29,44 @@ export async function generateStaticParams() {
   return posts.map((post) => ({ slug: post.slug }));
 }
 
-/**
- * Canonical origin for metadata / JSON-LD. Uses a build-time env var so the
- * page can be statically generated (no per-request `headers()` access).
- */
-function siteOrigin() {
-  return process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "";
-}
-
 export async function generateMetadata({
   params,
-}: PageProps<"/blog/[slug]">): Promise<Metadata> {
+}: PageProps<"/blog/[slug]">) {
   const { slug } = await params;
   const post = await getPublishedBlogPostBySlug(slug);
   if (!post) {
-    return {};
+    return createMetadata({
+      title: "Blog",
+      description: "This article is not available.",
+      path: `/blog/${slug}`,
+      noIndex: true,
+    });
   }
-  const origin = siteOrigin();
+
   const path = `/blog/${post.slug}`;
   const title = post.metaTitle || post.title;
   const description = post.metaDescription || post.excerpt;
   const publishedTime = toIsoDate(post.publishedAt);
   const modifiedTime = toIsoDate(post.updatedAt);
+  const metadata = createMetadata({
+    title,
+    description,
+    path,
+    image: post.imageUrl
+      ? { url: post.imageUrl, alt: post.title }
+      : undefined,
+  });
 
   return {
-    title: `${title} | AMA Supplies`,
-    description,
-    authors: [{ name: post.authorName }],
-    alternates: origin ? { canonical: `${origin}${path}` } : undefined,
+    ...metadata,
+    authors: post.authorName ? [{ name: post.authorName }] : undefined,
     openGraph: {
+      ...metadata.openGraph,
       type: "article",
-      title,
-      description,
-      url: origin ? `${origin}${path}` : undefined,
-      images: [{ url: post.imageUrl }],
-      publishedTime,
-      modifiedTime,
-      authors: [post.authorName],
-      section: post.categoryTitle,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [post.imageUrl],
+      ...(publishedTime ? { publishedTime } : {}),
+      ...(modifiedTime ? { modifiedTime } : {}),
+      ...(post.authorName ? { authors: [post.authorName] } : {}),
+      ...(post.categoryTitle ? { section: post.categoryTitle } : {}),
     },
   };
 }
@@ -82,40 +82,30 @@ export default async function BlogPostPage({
   }
 
   const related = await listBlogRelatedPublishedProducts(post.id);
-  const origin = siteOrigin();
   const content = sanitizeProductHtml(post.content);
-  const published = toIsoDate(post.publishedAt);
-  const modified = toIsoDate(post.updatedAt);
   const path = `/blog/${post.slug}`;
-  const jsonLd = origin
-    ? {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: post.title,
-        description: post.excerpt,
-        image: post.imageUrl,
-        datePublished: published,
-        dateModified: modified,
-        author: {
-          "@type": "Person",
-          name: post.authorName,
-        },
-        publisher: {
-          "@type": "Organization",
-          name: "AMA Supplies",
-        },
-        mainEntityOfPage: `${origin}${path}`,
-      }
-    : null;
 
   return (
     <>
-      {jsonLd ? (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      ) : null}
+      <JsonLd
+        data={[
+          blogPostingSchema({
+            path,
+            title: post.title,
+            description: post.metaDescription || post.excerpt,
+            image: post.imageUrl,
+            publishedAt: toBlogDate(post.publishedAt) ?? undefined,
+            updatedAt: toBlogDate(post.updatedAt) ?? undefined,
+            author: post.authorName,
+            section: post.categoryTitle,
+          }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Blog", path: "/blog" },
+            { name: post.title, path },
+          ]),
+        ]}
+      />
       <div className="container mx-auto px-4 py-12 md:py-16">
         <PageBreadcrumbs
           items={crumbs(

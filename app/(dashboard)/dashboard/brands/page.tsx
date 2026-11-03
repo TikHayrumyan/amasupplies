@@ -3,6 +3,8 @@ import { BrandManager } from "./brand-manager";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Brands" };
+
 export default async function BrandsPage() {
   const brands = await listProductBrands();
 

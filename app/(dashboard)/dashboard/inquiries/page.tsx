@@ -9,6 +9,8 @@ import { InquiryManager } from "./inquiry-manager";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Inquiries" };
+
 export default async function InquiriesPage({
   searchParams,
 }: PageProps<"/dashboard/inquiries">) {
