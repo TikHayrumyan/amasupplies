@@ -137,7 +137,7 @@ export function MobileNav({ categories }: { categories: NavCategory[] }) {
         </SheetContent>
       </Sheet>
 
-      <Link href="/" className="justify-self-center" aria-label="AmaSupplies">
+      <Link href="/" className="justify-self-center" aria-label="AMA Supplies">
         <BrandLogo priority />
       </Link>
 

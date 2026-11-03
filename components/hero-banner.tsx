@@ -21,7 +21,7 @@ export function HeroBanner({
   preview = false,
 }: HeroBannerProps) {
   const hasMedia = Boolean(videoUrl || imageUrl);
-  const heading = title || (preview ? "Add a title" : "AmaSupplies");
+  const heading = title || (preview ? "Add a title" : "AMA Supplies");
   const copy = description || (preview ? "Add a short description." : "");
 
   return (
@@ -76,7 +76,7 @@ export function HeroBanner({
                 : "border-border text-muted-foreground",
             )}
           >
-            Free consultation
+            Wholesale for approved businesses
           </span>
           <h1
             className={cn(
@@ -105,7 +105,7 @@ export function HeroBanner({
                 "bg-white text-foreground hover:bg-white/90",
             )}
           >
-            <Link href="/contact">Get a Quote </Link>
+            <Link href="/contact">Request an Account</Link>
           </Button>
         </div>
       </div>

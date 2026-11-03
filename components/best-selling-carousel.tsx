@@ -50,7 +50,7 @@ export function BestSellingCarousel({
                   <div className="relative aspect-4/5 overflow-hidden bg-surface">
                     <Image
                       src={product.imageUrl}
-                      alt=""
+                      alt={product.title}
                       fill
                       sizes="(max-width: 640px) 78vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 20vw"
                       className="object-contain"

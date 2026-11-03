@@ -1,7 +1,7 @@
 const ITEMS = [
   ["Premium ", "Quality"],
   ["Wholesale", "pricing"],
-  ["Fast worldwide", "shipping"],
+  ["Fast nationwide", "shipping"],
 ] as const;
 
 export function HomeHighlights() {

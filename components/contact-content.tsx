@@ -9,10 +9,10 @@ import {
   ADDRESS_MAP_EMBED,
   ADDRESS_MAPS_HREF,
   ADDRESS_STREET,
+  EMAIL_DISPLAY,
+  EMAIL_HREF,
   HOURS_SATURDAY,
   HOURS_WEEKDAY,
-  INQUIRY_EMAIL,
-  INQUIRY_EMAIL_HREF,
   PHONE_DISPLAY,
   PHONE_HREF,
 } from "@/lib/contact";
@@ -62,10 +62,10 @@ export function ContactContent() {
             </InfoBlock>
             <InfoBlock label="Email">
               <Link
-                href={INQUIRY_EMAIL_HREF}
+                href={EMAIL_HREF}
                 className="transition-colors hover:text-primary"
               >
-                {INQUIRY_EMAIL}
+                {EMAIL_DISPLAY}
               </Link>
             </InfoBlock>
             <InfoBlock label="Address">

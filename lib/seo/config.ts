@@ -1,8 +1,9 @@
 import {
   ADDRESS_STREET,
+  EMAIL_DISPLAY,
   FACEBOOK_HREF,
+  GOOGLE_BUSINESS_HREF,
   INSTAGRAM_HREF,
-  INQUIRY_EMAIL,
   PHONE_HREF,
 } from "@/lib/contact";
 
@@ -49,7 +50,7 @@ export const seo = {
   /** Business NAP + profile. Mirrors the public contact details. */
   business: {
     legalName: "AMA Supplies",
-    email: INQUIRY_EMAIL,
+    email: EMAIL_DISPLAY,
     /** E.164 phone, derived from the single tel: href in lib/contact. */
     telephone: PHONE_HREF.replace("tel:", ""),
     logo: "/logo/ama-logo-bg.png",
@@ -60,6 +61,9 @@ export const seo = {
       postalCode: "91204",
       addressCountry: "US",
     },
+    /** Pin coordinates from the Google Business Profile. */
+    geo: { latitude: 34.1322291, longitude: -118.2611207 },
+    map: GOOGLE_BUSINESS_HREF,
     openingHours: [
       {
         days: [
@@ -86,7 +90,7 @@ export const seo = {
     ],
     paymentAccepted: "Bank transfer, Zelle, check, and credit card",
     currenciesAccepted: "USD",
-    sameAs: [FACEBOOK_HREF, INSTAGRAM_HREF],
+    sameAs: [GOOGLE_BUSINESS_HREF, FACEBOOK_HREF, INSTAGRAM_HREF],
   },
 } as const;
 

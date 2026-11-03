@@ -11,7 +11,7 @@ export function MainNav({ categories }: { categories: NavCategory[] }) {
   return (
     <div className="hidden w-full items-center justify-between gap-8 md:flex">
       <div className="flex min-w-0 items-center gap-5">
-        <Link href="/" className="shrink-0" aria-label="AmaSupplies">
+        <Link href="/" className="shrink-0" aria-label="AMA Supplies">
           <BrandLogo className="h-12 w-auto md:h-12" priority />
         </Link>
         <Link

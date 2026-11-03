@@ -11,7 +11,7 @@ export function BrandLogo({
   return (
     <Image
       src="/logo/ama-logo.png"
-      alt="AmaSupplies"
+      alt="AMA Supplies"
       width={130}
       height={80}
       priority={priority}

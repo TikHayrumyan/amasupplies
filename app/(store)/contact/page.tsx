@@ -1,12 +1,10 @@
 import { ContactContent } from "@/components/contact-content";
-import { CONTACT_FAQS, faqSchemaItems } from "@/components/faq-data";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
 import { crumbs } from "@/lib/breadcrumbs";
 import { ADDRESS_DISPLAY } from "@/lib/contact";
 import {
   breadcrumbSchema,
   createMetadata,
-  faqSchema,
   JsonLd,
   webPageSchema,
 } from "@/lib/seo";
@@ -28,7 +26,6 @@ export default function ContactPage() {
             description,
             type: "ContactPage",
           }),
-          faqSchema(faqSchemaItems(CONTACT_FAQS)),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Contact", path: PATH },

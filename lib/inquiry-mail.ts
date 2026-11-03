@@ -1,7 +1,7 @@
 import "server-only";
 
 import { Resend } from "resend";
-import { INQUIRY_EMAIL } from "@/lib/contact";
+import { EMAIL_DISPLAY } from "@/lib/contact";
 
 function escapeHtml(value: string) {
   return value
@@ -27,7 +27,7 @@ export async function sendInquiryEmail(input: {
     const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
       from: process.env.RESEND_FROM ?? "AMA Supplies <onboarding@resend.dev>",
-      to: process.env.CONTACT_FORM_TO ?? INQUIRY_EMAIL,
+      to: process.env.CONTACT_FORM_TO ?? EMAIL_DISPLAY,
       replyTo: input.replyTo,
       subject: input.subject,
       text: input.text,

@@ -48,7 +48,7 @@ export function RelatedProductsSlider({
                 <div className="relative aspect-4/3 bg-surface">
                   <Image
                     src={product.imageUrl}
-                    alt=""
+                    alt={product.title}
                     fill
                     sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-contain"

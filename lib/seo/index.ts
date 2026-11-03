@@ -1,7 +1,7 @@
 /**
  * SEO toolkit — single entry point.
  *
- *   import { createMetadata, JsonLd, productSchema } from "@/lib/seo"
+ *   import { createMetadata, JsonLd, webPageSchema } from "@/lib/seo"
  *
  * - config:   seo, schemaIds, absoluteUrl, asDate  (one source of truth)
  * - metadata: createMetadata                        (per-page <head> metadata)
@@ -14,7 +14,6 @@ export {
   localBusinessSchema,
   websiteSchema,
   webPageSchema,
-  productSchema,
   itemListSchema,
   faqSchema,
   blogSchema,

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { AccountCta } from "@/components/account-cta";
 import { Badge } from "@/components/ui/badge";
-import { PRODUCT_FAQS, faqSchemaItems } from "@/components/faq-data";
+import { PRODUCT_FAQS } from "@/components/faq-data";
 import { FaqSection } from "@/components/faq-section";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
 import { ProductGallery } from "@/components/product-gallery";
@@ -14,9 +14,7 @@ import {
   asDate,
   breadcrumbSchema,
   createMetadata,
-  faqSchema,
   JsonLd,
-  productSchema,
   webPageSchema,
 } from "@/lib/seo";
 import {
@@ -105,17 +103,6 @@ export default async function ProductPage({
             description: summary,
             dateModified: asDate(product.updatedAt),
           }),
-          productSchema({
-            path,
-            name: product.title,
-            description: summary,
-            images,
-            sku: product.sku,
-            itemNumber: product.itemNumber,
-            brand: product.brandTitle,
-            category: product.categoryTitle,
-          }),
-          faqSchema(faqSchemaItems(PRODUCT_FAQS)),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Products", path: "/products" },

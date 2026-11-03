@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WhoWeAreSlider } from "@/components/who-we-are-slider";

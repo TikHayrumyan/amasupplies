@@ -7,8 +7,8 @@ import { absoluteUrl, schemaIds, seo } from "./config";
  * The business and website nodes are rendered on every public page by the store
  * layout; page-level nodes reference them by @id instead of repeating the data.
  *
- * Product nodes do not include an Offer. Wholesale prices are shown only to
- * approved accounts, and a placeholder price would be invalid structured data.
+ * Product nodes are not emitted: Google requires offers, review or
+ * aggregateRating, and wholesale prices are shown only to approved accounts.
  */
 
 type Thing = Record<string, unknown>;
@@ -40,6 +40,8 @@ export function localBusinessSchema(): Thing {
     currenciesAccepted: business.currenciesAccepted,
     paymentAccepted: business.paymentAccepted,
     address: { "@type": "PostalAddress", ...business.address },
+    geo: { "@type": "GeoCoordinates", ...business.geo },
+    hasMap: business.map,
     areaServed: areaServed(),
     openingHoursSpecification: business.openingHours.map((hours) => ({
       "@type": "OpeningHoursSpecification",
@@ -70,14 +72,6 @@ export function websiteSchema(): Thing {
     description: seo.description,
     inLanguage,
     publisher: { "@id": schemaIds.organization },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${seo.siteUrl}/search?query={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
 }
 
@@ -118,46 +112,6 @@ export function webPageSchema({
     isPartOf: { "@id": schemaIds.website },
     ...(aboutBusiness ? { mainEntity: business } : { about: business }),
     ...(dateModified ? { dateModified: dateModified.toISOString() } : {}),
-  };
-}
-
-type ProductSchemaInput = {
-  path: string;
-  name: string;
-  description: string;
-  images?: readonly string[];
-  sku?: string;
-  itemNumber?: string;
-  brand?: string;
-  category?: string;
-};
-
-/** A catalog product. Price is omitted because it is not public. */
-export function productSchema({
-  path,
-  name,
-  description,
-  images = [],
-  sku,
-  itemNumber,
-  brand,
-  category,
-}: ProductSchemaInput): Thing {
-  const url = absoluteUrl(path);
-  const image = images.filter(Boolean).map((item) => absoluteUrl(item));
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name,
-    description,
-    url,
-    mainEntityOfPage: { "@type": "WebPage", "@id": `${url}#webpage` },
-    ...(image.length > 0 ? { image } : {}),
-    ...(sku ? { sku } : {}),
-    ...(itemNumber ? { mpn: itemNumber } : {}),
-    ...(brand ? { brand: { "@type": "Brand", name: brand } } : {}),
-    ...(category ? { category } : {}),
   };
 }
 

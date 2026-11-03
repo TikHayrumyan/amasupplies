@@ -11,7 +11,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
       <div className="relative aspect-4/3 bg-surface">
         <Image
           src={product.imageUrl}
-          alt=""
+          alt={product.title}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
           className="object-contain"

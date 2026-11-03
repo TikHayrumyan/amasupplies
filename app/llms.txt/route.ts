@@ -3,8 +3,8 @@ import { listPublishedCategories } from "@/lib/category";
 import {
   ADDRESS_DISPLAY,
   HOURS_SATURDAY,
+  EMAIL_DISPLAY,
   HOURS_WEEKDAY,
-  INQUIRY_EMAIL,
   PHONE_DISPLAY,
 } from "@/lib/contact";
 import { listPublishedProducts } from "@/lib/product";
@@ -37,7 +37,7 @@ export async function GET() {
     "## Contact",
     "",
     `- Phone: ${PHONE_DISPLAY}`,
-    `- Email: ${INQUIRY_EMAIL}`,
+    `- Email: ${EMAIL_DISPLAY}`,
     `- Address: ${ADDRESS_DISPLAY}`,
     `- Hours: ${HOURS_WEEKDAY}; ${HOURS_SATURDAY}`,
     "- Service area: United States, with local pickup in Glendale, California",

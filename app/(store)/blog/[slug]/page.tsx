@@ -129,7 +129,7 @@ export default async function BlogPostPage({
         <div className="relative mt-10 aspect-4/3 bg-surface md:aspect-2/1">
           <Image
             src={post.imageUrl}
-            alt=""
+            alt={post.title}
             fill
             priority
             sizes="100vw"

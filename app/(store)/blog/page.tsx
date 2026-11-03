@@ -163,7 +163,7 @@ function FeaturedPost({ post }: { post: BlogPostListItem }) {
       <div className="relative aspect-4/3 bg-surface">
         <Image
           src={post.imageUrl}
-          alt=""
+          alt={post.title}
           fill
           priority
           sizes="(max-width: 1024px) 100vw, 50vw"
@@ -198,7 +198,7 @@ function BlogCard({ post }: { post: BlogPostListItem }) {
       <div className="relative aspect-4/3 bg-surface">
         <Image
           src={post.imageUrl}
-          alt=""
+          alt={post.title}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover"

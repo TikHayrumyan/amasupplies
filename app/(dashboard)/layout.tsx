@@ -30,7 +30,7 @@ export default async function DashboardLayout({
             href="/dashboard"
             className="text-sm font-semibold tracking-[0.22em] uppercase"
           >
-            AmaSupplies
+            AMA Supplies
           </Link>
           <DashboardNav
             isAdmin={role === "admin"}

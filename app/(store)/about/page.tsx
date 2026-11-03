@@ -1,11 +1,9 @@
 import { AboutContent } from "@/components/about-content";
-import { ABOUT_FAQS, faqSchemaItems } from "@/components/faq-data";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
 import { crumbs } from "@/lib/breadcrumbs";
 import {
   breadcrumbSchema,
   createMetadata,
-  faqSchema,
   JsonLd,
   webPageSchema,
 } from "@/lib/seo";
@@ -28,7 +26,6 @@ export default function AboutPage() {
             description,
             type: "AboutPage",
           }),
-          faqSchema(faqSchemaItems(ABOUT_FAQS)),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "About Us", path: PATH },

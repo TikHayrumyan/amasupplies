@@ -25,7 +25,7 @@ export default async function LoginPage({
         />
         <div className="absolute inset-0 bg-black/40" />
         <p className="relative text-sm font-semibold tracking-[0.22em] uppercase">
-          AmaSupplies
+          AMA Supplies
         </p>
         <div className="relative max-w-sm">
           <p className="text-4xl font-medium leading-tight tracking-tight">
@@ -43,7 +43,7 @@ export default async function LoginPage({
       <div className="relative z-10 flex items-center justify-center px-6 py-16 lg:bg-background lg:px-16">
         <div className="w-full max-w-sm bg-background px-6 py-10 lg:bg-transparent lg:p-0">
           <p className="text-sm font-semibold tracking-[0.22em] uppercase lg:hidden">
-            AmaSupplies
+            AMA Supplies
           </p>
           <h1 className="mt-10 text-[28px] font-medium tracking-tight lg:mt-0">
             Sign in

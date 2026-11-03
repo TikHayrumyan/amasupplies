@@ -41,11 +41,7 @@ function FooterLinks({
     <ul className="mt-5 flex flex-col gap-3">
       {links.map((link) => (
         <li key={link.label}>
-          <Link
-            href={link.href}
-            prefetch={link.href === "#" ? false : undefined}
-            className={linkClass}
-          >
+          <Link href={link.href} className={linkClass}>
             {link.label}
           </Link>
         </li>
@@ -59,7 +55,7 @@ export function Footer() {
     <footer className="border-t border-border bg-background">
       <div className="container mx-auto grid gap-12 px-4 py-16 md:grid-cols-2 xl:grid-cols-5">
         <div>
-          <Link href="/" aria-label="AmaSupplies">
+          <Link href="/" aria-label="AMA Supplies">
             <BrandLogo className="h-15 w-auto md:h-15" />
           </Link>
           <ul className="mt-8 flex flex-col gap-3">
@@ -73,7 +69,7 @@ export function Footer() {
                 >
                   <Image
                     src={link.src}
-                    alt="social media icons"
+                    alt=""
                     width={100}
                     height={100}
                     unoptimized
