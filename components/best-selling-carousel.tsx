@@ -65,7 +65,7 @@ export function BestSellingCarousel({
                           alt={product.title}
                           fill
                           sizes="(max-width: 1024px) 50vw, 20vw"
-                          className="object-contain"
+                          className="object-contain p-4"
                         />
                         <Badge className="absolute top-3 left-3 rounded-none tracking-[0.14em] uppercase">
                           Best seller

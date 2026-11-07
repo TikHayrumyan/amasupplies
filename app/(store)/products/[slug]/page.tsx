@@ -253,7 +253,7 @@ async function CatalogResults({
               No products match these filters.
             </p>
           ) : (
-            <div className="mt-8 grid gap-10 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-8 grid gap-10 sm:grid-cols-2 xl:grid-cols-4">
               {catalog.products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}

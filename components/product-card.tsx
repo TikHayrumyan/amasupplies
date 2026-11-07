@@ -14,7 +14,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           alt={product.title}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
-          className="object-contain"
+          className="object-contain p-4"
         />
         <div className="absolute inset-0 bg-foreground/0 transition-colors duration-300 group-hover:bg-foreground/15" />
       </div>
