@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import type { ProductListItem } from "@/lib/product-fields";
 
 export function ProductCard({ product }: { product: ProductListItem }) {
@@ -16,6 +17,11 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           sizes="(max-width: 768px) 100vw, 33vw"
           className="object-contain p-4"
         />
+        {product.isBestSeller ? (
+          <Badge className="absolute top-3 left-3 rounded-none tracking-[0.14em] uppercase">
+            Best seller
+          </Badge>
+        ) : null}
         <div className="absolute inset-0 bg-foreground/0 transition-colors duration-300 group-hover:bg-foreground/15" />
       </div>
 
