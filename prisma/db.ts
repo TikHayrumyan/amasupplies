@@ -1,7 +1,7 @@
-import "dotenv/config";
 import postgres from "@prisma/orm-postgres/runtime";
 import type { Contract } from "./contract.d";
 import contractJson from "./contract.json" with { type: "json" };
+import { pool } from "./pool";
 
 const globalForDb = globalThis as typeof globalThis & {
   prisma?: ReturnType<typeof connect>;
@@ -9,14 +9,7 @@ const globalForDb = globalThis as typeof globalThis & {
 };
 
 function connect() {
-  return postgres<Contract>({
-    contractJson,
-    url: process.env.DATABASE_URL!,
-    poolOptions: {
-      connectionTimeoutMillis: 5_000,
-      idleTimeoutMillis: 10_000,
-    },
-  });
+  return postgres<Contract>({ contractJson, pg: pool });
 }
 
 const profileHash = contractJson.profileHash;
