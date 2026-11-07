@@ -3,7 +3,7 @@ import Link from "next/link";
 import { listPublishedCategories } from "@/lib/category";
 
 export async function ShopByCategory() {
-  const categories = (await listPublishedCategories()).slice(0, 5);
+  const categories = await listPublishedCategories();
 
   if (categories.length === 0) {
     return null;
