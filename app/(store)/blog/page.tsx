@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
+import { Skeleton } from "@/components/ui/skeleton";
 import { crumbs } from "@/lib/breadcrumbs";
-import { listBlogCategories } from "@/lib/blog-category";
+import { listBlogCategories, type BlogCategory } from "@/lib/blog-category";
 import { formatBlogDate, type BlogPostListItem } from "@/lib/blog-fields";
 import { listPublishedBlogPosts } from "@/lib/blog";
 import { cn } from "@/lib/utils";
@@ -58,43 +60,23 @@ export default async function BlogPage({
 }: PageProps<"/blog">) {
   const params = await searchParams;
   const categorySlug = categoryParam(params.category);
-  const [allPosts, categories] = await Promise.all([
-    listPublishedBlogPosts(),
-    listBlogCategories(),
-  ]);
+  const categories = await listBlogCategories();
   const selected = categorySlug
-    ? categories.find((row) => row.slug === categorySlug)
+    ? (categories.find((row) => row.slug === categorySlug) ?? null)
     : null;
 
+  // Must run before anything suspends: once streaming starts the status is 200.
   if (categorySlug && !selected) {
     notFound();
   }
 
-  const posts = selected
-    ? allPosts.filter((post) => post.categorySlug === selected.slug)
-    : allPosts;
-  const filters = categories.filter(
-    (category) =>
-      category.slug === selected?.slug ||
-      allPosts.some((post) => post.categorySlug === category.slug),
-  );
-  const [featured, ...rest] = posts;
-
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
       <JsonLd
-        data={[
-          blogSchema(
-            posts.map((post) => ({
-              title: post.title,
-              path: `/blog/${post.slug}`,
-            })),
-          ),
-          breadcrumbSchema([
-            { name: "Home", path: "/" },
-            { name: "Blog", path: "/blog" },
-          ]),
-        ]}
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Blog", path: "/blog" },
+        ])}
       />
       <PageBreadcrumbs
         items={crumbs({ label: "Blog", href: "/blog" })}
@@ -107,7 +89,41 @@ export default async function BlogPage({
         Notes from AMA Supplies on wholesale medical supplies and working with
         approved healthcare accounts.
       </p>
+      <Suspense fallback={<BlogPostsSkeleton />}>
+        <BlogPosts selected={selected} categories={categories} />
+      </Suspense>
+    </div>
+  );
+}
 
+async function BlogPosts({
+  selected,
+  categories,
+}: {
+  selected: BlogCategory | null;
+  categories: BlogCategory[];
+}) {
+  const allPosts = await listPublishedBlogPosts();
+  const posts = selected
+    ? allPosts.filter((post) => post.categorySlug === selected.slug)
+    : allPosts;
+  const filters = categories.filter(
+    (category) =>
+      category.slug === selected?.slug ||
+      allPosts.some((post) => post.categorySlug === category.slug),
+  );
+  const [featured, ...rest] = posts;
+
+  return (
+    <>
+      <JsonLd
+        data={blogSchema(
+          posts.map((post) => ({
+            title: post.title,
+            path: `/blog/${post.slug}`,
+          })),
+        )}
+      />
       {filters.length > 1 ? (
         <nav
           aria-label="Blog categories"
@@ -153,6 +169,33 @@ export default async function BlogPage({
           ) : null}
         </div>
       )}
+    </>
+  );
+}
+
+function BlogPostsSkeleton() {
+  return (
+    <div role="status" className="mt-12">
+      <span className="sr-only">Loading posts…</span>
+      <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
+        <Skeleton className="aspect-4/3" />
+        <div>
+          <Skeleton className="h-4 w-28" />
+          <Skeleton className="mt-4 h-20 max-w-md" />
+          <Skeleton className="mt-5 h-16 max-w-lg" />
+          <Skeleton className="mt-8 h-11 w-32" />
+        </div>
+      </div>
+      <div className="mt-16 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 3 }, (_, index) => (
+          <div key={index}>
+            <Skeleton className="aspect-4/3" />
+            <Skeleton className="mt-4 h-4 w-24" />
+            <Skeleton className="mt-2 h-12" />
+            <Skeleton className="mt-3 h-14" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

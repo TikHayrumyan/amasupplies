@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageBreadcrumbs } from "@/components/page-breadcrumbs";
@@ -5,6 +6,8 @@ import { CategoryFilters } from "@/components/category-filters";
 import { CategoryFiltersSheet } from "@/components/category-filters-sheet";
 import { CategorySort } from "@/components/category-sort";
 import { ProductCard } from "@/components/product-card";
+import { ProductGridSkeleton } from "@/components/product-grid-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { crumbs } from "@/lib/breadcrumbs";
 import {
   catalogHref,
@@ -71,15 +74,85 @@ export default async function CategoryPage({
   searchParams,
 }: PageProps<"/products/[slug]">) {
   const { slug } = await params;
-  const query = await searchParams;
-  const catalog = await getCatalog(slug, parseCatalogQuery(query));
+  const category =
+    slug === ALL_PRODUCTS_SLUG ? null : await getCategoryBySlug(slug);
+
+  // Must run before anything suspends: once streaming starts the status is 200.
+  if (slug !== ALL_PRODUCTS_SLUG && !category?.isPublished) {
+    notFound();
+  }
+
+  const pathname = `/products/${category?.slug ?? ALL_PRODUCTS_SLUG}`;
+  const pageTitle = category?.title ?? "All products";
+  const pageDescription =
+    category?.description ||
+    (category
+      ? `Wholesale ${category.title} for approved healthcare accounts from AMA Supplies.`
+      : ALL_DESCRIPTION);
+
+  return (
+    <div>
+      <JsonLd
+        data={[
+          webPageSchema({
+            path: pathname,
+            name: pageTitle,
+            description: pageDescription,
+            type: "CollectionPage",
+          }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Products", path: "/products" },
+            { name: pageTitle, path: pathname },
+          ]),
+        ]}
+      />
+      <div className="container mx-auto px-4 pt-6 md:pt-8">
+        <PageBreadcrumbs
+          items={crumbs(
+            { label: "Products", href: "/products" },
+            { label: pageTitle, href: pathname },
+          )}
+        />
+        <h1 className="mt-8 font-medium tracking-tight">{pageTitle}</h1>
+        {category?.description ? (
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
+            {category.description}
+          </p>
+        ) : null}
+      </div>
+      <div className="container mx-auto px-4 py-12 md:py-16">
+        <Suspense fallback={<CatalogSkeleton />}>
+          <CatalogResults
+            slug={slug}
+            pathname={pathname}
+            pageTitle={pageTitle}
+            searchParams={searchParams}
+          />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+
+async function CatalogResults({
+  slug,
+  pathname,
+  pageTitle,
+  searchParams,
+}: {
+  slug: string;
+  pathname: string;
+  pageTitle: string;
+  searchParams: PageProps<"/products/[slug]">["searchParams"];
+}) {
+  const catalog = await getCatalog(slug, parseCatalogQuery(await searchParams));
 
   if (!catalog) {
     notFound();
   }
 
   const category = catalog.category;
-  const pathname = `/products/${category?.slug ?? ALL_PRODUCTS_SLUG}`;
   const catalogQuery = { ...catalog.filters, sort: catalog.sort };
   const filtersActive = hasActiveCatalogFilters(catalog.filters);
   const hasFilters =
@@ -95,143 +168,111 @@ export default async function CategoryPage({
     brand: null,
     size: null,
   });
+  const indexableList = !filtersActive && catalog.sort === "featured";
 
-  const pageTitle = category?.title ?? "All products";
-  const pageDescription =
-    category?.description ||
-    (category
-      ? `Wholesale ${category.title} for approved healthcare accounts from AMA Supplies.`
-      : ALL_DESCRIPTION);
-  const indexableList =
-    !filtersActive && catalog.sort === "featured";
+  if (catalog.total === 0) {
+    return (
+      <p className="text-muted-foreground">
+        {category ? "No products in this category yet." : "No products yet."}
+      </p>
+    );
+  }
 
   return (
-    <div>
-      <JsonLd
-        data={[
-          webPageSchema({
+    <>
+      {indexableList ? (
+        <JsonLd
+          data={itemListSchema({
             path: pathname,
             name: pageTitle,
-            description: pageDescription,
-            type: "CollectionPage",
-          }),
-          ...(indexableList
-            ? [
-                itemListSchema({
-                  path: pathname,
-                  name: pageTitle,
-                  items: catalog.products.map((product) => ({
-                    name: product.title,
-                    path: `/products/${product.categorySlug}/${product.slug}`,
-                  })),
-                }),
-              ]
-            : []),
-          breadcrumbSchema([
-            { name: "Home", path: "/" },
-            { name: "Products", path: "/products" },
-            { name: pageTitle, path: pathname },
-          ]),
-        ]}
-      />
-      <div className="container mx-auto px-4 pt-6 md:pt-8">
-        <PageBreadcrumbs
-          items={crumbs(
-            { label: "Products", href: "/products" },
-            {
-              label: category?.title ?? "All products",
-              href: pathname,
-            },
-          )}
+            items: catalog.products.map((product) => ({
+              name: product.title,
+              path: `/products/${product.categorySlug}/${product.slug}`,
+            })),
+          })}
         />
-        <h1 className="mt-8 font-medium tracking-tight">
-          {category?.title ?? "All products"}
-        </h1>
-        {category?.description ? (
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            {category.description}
-          </p>
+      ) : null}
+      <div
+        className={
+          hasFilters
+            ? "lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-x-16 xl:grid-cols-[16rem_minmax(0,1fr)]"
+            : undefined
+        }
+      >
+        {hasFilters ? (
+          <aside className="hidden lg:sticky lg:top-36 lg:block lg:self-start">
+            <CategoryFilters
+              pathname={pathname}
+              query={catalogQuery}
+              facets={catalog.facets}
+            />
+          </aside>
         ) : null}
-      </div>
-      <div className="container mx-auto px-4 py-12 md:py-16">
-        {catalog.total === 0 ? (
-          <p className="text-muted-foreground">
-            {category
-              ? "No products in this category yet."
-              : "No products yet."}
-          </p>
-        ) : (
-          <div
-            className={
-              hasFilters
-                ? "lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-x-16 xl:grid-cols-[16rem_minmax(0,1fr)]"
-                : undefined
-            }
-          >
-            {hasFilters ? (
-              <aside className="hidden lg:sticky lg:top-36 lg:block lg:self-start">
-                <CategoryFilters
-                  pathname={pathname}
-                  query={catalogQuery}
-                  facets={catalog.facets}
-                />
-              </aside>
-            ) : null}
-            <div>
-              <div className="lg:hidden">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
-                    {countLabel}
-                  </p>
-                  {filtersActive ? (
-                    <Link
-                      href={clearHref}
-                      scroll={false}
-                      className="caption tracking-[0.16em] text-muted-foreground uppercase transition-colors hover:text-foreground"
-                    >
-                      Clear
-                    </Link>
-                  ) : null}
-                </div>
-                <div className="mt-4 flex items-center justify-between gap-3">
-                  <CategorySort
+        <div>
+          <div className="lg:hidden">
+            <div className="flex items-center justify-between gap-3">
+              <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+                {countLabel}
+              </p>
+              {filtersActive ? (
+                <Link
+                  href={clearHref}
+                  scroll={false}
+                  className="caption tracking-[0.16em] text-muted-foreground uppercase transition-colors hover:text-foreground"
+                >
+                  Clear
+                </Link>
+              ) : null}
+            </div>
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <CategorySort
+                pathname={pathname}
+                query={catalogQuery}
+                align="start"
+              />
+              {hasFilters ? (
+                <CategoryFiltersSheet active={filtersActive}>
+                  <CategoryFilters
                     pathname={pathname}
                     query={catalogQuery}
-                    align="start"
+                    facets={catalog.facets}
+                    showHeading={false}
                   />
-                  {hasFilters ? (
-                    <CategoryFiltersSheet active={filtersActive}>
-                      <CategoryFilters
-                        pathname={pathname}
-                        query={catalogQuery}
-                        facets={catalog.facets}
-                        showHeading={false}
-                      />
-                    </CategoryFiltersSheet>
-                  ) : null}
-                </div>
-              </div>
-              <div className="hidden items-center justify-between gap-4 lg:flex">
-                <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
-                  {countLabel}
-                </p>
-                <CategorySort pathname={pathname} query={catalogQuery} />
-              </div>
-              {catalog.products.length === 0 ? (
-                <p className="mt-10 text-muted-foreground">
-                  No products match these filters.
-                </p>
-              ) : (
-                <div className="mt-8 grid gap-10 sm:grid-cols-2 xl:grid-cols-3">
-                  {catalog.products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              )}
+                </CategoryFiltersSheet>
+              ) : null}
             </div>
           </div>
-        )}
+          <div className="hidden items-center justify-between gap-4 lg:flex">
+            <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+              {countLabel}
+            </p>
+            <CategorySort pathname={pathname} query={catalogQuery} />
+          </div>
+          {catalog.products.length === 0 ? (
+            <p className="mt-10 text-muted-foreground">
+              No products match these filters.
+            </p>
+          ) : (
+            <div className="mt-8 grid gap-10 sm:grid-cols-2 xl:grid-cols-3">
+              {catalog.products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+    </>
+  );
+}
+
+function CatalogSkeleton() {
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-4">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-10 w-44" />
+      </div>
+      <ProductGridSkeleton className="mt-8" />
     </div>
   );
 }
