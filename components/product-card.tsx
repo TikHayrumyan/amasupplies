@@ -29,18 +29,18 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         {product.title}
       </h2>
 
-      <div className="mt-3 grid grid-cols-2 gap-4">
+      <div className="mt-3 grid grid-cols-2 gap-3">
         <div>
-          <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+          <p className="text-[12px] tracking-[0.08em] whitespace-nowrap text-muted-foreground uppercase">
             Brand
           </p>
-          <p className="mt-1 truncate text-sm">{product.brandTitle}</p>
+          <p className="mt-1 truncate text-[13px]">{product.brandTitle}</p>
         </div>
         <div>
-          <p className="caption tracking-[0.16em] text-muted-foreground uppercase">
+          <p className="text-[12px] tracking-[0.08em] whitespace-nowrap text-muted-foreground uppercase">
             Item number
           </p>
-          <p className="mt-1 truncate text-sm">{product.itemNumber}</p>
+          <p className="mt-1 truncate text-[13px]">{product.itemNumber}</p>
         </div>
       </div>
 
