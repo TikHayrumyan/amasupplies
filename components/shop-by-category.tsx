@@ -16,7 +16,7 @@ export async function ShopByCategory() {
           Shop by category
         </h2>
 
-        <div className="mt-10 grid grid-cols-2 gap-x-3 gap-y-8 md:mt-14 md:gap-x-6 md:gap-y-12 lg:grid-cols-5">
+        <div className="mt-10 grid grid-cols-2 gap-x-3 gap-y-8 md:mt-14 md:gap-x-6 md:gap-y-12 lg:grid-cols-6">
           {categories.map((category) => (
             <Link
               key={category.id}
